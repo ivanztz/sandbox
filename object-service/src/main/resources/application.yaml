@@ -1,0 +1,24 @@
+spring:
+  application:
+    name: object-service
+  datasource:
+    url: jdbc:postgresql://${server-name}:${database-port}/${database-name}
+    username: ${database-user}
+    password: ${database-password}
+    driverClassName: org.postgresql.Driver
+  jpa:
+    generate-ddl: false
+    database: postgresql
+    hibernate:
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy
+  jackson:
+    default-property-inclusion: non_null
+  liquibase:
+    change-log: changelog.yml
+logging:
+  level:
+    ROOT: INFO
+    com.iz: INFO
+
+management.endpoints.web.exposure.include: '*'

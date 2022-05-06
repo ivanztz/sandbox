@@ -1,0 +1,31 @@
+version: "3"
+services:
+  postgres:
+    image: postgres:14.2
+    ports:
+      - '5432:5432'
+    environment:
+      - POSTGRES_USER=admin
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=objects
+    networks:
+      default:
+        aliases:
+          - postgres
+    # persistent volume to survive container recreation
+    volumes:
+      - db-data:/var/lib/postgresql/data
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - '8088:8080'
+    networks:
+      default:
+        aliases:
+          - adminer
+networks:
+  default:
+volumes:
+  db-data:
+    driver: local

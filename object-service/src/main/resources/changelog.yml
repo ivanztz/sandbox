@@ -1,0 +1,32 @@
+databaseChangeLog:
+  - changeSet:
+      id: 1
+      author: ivan_zayats
+      changes:
+        - createTable:
+            tableName: objects
+            columns:
+              - column:
+                  name: id
+                  type: uuid
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: string_field
+                  type: varchar(255)
+              - column:
+                  name: int_field
+                  type: bigint
+              - column:
+                  name: decimal_field
+                  type: double
+              - column:
+                  name: json_field
+                  type: jsonb
+              - column:
+                  name: created_at
+                  type: datetime
+              - column:
+                  name: updated_at
+                  type: datetime

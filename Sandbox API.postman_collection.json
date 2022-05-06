@@ -1,0 +1,149 @@
+{
+	"info": {
+		"_postman_id": "b15a81ae-85ef-4e41-a5e3-395820bc94e7",
+		"name": "Sandbox API",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Create object",
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"stringField\": \"string value \",\n    \"intField\" : 1, \n    \"decimalField\": 3.15,\n    \"jsonField\": \"{\\\"field\\\":\\\"value\\\"}\"\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8080/objects",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"objects"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update object",
+			"request": {
+				"method": "PUT",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{   \n    \"stringField\": \"string value 2\",\n    \"intField\" : 1, \n    \"decimalField\": 3.16,\n    \"jsonField\": \"{\\\"field\\\":\\\"value\\\"}\"\n}"
+				},
+				"url": {
+					"raw": "http://localhost:8080/objects/16f30674-bc91-4d79-8f2d-c1268869cd04",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"objects",
+						"16f30674-bc91-4d79-8f2d-c1268869cd04"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete object",
+			"request": {
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:8080/objects/3d7ab4a5-499b-4da0-9fbd-588fcb1c710f",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"objects",
+						"3d7ab4a5-499b-4da0-9fbd-588fcb1c710f"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get object",
+			"request": {
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "http://localhost:8080/objects/16f30674-bc91-4d79-8f2d-c1268869cd04",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"objects",
+						"16f30674-bc91-4d79-8f2d-c1268869cd04"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get objects",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://localhost:8080/objects?startDate=2022-05-05T16%3A30%3A00.000%2B03%3A00&endDate=2022-05-05T16%3A44%3A57.272%2B03%3A00",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8080",
+					"path": [
+						"objects"
+					],
+					"query": [
+						{
+							"key": "startDate",
+							"value": "2022-05-05T16%3A30%3A00.000%2B03%3A00"
+						},
+						{
+							"key": "endDate",
+							"value": "2022-05-05T16%3A44%3A57.272%2B03%3A00"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}

@@ -1,0 +1,15 @@
+# Project exclude paths
+/object-api/target/
+/object-api/object-api.iml
+/.idea/compiler.xml
+/.idea/encodings.xml
+/.idea/jarRepositories.xml
+/.idea/misc.xml
+/.idea/uiDesigner.xml
+/.idea/vcs.xml
+/object-service/mvnw
+/object-service/mvnw.cmd
+/sandbox.iml
+/sandbox.ipr
+/sandbox.iws
+/object-service/.mvn/

@@ -1,0 +1,266 @@
+openapi: 3.0.3
+info:
+  title: Sandbox Objects API
+  description: Sandbox Objects API
+  version: 1.0.0
+servers:
+  - url: 'https://localhost:8080/v1'
+tags:
+  - name: objects
+paths:
+  /objects:
+    post:
+      description: Creates new object
+      operationId: createObject
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ObjectDataRequest'
+      responses:
+        201:
+          description: Object created response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ObjectDataResponse'
+        401:
+          $ref: '#/components/responses/401'
+        403:
+          $ref: '#/components/responses/403'
+        500:
+          $ref: '#/components/responses/500'
+      tags:
+        - objects
+    get:
+      description: Finds objects with filtering options
+      operationId: getObjects
+      parameters:
+        - in: query
+          name: startDate
+          schema:
+            type: string
+            format: date-time
+          required: false
+          description: Start date for filtering objects
+        - in: query
+          name: endDate
+          schema:
+            type: string
+            format: date-time
+          required: false
+          description: End date for filtering objects
+      responses:
+        200:
+          description: Returns objects array according to filtering parameters
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ObjectDataListResponse'
+      tags:
+        - objects
+  /objects/{objectId}:
+    parameters:
+      - in: path
+        name: objectId
+        schema:
+          type: string
+          format: uuid
+        required: true
+    get:
+      description: Get object by ID
+      operationId: getObjectById
+      responses:
+        200:
+          description: Object created response
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ObjectDataResponse'
+        401:
+          $ref: '#/components/responses/401'
+        403:
+          $ref: '#/components/responses/403'
+        404:
+          $ref: '#/components/responses/404'
+        500:
+          $ref: '#/components/responses/500'
+      tags:
+        - objects
+    put:
+      description: Update object
+      operationId: updateObjectById
+      requestBody:
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ObjectDataRequest'
+      responses:
+        200:
+          $ref: '#/components/responses/200'
+        401:
+          $ref: '#/components/responses/401'
+        403:
+          $ref: '#/components/responses/403'
+        404:
+          $ref: '#/components/responses/404'
+        500:
+          $ref: '#/components/responses/500'
+      tags:
+        - objects
+    delete:
+      description: Delete object
+      operationId: deleteObjectById
+      responses:
+        200:
+          $ref: '#/components/responses/200'
+        401:
+          $ref: '#/components/responses/401'
+        403:
+          $ref: '#/components/responses/403'
+        404:
+          $ref: '#/components/responses/404'
+        500:
+          $ref: '#/components/responses/500'
+      tags:
+        - objects
+
+components:
+  schemas:
+    ObjectData:
+      type: object
+      description: Base object
+      properties:
+        id:
+          description: Object unique identifier
+          type: string
+          format: uuid #for codegen
+          readOnly: true
+          example: cc0345ee-cb97-11ec-9d64-0242ac120002
+        stringField:
+          type: string
+          example: 'String example'
+        intField:
+          type: integer
+          format: int64
+          example: 1
+        decimalField:
+          type: number
+          format: double
+          example: 3.14
+        jsonField:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+          readOnly: true
+          example: 2017-07-21T17:32:28Z
+        updatedAt:
+          type: string
+          format: date-time
+          readOnly: true
+          example: 2017-07-21T17:32:28Z
+
+    ObjectDataRequest:
+      type: object
+      description: Base object
+      properties:
+        stringField:
+          type: string
+          example: 'String example'
+        intField:
+          type: integer
+          format: int64
+          example: 1
+        decimalField:
+          type: number
+          format: double
+          example: 3.14
+        jsonField:
+          type: string
+
+    ObjectDataResponse:
+      description: Single object data response
+      allOf:
+        - $ref: '#/components/schemas/Response'
+        - properties:
+            data:
+              $ref: '#/components/schemas/ObjectData'
+
+    ObjectDataListResponse:
+      description: Response for list of objects
+      allOf:
+        - $ref: '#/components/schemas/Response'
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/ObjectData'
+
+    Response:
+      type: object
+      description: Request processing result
+      properties:
+        data:
+          type: object
+          description: Response body
+        errors:
+          type: array
+          items:
+            $ref: '#/components/schemas/Error'
+          title: Errors list
+    Error:
+      type: object
+      description: Contains error information
+      required:
+        - description
+      properties:
+        description:
+          type: string
+          description: Error text
+          example: Unexpected error
+          title: Error text
+        details:
+          type: string
+          description: Error details
+
+  responses:
+    200:
+      description: OK
+    400:
+      description: Bad request
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: '#/components/schemas/Response'
+    401:
+      description: Unauthorized
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: '#/components/schemas/Response'
+    403:
+      description: Permission denied
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: '#/components/schemas/Response'
+    404:
+      description: Not found
+    422:
+      description: Unprocessable entity
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: '#/components/schemas/Response'
+    500:
+      description: Internal server error
+      content:
+        application/json:
+          schema:
+            allOf:
+              - $ref: '#/components/schemas/Response'

@@ -1,0 +1,9 @@
+spring:
+  jpa:
+    show-sql: true
+
+server-name: localhost
+database-port: 5432
+database-name: objects
+database-user: admin
+database-password: password
