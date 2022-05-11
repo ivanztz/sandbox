@@ -6,6 +6,8 @@ services:
       - '2181:2181'
     environment:
       - ALLOW_ANONYMOUS_LOGIN=yes
+    volumes:
+      - zookeeper-data:/bitnami/zookeeper
   kafka:
     image: 'bitnami/kafka:2.8.1'
     ports:
@@ -40,6 +42,10 @@ services:
       - KAFKA_CLUSTERS_0_ZOOKEEPER=localhost:2181
 networks:
   default:
+    external:
+      name: sandbox_default
 volumes:
   kafka-data:
+    driver: local
+  zookeeper-data:
     driver: local

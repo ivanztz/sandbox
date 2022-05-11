@@ -1,4 +1,15 @@
 #!/bin/bash
 
-echo "Running env containers"
-exec docker-compose -f docker-compose-env.yml up -d
+echo "Configuring docker env"
+docker-compose -f docker-compose-env.yml -p sandbox up -d
+
+echo "Running postgres containers"
+docker-compose -f docker-compose-postgres.yml -p sandbox-postgres up -d
+
+echo "Running kafka containers"
+docker-compose -f docker-compose-kafka.yml -p sandbox-kafka up -d
+
+echo "Running mongodb containers "
+docker-compose -f docker-compose-mongo.yml -p sandbox-mongo up -d
+
+echo  "Docker env started"

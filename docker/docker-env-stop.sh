@@ -1,4 +1,15 @@
 #!/bin/bash
 
-echo "Stopping env containers"
-exec docker-compose -f docker-compose-env.yml down
+echo "Removing postgres containers"
+docker-compose -f docker-compose-postgres.yml -p sandbox-postgres down
+
+echo "Removing kafka containers"
+docker-compose -f docker-compose-kafka.yml -p sandbox-kafka down
+
+echo "Removing mongodb containers "
+docker-compose -f docker-compose-mongo.yml -p sandbox-mongo down
+
+echo "Removing docker env"
+docker-compose -f docker-compose-env.yml -p sandbox down
+
+echo "Docker env stopped"

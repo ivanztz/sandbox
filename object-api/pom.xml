@@ -14,6 +14,10 @@
     <properties>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
+        <jackson-databind-nullable.version>0.2.2</jackson-databind-nullable.version>
+        <swagger-parser-v3.version>2.0.32</swagger-parser-v3.version>
+        <swagger-annotations.version>2.2.0</swagger-annotations.version>
+        <lombok.version>1.18.24</lombok.version>
     </properties>
 
     <build>
@@ -53,12 +57,12 @@
         <dependency>
             <groupId>io.swagger.core.v3</groupId>
             <artifactId>swagger-annotations</artifactId>
-            <version>2.2.0</version>
+            <version>${swagger-annotations.version}</version>
         </dependency>
         <dependency>
             <groupId>io.swagger.parser.v3</groupId>
             <artifactId>swagger-parser-v3</artifactId>
-            <version>2.0.32</version>
+            <version>${swagger-parser-v3.version}</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -67,7 +71,13 @@
         <dependency>
             <groupId>org.openapitools</groupId>
             <artifactId>jackson-databind-nullable</artifactId>
-            <version>0.2.2</version>
+            <version>${jackson-databind-nullable.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>${lombok.version}</version>
+            <scope>provided</scope>
         </dependency>
     </dependencies>
 

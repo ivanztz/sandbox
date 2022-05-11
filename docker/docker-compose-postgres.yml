@@ -26,6 +26,8 @@ services:
           - adminer
 networks:
   default:
+    external:
+      name: sandbox_default
 volumes:
   db-data:
     driver: local

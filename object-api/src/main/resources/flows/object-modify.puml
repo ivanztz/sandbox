@@ -5,23 +5,23 @@ participant "Invoker" as invoker
 participant "Object Service" as objectService #LightBlue
 participant "Object History Service" as objectHistory #LightBlue
 
-invoker -> objectService: Object modification request \n HTTP POST /objects \n HTTP PUT\DELETE /objects/{objectId}
+invoker -> objectService: Object modification request \n [HTTP POST /objects] \n [HTTP PUT\DELETE /objects/{objectId}]
 activate invoker
 activate objectService
 objectService -> objectService: Validate request
 
 alt "Request is valid"
     objectService -> objectService: Persist object modifications
-    objectService ->> objectHistory: Publish object modification event
+    objectService ->> objectHistory: Publish object modification event\n [kafka:object.events]
     activate objectHistory
     objectService --> invoker: Success response
-    deactivate objectService
-    deactivate invoker
     objectHistory -> objectHistory: Persist object modification event
     deactivate objectHistory
 else "Request is not valid"
     objectService --> invoker: Error response
 end
+deactivate objectService
+deactivate invoker
 
 legend right
     |Color| Type |

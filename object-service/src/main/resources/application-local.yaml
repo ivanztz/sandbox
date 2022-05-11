@@ -1,6 +1,13 @@
 spring:
   jpa:
     show-sql: true
+  kafka:
+    bootstrap-servers: localhost:9093
+
+logging:
+  level:
+    ROOT: INFO
+    com.iz: DEBUG
 
 server-name: localhost
 database-port: 5432

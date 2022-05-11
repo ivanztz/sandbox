@@ -1,0 +1,117 @@
+asyncapi: 2.3.0
+info:
+  title: Object Events API
+  version: 1.0.0
+  description: |
+    Describes events produced bu object service
+servers:
+  local:
+    url: localhost:9093
+    protocol: kafka
+    description: Local Kafka broker
+
+channels:
+  object/events:
+    subscribe:
+      message:
+        oneOf:
+          - $ref: '#/components/messages/ObjectCreated'
+          - $ref: '#/components/messages/ObjectUpdated'
+          - $ref: '#/components/messages/ObjectDeleted'
+
+components:
+  messages:
+    ObjectCreated:
+      name: ObjectCreated
+      title: Object created event
+      summary: Event published when new object was created
+      contentType: application/json
+      payload:
+        $ref: '#/components/schemas/objectModifiedEvent'
+    ObjectUpdated:
+      name: ObjectUpdated
+      title: Object updated event
+      summary: Event published when object was updated
+      contentType: application/json
+      payload:
+        $ref: '#/components/schemas/objectModifiedEvent'
+    ObjectDeleted:
+      name: ObjectDeleted
+      title: Object deleted event
+      summary: Event published when object was deleted
+      contentType: application/json
+      payload:
+        $ref: '#/components/schemas/objectDeletedEvent'
+
+  schemas:
+    objectEvent:
+      type: object
+      description: Base object for events holding common information about action was performed
+      properties:
+        publishedAt:
+          description: Event creation timestamp
+          type: string
+          format: date-time
+        principal:
+          description: Principal who triggered the event
+          type: string
+      required:
+        - createdAt
+
+    objectModifiedEvent:
+      allOf:
+        - $ref: '#/components/schemas/objectEvent'
+        - type: object
+          properties:
+            id:
+              description: Object unique identifier
+              type: string
+              format: uuid #for codegen
+              readOnly: true
+              example: cc0345ee-cb97-11ec-9d64-0242ac120002
+            modificationType:
+              description: Type of object modification performed
+              type: string
+              enum:
+                - CREATED
+                - UPDATED
+            stringField:
+              type: string
+              example: 'String example'
+            intField:
+              type: integer
+              format: int64
+              example: 1
+            decimalField:
+              type: number
+              format: double
+              example: 3.14
+            jsonField:
+              type: string
+            createdAt:
+              type: string
+              format: date-time
+              readOnly: true
+              example: 2017-07-21T17:32:28Z
+            updatedAt:
+              type: string
+              format: date-time
+              readOnly: true
+              example: 2017-07-21T17:32:28Z
+      required:
+        - id
+        - modificationType
+
+    objectDeletedEvent:
+      allOf:
+        - $ref: '#/components/schemas/objectEvent'
+        - type: object
+          properties:
+            id:
+              description: Object unique identifier
+              type: string
+              format: uuid #for codegen
+              readOnly: true
+              example: cc0345ee-cb97-11ec-9d64-0242ac120002
+      required:
+        - id
