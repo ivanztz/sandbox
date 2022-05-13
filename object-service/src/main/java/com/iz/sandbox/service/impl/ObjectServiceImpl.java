@@ -1,12 +1,12 @@
 package com.iz.sandbox.service.impl;
 
-import com.iz.sandbox.config.ObjectMapper;
+import com.iz.sandbox.config.ObjectTypeMapper;
 import com.iz.sandbox.dto.ObjectData;
 import com.iz.sandbox.dto.ObjectDataRequest;
 import com.iz.sandbox.entity.ObjectEntity;
 import com.iz.sandbox.repository.ObjectRepository;
 import com.iz.sandbox.repository.ObjectSpecifications;
-import com.iz.sandbox.service.EventService;
+import com.iz.sandbox.service.EventPublishingService;
 import com.iz.sandbox.service.ObjectNotFoundException;
 import com.iz.sandbox.service.ObjectService;
 import lombok.AllArgsConstructor;
@@ -25,10 +25,10 @@ import java.util.stream.Collectors;
 @Slf4j
 public class ObjectServiceImpl implements ObjectService {
 
-    private final ObjectMapper dataMapper;
+    private final ObjectTypeMapper dataMapper;
     private final ObjectRepository repository;
 
-    private final EventService eventService;
+    private final EventPublishingService eventPublishingService;
 
     @Override
     @Transactional
@@ -36,9 +36,8 @@ public class ObjectServiceImpl implements ObjectService {
         log.debug("Creating object: {}", dto);
 
         final ObjectEntity entity = repository.saveAndFlush(dataMapper.mapRequestToEntity(dto));
-        final ObjectData result = dataMapper.mapEntityToDto(entity);
-        eventService.publishObjectCreatedEvent(result);
-        return result;
+        eventPublishingService.publishObjectCreatedEvent(dataMapper.mapEntityToEventDto(entity));
+        return dataMapper.mapEntityToDto(entity);
     }
 
     @Override
@@ -49,7 +48,7 @@ public class ObjectServiceImpl implements ObjectService {
         final ObjectEntity entity = repository.findById(objectId).orElseThrow(() -> new ObjectNotFoundException(objectId));
         dataMapper.mapRequestToEntity(dto, entity);
         repository.saveAndFlush(entity);
-        eventService.publishObjectModifiedEvent(dataMapper.mapEntityToDto(entity));
+        eventPublishingService.publishObjectModifiedEvent(dataMapper.mapEntityToEventDto(entity));
     }
 
     @Override
@@ -66,7 +65,7 @@ public class ObjectServiceImpl implements ObjectService {
         log.debug("Deleting object with ID: {}", objectId);
 
         repository.deleteById(objectId);
-        eventService.publishObjectDeletedEvent(objectId);
+        eventPublishingService.publishObjectDeletedEvent(objectId);
     }
 
     @Override

@@ -1,0 +1,35 @@
+spring:
+  application:
+    name: object-service
+  data:
+    mongodb:
+      database: ${database-name:local}
+      host: ${server-name:localhost}
+      port: ${database-port:27017}
+      username: ${database-user:admin}
+      password: ${database-password:password}
+      authentication-database: ${auth-database-name:admin}
+  jackson:
+    default-property-inclusion: non_null
+  kafka:
+    bootstrap-servers: kafka:9092
+    consumer:
+      enable-auto-commit: false
+      group-id: object-events
+      properties:
+        spring.json.key.default.type: java.lang.String
+        spring.json.trusted.packages: '*'
+        request.timeout.ms: '60000'
+        session.timeout.ms: '180000'
+    listener:
+      concurrency: 1
+
+logging:
+  level:
+    ROOT: INFO
+    com.iz: INFO
+
+management.endpoints.web.exposure.include: '*'
+
+topics:
+  events: object.events

@@ -2,9 +2,9 @@ spring:
   application:
     name: object-service
   datasource:
-    url: jdbc:postgresql://${server-name}:${database-port}/${database-name}
-    username: ${database-user}
-    password: ${database-password}
+    url: jdbc:postgresql://${server-name:localhost}:${database-port:5432}/${database-name:objects}
+    username: ${database-user:admin}
+    password: ${database-password:password}
     driverClassName: org.postgresql.Driver
   jpa:
     generate-ddl: false
@@ -18,9 +18,21 @@ spring:
     change-log: changelog.yml
   kafka:
     bootstrap-servers: kafka:9092
-    producer:
-      key-serializer: org.apache.kafka.common.serialization.StringSerializer
-      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+  cloud:
+    #disabling ribbon
+    loadbalancer:
+      ribbon:
+        enable: false
+
+feign:
+  httpclient:
+    enabled: true
+  client:
+    config:
+      events:
+        connectTimeout: 5000
+        readTimeout: 5000
+        loggerLevel: full
 
 logging:
   level:
@@ -31,3 +43,6 @@ management.endpoints.web.exposure.include: '*'
 
 topics:
   events: object.events
+
+clients:
+  events: http://localhost:8082/

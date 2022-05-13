@@ -7,6 +7,7 @@ servers:
   - url: 'https://localhost:8080/v1'
 tags:
   - name: objects
+  - name: events
 paths:
   /objects:
     post:
@@ -125,6 +126,41 @@ paths:
       tags:
         - objects
 
+  /events:
+    get:
+      description: Finds events with filtering options
+      operationId: getEvents
+      parameters:
+        - in: query
+          name: objectId
+          schema:
+            type: string
+            format: uuid
+          required: false
+          description: objectId to Search events
+        - in: query
+          name: startDate
+          schema:
+            type: string
+            format: date-time
+          required: false
+          description: Start date for filtering objects
+        - in: query
+          name: endDate
+          schema:
+            type: string
+            format: date-time
+          required: false
+          description: End date for filtering objects
+      responses:
+        200:
+          description: Returns objects array according to filtering parameters
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ObjectEventDataListResponse'
+      tags:
+        - events
 components:
   schemas:
     ObjectData:
@@ -197,6 +233,53 @@ components:
           items:
             $ref: '#/components/schemas/ObjectData'
 
+    ObjectEventDataListResponse:
+      description: Response for list of object events
+      allOf:
+        - $ref: '#/components/schemas/Response'
+      properties:
+        data:
+          type: array
+          items:
+            $ref: '#/components/schemas/ObjectEventData'
+
+    ObjectEventData:
+      type: object
+      description: Object modification event data
+      properties:
+        id:
+          type: string
+          example: 627e36d76b665b167a0a7714
+        objectId:
+          type: string
+          format: uuid
+          example: cc0345ee-cb97-11ec-9d64-0242ac120002
+        eventType:
+          type: string
+          example: OBJECT_CREATED
+        principal:
+          type: string
+        data:
+          $ref: '#/components/schemas/ObjectData'
+        messageInfo:
+          $ref: '#/components/schemas/MessageInfo'
+
+    MessageInfo:
+      type: object
+      description: Transport level information about object event
+      properties:
+        topic:
+          type: string
+          description: Kafka topic name
+          example: topic.events
+        partition:
+          type: integer
+          description: Kafka topic partition number
+          example: 0
+        offset:
+          type: integer
+          description: Kafka topic partition offset
+          example: 12345
     Response:
       type: object
       description: Request processing result

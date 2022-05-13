@@ -13,6 +13,7 @@ services:
     ports:
       - '9092:9092'
       - '9093:9093'
+    restart: always
     environment:
       # without zookeper https://github.com/bitnami/bitnami-docker-kafka
       - KAFKA_BROKER_ID=1

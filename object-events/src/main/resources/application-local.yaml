@@ -5,7 +5,7 @@ spring:
     bootstrap-servers: localhost:9093
 
 server:
-  port: 8080
+  port: 8082
 
 logging:
   level:
@@ -13,9 +13,8 @@ logging:
     com.iz: DEBUG
 
 server-name: localhost
-database-port: 5432
-database-name: objects
+database-port: 27017
+auth-database-name: admin
+database-name: local
 database-user: admin
 database-password: password
-
-events-url: http://localhost:8082

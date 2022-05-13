@@ -19,6 +19,7 @@
 	<modules>
 		<module>object-service</module>
 		<module>object-api</module>
-	</modules>
+        <module>object-events</module>
+    </modules>
 
 </project>

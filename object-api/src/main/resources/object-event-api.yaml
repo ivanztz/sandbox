@@ -15,39 +15,29 @@ channels:
     subscribe:
       message:
         oneOf:
-          - $ref: '#/components/messages/ObjectCreated'
-          - $ref: '#/components/messages/ObjectUpdated'
-          - $ref: '#/components/messages/ObjectDeleted'
+          - $ref: '#/components/messages/ObjectModified'
 
 components:
   messages:
-    ObjectCreated:
-      name: ObjectCreated
-      title: Object created event
-      summary: Event published when new object was created
+    ObjectModifiedMessage:
+      name: ObjectModified
+      title: Object modified event
+      summary: Event published when any object mutable operation performed
       contentType: application/json
       payload:
-        $ref: '#/components/schemas/objectModifiedEvent'
-    ObjectUpdated:
-      name: ObjectUpdated
-      title: Object updated event
-      summary: Event published when object was updated
-      contentType: application/json
-      payload:
-        $ref: '#/components/schemas/objectModifiedEvent'
-    ObjectDeleted:
-      name: ObjectDeleted
-      title: Object deleted event
-      summary: Event published when object was deleted
-      contentType: application/json
-      payload:
-        $ref: '#/components/schemas/objectDeletedEvent'
+        $ref: '#/components/schemas/eventData'
 
   schemas:
-    objectEvent:
+    eventData:
       type: object
       description: Base object for events holding common information about action was performed
       properties:
+        objectId:
+          description: Object unique identifier
+          type: string
+          format: uuid
+          readOnly: true
+          example: cc0345ee-cb97-11ec-9d64-0242ac120002
         publishedAt:
           description: Event creation timestamp
           type: string
@@ -55,63 +45,51 @@ components:
         principal:
           description: Principal who triggered the event
           type: string
+        eventType:
+          description: Event type name
+          type: string
+          enum:
+            - CREATED
+            - UPDATED
+            - DELETED
+        data:
+          $ref: '#/components/schemas/objectData'
       required:
         - createdAt
+        - eventType
 
-    objectModifiedEvent:
-      allOf:
-        - $ref: '#/components/schemas/objectEvent'
-        - type: object
-          properties:
-            id:
-              description: Object unique identifier
-              type: string
-              format: uuid #for codegen
-              readOnly: true
-              example: cc0345ee-cb97-11ec-9d64-0242ac120002
-            modificationType:
-              description: Type of object modification performed
-              type: string
-              enum:
-                - CREATED
-                - UPDATED
-            stringField:
-              type: string
-              example: 'String example'
-            intField:
-              type: integer
-              format: int64
-              example: 1
-            decimalField:
-              type: number
-              format: double
-              example: 3.14
-            jsonField:
-              type: string
-            createdAt:
-              type: string
-              format: date-time
-              readOnly: true
-              example: 2017-07-21T17:32:28Z
-            updatedAt:
-              type: string
-              format: date-time
-              readOnly: true
-              example: 2017-07-21T17:32:28Z
+    eventObjectData:
+      type: object
+      properties:
+        id:
+          description: Object unique identifier
+          type: string
+          format: uuid
+          readOnly: true
+          example: cc0345ee-cb97-11ec-9d64-0242ac120002
+        stringField:
+          type: string
+          example: 'String example'
+        intField:
+          type: integer
+          format: int64
+          example: 1
+        decimalField:
+          type: number
+          format: double
+          example: 3.14
+        jsonField:
+          type: string
+        createdAt:
+          type: string
+          format: date-time
+          readOnly: true
+          example: 2017-07-21T17:32:28Z
+        updatedAt:
+          type: string
+          format: date-time
+          readOnly: true
+          example: 2017-07-21T17:32:28Z
       required:
-        - id
-        - modificationType
-
-    objectDeletedEvent:
-      allOf:
-        - $ref: '#/components/schemas/objectEvent'
-        - type: object
-          properties:
-            id:
-              description: Object unique identifier
-              type: string
-              format: uuid #for codegen
-              readOnly: true
-              example: cc0345ee-cb97-11ec-9d64-0242ac120002
-      required:
+        - createdAt
         - id
