@@ -9,6 +9,9 @@ docker-compose -f docker-compose-kafka.yml -p sandbox-kafka down
 echo "Removing mongodb containers "
 docker-compose -f docker-compose-mongo.yml -p sandbox-mongo down
 
+echo "Removing tracing containers "
+docker-compose -f docker-compose-tracing.yml -p sandbox-tracing down
+
 echo "Removing docker env"
 docker-compose -f docker-compose-env.yml -p sandbox down
 

@@ -35,13 +35,20 @@ Simplified data flow is described at [flow diagram](./object-api/src/main/resour
 
 - Docker
 
+### Tracing/Monitoring
+- OpenTelemetry
+- Jaeger
+
 ## Running instructions
 
 ### Docker environment
-Use ```./docker/docker-env-start.sh``` to setup project environment and ```./docker/docker-env-use.sh``` to clean it 
+- Run ```mvn clean install``` to build project artifacts
+- Use ```./docker/docker-env-start.sh``` to setup project environment and ```./docker/docker-env-stop.sh``` to clean it 
+- After environment is initialized use ```./docker/docker-app-start.sh``` to start services and ```./docker/docker-app-stop.sh``` to stop them
 
 #### Endpoints by default available at:
 - REST endpoints - http://localhost:8080
 - Postgres adminer - http://localhost:8088 
 - Kafka UI - http://localhost:8092
 - MongoDB Express - http://localhost:8081
+- Jaeger - http://localhost:16686 

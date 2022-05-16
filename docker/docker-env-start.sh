@@ -12,4 +12,7 @@ docker-compose -f docker-compose-kafka.yml -p sandbox-kafka up -d
 echo "Running mongodb containers "
 docker-compose -f docker-compose-mongo.yml -p sandbox-mongo up -d
 
+echo "Running tracing containers "
+docker-compose -f docker-compose-tracing.yml -p sandbox-tracing up -d
+
 echo  "Docker env started"

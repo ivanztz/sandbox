@@ -45,4 +45,4 @@ topics:
   events: object.events
 
 clients:
-  events: http://localhost:8082/
+  events: ${events-url:http://localhost:8082/}

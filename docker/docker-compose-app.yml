@@ -1,0 +1,46 @@
+version: "3"
+services:
+  object-service:
+    container_name: object-service
+    build: ../object-service
+    ports:
+      - '8080:8080'
+    environment:
+      - spring.kafka.bootstrap-servers=kafka:9092
+      - server-name=postgres
+      - database-port=5432
+      - database-name=objects
+      - database-user=admin
+      - database-password=password
+      - events-url=http://object-events:8080
+      - OTEL_TRACES_EXPORTER=jaeger
+      - OTEL_EXPORTER_JAEGER_ENDPOINT=http://jaeger:14250
+      - OTEL_SERVICE_NAME=object-service
+    networks:
+      default:
+        aliases:
+          - object-service
+  object-events:
+    container_name: object-events
+    build: ../object-events
+    ports:
+      - '8082:8080'
+    environment:
+      - spring.kafka.bootstrap-servers=kafka:9092
+      - server-name=mongo
+      - database-port=27017
+      - auth-database-name=admin
+      - database-name=local
+      - database-user=admin
+      - database-password=password
+      - OTEL_TRACES_EXPORTER=jaeger
+      - OTEL_EXPORTER_JAEGER_ENDPOINT=http://jaeger:14250
+      - OTEL_SERVICE_NAME=object-events
+    networks:
+      default:
+        aliases:
+          - object-events
+networks:
+  default:
+    external:
+      name: sandbox_default
