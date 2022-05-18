@@ -250,6 +250,10 @@ components:
         id:
           type: string
           example: 627e36d76b665b167a0a7714
+        publishedAt:
+          type: string
+          format: date-time
+          example: 2017-07-21T17:32:28Z
         objectId:
           type: string
           format: uuid

@@ -11,7 +11,7 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.util.Date;
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -29,13 +29,14 @@ public class EventServiceImpl implements EventService {
         log.debug("Saving event data: {} from message {}", message, messageInfo);
 
         final ObjectEventDocument eventDocument = dataMapper.mapMessageDataToDocument(message);
+        eventDocument.setPublishedAt(OffsetDateTime.now());
         eventDocument.setMessageInfo(messageInfo);
         repository.save(eventDocument);
     }
 
     @Override
-    public List<ObjectEventData> findEvents(String objectIdm, Date startDate, Date endDate) {
-        return repository.findAll().stream()
+    public List<ObjectEventData> findEvents(String objectId, OffsetDateTime startDate, OffsetDateTime endDate) {
+        return repository.findByCriteria(objectId, startDate, endDate).stream()
                 .map(dataMapper::mapEventDocumentToDto)
                 .collect(Collectors.toList());
     }
