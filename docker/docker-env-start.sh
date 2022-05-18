@@ -15,4 +15,7 @@ docker-compose -f docker-compose-mongo.yml -p sandbox-mongo up -d
 echo "Running tracing containers "
 docker-compose -f docker-compose-tracing.yml -p sandbox-tracing up -d
 
+echo "Running monitoring containers "
+docker-compose -f docker-compose-monitoring.yml -p sandbox-monitoring up -d
+
 echo  "Docker env started"

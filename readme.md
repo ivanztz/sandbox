@@ -23,9 +23,11 @@ Simplified data flow is described at [flow diagram](./object-api/src/main/resour
   - Spring Boot
   - Spring Data
   - Spring Kafka
+  - Spring Metrics
   - Lombok
   - MapStruct
   - Liquibase
+  - Micrometer
 - Maven
 - Postgresql
 - MongoDB
@@ -38,6 +40,8 @@ Simplified data flow is described at [flow diagram](./object-api/src/main/resour
 ### Tracing/Monitoring
 - OpenTelemetry
 - Jaeger
+- Prometheus
+- Grafana
 
 ## Running instructions
 
@@ -48,7 +52,9 @@ Simplified data flow is described at [flow diagram](./object-api/src/main/resour
 
 #### Endpoints by default available at:
 - REST endpoints - http://localhost:8080
-- Postgres adminer - http://localhost:8088 
+- Postgres adminer - http://localhost:8088 (admin:password)
 - Kafka UI - http://localhost:8092
-- MongoDB Express - http://localhost:8081
+- MongoDB Express - http://localhost:8081 (admin:password)
 - Jaeger - http://localhost:16686 
+- Prometheus - http://localhost:9090 
+- Grafana - http://localhost:3000 (admin:password)
