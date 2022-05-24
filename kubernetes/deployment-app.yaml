@@ -1,0 +1,145 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: object-service
+  name: object-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: object-service
+  template:
+    metadata:
+      labels:
+        app: object-service
+    spec:
+      containers:
+        - image: object-service:latest
+          imagePullPolicy: IfNotPresent # using local image from docker
+          name: object-service
+          ports:
+            - containerPort: 8080
+          livenessProbe:
+            httpGet:
+              path: /actuator/health/liveness
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 30
+          readinessProbe:
+            httpGet:
+              path: /actuator/health/readiness
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 15
+          envFrom:
+            - configMapRef:
+                name: object-service-config
+          resources: { }
+      restartPolicy: Always
+---
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: object-service-config
+data:
+  spring.kafka.bootstrap: 'kafka:9092'
+  server-name: 'postgres'
+  database-port: '5432'
+  database-name: 'objects'
+  database-user: 'admin'
+  database-password: 'password'
+  events-url: 'http://object-events:8080'
+  OTEL_TRACES_EXPORTER: 'jaeger'
+  OTEL_EXPORTER_JAEGER_ENDPOINT: 'http://jaeger:14250'
+  OTEL_SERVICE_NAME: 'object-service'
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: object-service
+  name: object-service
+spec:
+  ports:
+    - name: "8080"
+      port: 8080
+  selector:
+    app: object-service
+  type: LoadBalancer
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: object-events
+  name: object-events
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: object-events
+  template:
+    metadata:
+      labels:
+        app: object-events
+    spec:
+      containers:
+        - image: object-events:latest
+          imagePullPolicy: IfNotPresent # using local image from docker
+          name: object-events
+          ports:
+            - containerPort: 8080
+          livenessProbe:
+            httpGet:
+              path: /actuator/health/liveness
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 30
+          readinessProbe:
+            httpGet:
+              path: /actuator/health/readiness
+              port: 8080
+            initialDelaySeconds: 5
+            periodSeconds: 15
+          envFrom:
+            - configMapRef:
+                name: object-events-config
+          resources: { }
+      restartPolicy: Always
+---
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: object-events-config
+data:
+  spring.kafka.bootstrap: 'kafka:9092'
+  server-name: 'mongo'
+  database-port: '27017'
+  database-name: 'local'
+  auth-database-name: 'admin'
+  database-user: 'admin'
+  database-password: 'password'
+  OTEL_TRACES_EXPORTER: 'jaeger'
+  OTEL_EXPORTER_JAEGER_ENDPOINT: 'http://jaeger:14250'
+  OTEL_SERVICE_NAME: 'object-events'
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: object-events
+  name: object-events
+spec:
+  ports:
+    - name: "8080"
+      port: 8080
+  selector:
+    app: object-events
+  type: LoadBalancer

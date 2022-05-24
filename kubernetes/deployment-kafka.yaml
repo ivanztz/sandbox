@@ -1,0 +1,178 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: kafka-service-account
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: kafka
+  name: kafka
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: kafka
+  template:
+    metadata:
+      labels:
+        app: kafka
+    spec:
+      serviceAccountName: kafka-service-account
+      hostname: kafka #required to make advertised listeners work properly
+      containers:
+        - image: 'bitnami/kafka:2.8.1'
+          name: kafka
+          ports:
+            - containerPort: 9092
+          envFrom:
+            - configMapRef:
+                name: kafka-config
+          resources: { }
+      restartPolicy: Always
+      volumes:
+        - name: kafka-claim0
+          persistentVolumeClaim:
+            claimName: kafka-claim0
+
+---
+
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: kafka-config
+data:
+  KAFKA_BROKER_ID: '1'
+  KAFKA_CFG_LISTENERS: 'CLIENT://:9092'
+  KAFKA_CFG_LISTENER_SECURITY_PROTOCOL_MAP: 'CLIENT:PLAINTEXT'
+  KAFKA_CFG_ADVERTISED_LISTENERS: 'CLIENT://kafka:9092'
+  KAFKA_CFG_ZOOKEEPER_CONNECT: 'zookeeper:2181'
+  ALLOW_PLAINTEXT_LISTENER: 'yes'
+  KAFKA_CFG_AUTO_CREATE_TOPICS_ENABLE: 'true'
+  KAFKA_ADVERTISED_HOST_NAME: 'kafka'
+  KAFKA_CFG_INTER_BROKER_LISTENER_NAME: 'CLIENT'
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: kafka
+  name: kafka
+spec:
+  ports:
+    - name: "9092"
+      port: 9092
+  selector:
+    app: kafka
+  type: LoadBalancer
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: zookeeper
+  name: zookeeper
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: zookeeper
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: zookeeper
+    spec:
+      serviceAccountName: kafka-service-account
+      containers:
+        - image: 'bitnami/zookeeper:3.8.0'
+          name: zookeeper
+          env:
+            - name: ALLOW_ANONYMOUS_LOGIN
+              value: 'yes'
+          ports:
+            - containerPort: 2181
+          resources: { }
+      restartPolicy: Always
+      volumes:
+        - name: zookeeper-claim0
+          persistentVolumeClaim:
+            claimName: zookeeper-claim0
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: zookeeper
+  name: zookeeper
+spec:
+  ports:
+    - name: "2181"
+      port: 2181
+  selector:
+    app: zookeeper
+  type: LoadBalancer
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: kafka-ui
+  name: kafka-ui
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: kafka-ui
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app: kafka-ui
+    spec:
+      serviceAccountName: kafka-service-account
+      containers:
+        - image: 'provectuslabs/kafka-ui:v0.4.0'
+          name: kafka-ui
+          envFrom:
+            - configMapRef:
+                name: kafka-ui-config
+          ports:
+            - containerPort: 8080
+          resources: { }
+      restartPolicy: Always
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: kafka-ui-config
+data:
+  KAFKA_CLUSTERS_0_NAME: 'local'
+  KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: 'kafka:9092'
+  KAFKA_CLUSTERS_0_ZOOKEEPER: 'zookeeper:2181'
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: kafka-ui
+  name: kafka-ui
+spec:
+  ports:
+    - name: "8080"
+      port: 8080
+  selector:
+    app: kafka-ui
+  type: LoadBalancer
+      
+
+

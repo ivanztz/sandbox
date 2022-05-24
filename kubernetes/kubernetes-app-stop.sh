@@ -3,6 +3,6 @@
 echo "Stopping applications"
 
 echo "Removing app containers"
-docker-compose -f docker-compose-app.yml -p sandbox-app down
+kubectl delete -f deployment-app.yaml
 
 echo "Applications stopped"
