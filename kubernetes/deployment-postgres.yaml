@@ -69,8 +69,8 @@ spec:
       serviceAccountName: postgres-service-account
       containers:
         - envFrom:
-            - configMapRef:
-                name: postgres-config
+            - secretRef:
+                name: postgres-secrets
           image: postgres:14.2
           name: postgres
           ports:
@@ -84,10 +84,11 @@ spec:
 ---
 
 apiVersion: v1
-kind: ConfigMap
+kind: Secret
 metadata:
-  name: postgres-config
-data:
+  name: postgres-secrets
+type: Opaque
+stringData:
   POSTGRES_DB: 'objects'
   POSTGRES_PASSWORD: 'password'
   POSTGRES_USER: 'admin'

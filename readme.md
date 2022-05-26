@@ -46,7 +46,12 @@ Simplified data flow is described at [flow diagram](./object-api/src/main/resour
 - Prometheus
 - Grafana
 
-## Running instructions
+## Deployment instructions
+
+### Pre-requirements
+ - Docker or Minikube
+ - Maven
+ - JDK 17+
 
 ### Docker environment
 
@@ -67,6 +72,9 @@ Simplified data flow is described at [flow diagram](./object-api/src/main/resour
 - Grafana - http://localhost:3000 (admin:password)
 
 ### Minikube environment
+
+> **Important**. Minikube specifics is only used for pushing application images inside Kubernetes. Environment scripts
+> can be used with any other Kubernetes deployment
 
 - Run ```mvn clean install``` to build project artifacts
 - Ensure minikube is running. Use ```minikube dashboard``` to access web UI

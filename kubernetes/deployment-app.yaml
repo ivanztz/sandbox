@@ -13,6 +13,10 @@ spec:
     metadata:
       labels:
         app: object-service
+      annotations:
+        prometheus.io/scrape: 'true'
+        prometheus.io/path: /actuator/prometheus
+        prometheus.io/port: "8080"
     spec:
       containers:
         - image: object-service:latest
@@ -35,8 +39,23 @@ spec:
           envFrom:
             - configMapRef:
                 name: object-service-config
+            - secretRef:
+                name: object-service-secrets
           resources: { }
       restartPolicy: Always
+
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: object-service-secrets
+type: Opaque
+stringData:
+  server-name: 'postgres'
+  database-port: '5432'
+  database-name: 'objects'
+  database-user: 'admin'
+  database-password: 'password'
 ---
 
 apiVersion: v1
@@ -45,11 +64,6 @@ metadata:
   name: object-service-config
 data:
   spring.kafka.bootstrap: 'kafka:9092'
-  server-name: 'postgres'
-  database-port: '5432'
-  database-name: 'objects'
-  database-user: 'admin'
-  database-password: 'password'
   events-url: 'http://object-events:8080'
   OTEL_TRACES_EXPORTER: 'jaeger'
   OTEL_EXPORTER_JAEGER_ENDPOINT: 'http://jaeger:14250'
@@ -86,6 +100,10 @@ spec:
     metadata:
       labels:
         app: object-events
+      annotations:
+        prometheus.io/scrape: 'true'
+        prometheus.io/path: /actuator/prometheus
+        prometheus.io/port: "8080"
     spec:
       containers:
         - image: object-events:latest
@@ -108,8 +126,23 @@ spec:
           envFrom:
             - configMapRef:
                 name: object-events-config
+            - secretRef:
+                name: object-events-secrets
           resources: { }
       restartPolicy: Always
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: object-events-secrets
+type: Opaque
+stringData:
+  database-port: '27017'
+  database-name: 'local'
+  auth-database-name: 'admin'
+  database-user: 'admin'
+  database-password: 'password'
+
 ---
 
 apiVersion: v1
@@ -119,11 +152,6 @@ metadata:
 data:
   spring.kafka.bootstrap: 'kafka:9092'
   server-name: 'mongo'
-  database-port: '27017'
-  database-name: 'local'
-  auth-database-name: 'admin'
-  database-user: 'admin'
-  database-password: 'password'
   OTEL_TRACES_EXPORTER: 'jaeger'
   OTEL_EXPORTER_JAEGER_ENDPOINT: 'http://jaeger:14250'
   OTEL_SERVICE_NAME: 'object-events'

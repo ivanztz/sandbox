@@ -1,6 +1,6 @@
 #!/bin/bash
 
-echo  "Removing kubernetes env"
+echo "Removing kubernetes env"
 
 echo "Removing postgres containers"
 kubectl delete -f deployment-postgres.yaml
@@ -14,6 +14,15 @@ kubectl delete -f deployment-mongo.yaml
 echo "Removing tracing containers"
 kubectl delete -f deployment-tracing.yaml
 
+echo "Removing prometheus containers"
+kubectl delete -f deployment-prometheus.yaml
+
+echo "Removing grafana containers"
+kubectl delete -f deployment-grafana.yaml
+
+echo  "Removing pods"
+kubectl delete --all pods --namespace=default --force
+
 echo "Removing postgres volumes"
 kubectl delete -f deployment-postgres-pvc.yaml
 
@@ -23,4 +32,10 @@ kubectl delete -f deployment-kafka-pvc.yaml
 echo "Removing mongo volumes"
 kubectl delete -f deployment-mongo-pvc.yaml
 
-echo  "Kubernetes env removed"
+echo "Removing prometheus volumes"
+kubectl delete -f deployment-prometheus-pvc.yaml
+
+echo "Removing grafana volumes"
+kubectl delete -f deployment-grafana-pvc.yaml
+
+echo "Kubernetes env removed"

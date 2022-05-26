@@ -23,4 +23,16 @@ kubectl apply -f deployment-mongo.yaml
 echo "Deploying tracing containers"
 kubectl apply -f deployment-tracing.yaml
 
+echo "Configuring prometheus volumes"
+kubectl apply -f deployment-prometheus-pvc.yaml
+
+echo "Configuring grafana volumes"
+kubectl apply -f deployment-grafana-pvc.yaml
+
+echo "Deploying prometheus containers"
+kubectl apply -f deployment-prometheus.yaml
+
+echo "Deploying grafana containers"
+kubectl apply -f deployment-grafana.yaml
+
 echo "Kubernetes env started"
