@@ -38,6 +38,7 @@ Simplified data flow is described at [flow diagram](./object-api/src/main/resour
 ### Deployment
 
 - Docker
+- Kubernetes
 
 ### Tracing/Monitoring
 
