@@ -3,7 +3,6 @@ spring:
     show-sql: true
   kafka:
     bootstrap-servers: localhost:9093
-
 server:
   port: 8080
 

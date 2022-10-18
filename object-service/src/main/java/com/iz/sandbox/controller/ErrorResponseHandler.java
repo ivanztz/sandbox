@@ -2,6 +2,7 @@ package com.iz.sandbox.controller;
 
 import com.iz.sandbox.dto.Error;
 import com.iz.sandbox.dto.Response;
+import com.iz.sandbox.service.ObjectNotFoundException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.TypeMismatchException;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -33,7 +34,7 @@ public class ErrorResponseHandler extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(createErrorResponse("Wrong query parameter", ex.getMessage()), HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler({EntityNotFoundException.class, EmptyResultDataAccessException.class})
+    @ExceptionHandler({EntityNotFoundException.class, EmptyResultDataAccessException.class, ObjectNotFoundException.class})
     protected ResponseEntity<Object> handleEntityNotFound(Exception ex) {
         log.error(ex.getMessage(), ex);
         return new ResponseEntity<>(createErrorResponse("Entity Not found", ex.getMessage()), HttpStatus.NOT_FOUND);

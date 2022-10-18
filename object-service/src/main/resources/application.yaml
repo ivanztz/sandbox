@@ -23,6 +23,14 @@ spring:
     loadbalancer:
       ribbon:
         enable: false
+  security:
+    client:
+      name: sandbox-app #custom param
+    oauth2:
+      resourceserver:
+        jwt:
+          jwk-set-uri: http://keycloak:8083/realms/sandbox/protocol/openid-connect/certs
+          issuer-uri: http://keycloak:8083/realms/sandbox
 
 feign:
   httpclient:
@@ -37,7 +45,7 @@ feign:
 logging:
   level:
     ROOT: INFO
-    com.iz: INFO
+    com.iz: DEBUG
 
 management.endpoints.web.exposure.include: '*'
 

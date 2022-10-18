@@ -1,0 +1,46 @@
+version: "3.9"
+services:
+  keycloak-postgres:
+    image: postgres:14.2
+    ports:
+      - '5433:5432'
+    environment:
+      - POSTGRES_USER=admin
+      - POSTGRES_PASSWORD=password
+      - POSTGRES_DB=keycloak
+    networks:
+      default:
+        aliases:
+          - keycloak-postgres
+    # persistent volume to survive container recreation
+    volumes:
+      - keycloak-db-data:/var/lib/postgresql/data
+  keycloak:
+    image: quay.io/keycloak/keycloak:19.0.2
+    environment:
+      DB_VENDOR: POSTGRES
+      DB_ADDR: keycloak-postgres
+      DB_DATABASE: keycloak
+      DB_USER: admin
+      DB_SCHEMA: public
+      DB_PASSWORD: password
+      KEYCLOAK_ADMIN: admin
+      KEYCLOAK_ADMIN_PASSWORD: password
+      #Sync with exposed port to make Spring JWT iss validation work properly in local setup when tokens are generated from postman as iss depends on url used for generating.
+    entrypoint: "/opt/keycloak/bin/kc.sh start-dev --import-realm --http-port=8083"
+    ports:
+      - "8083:8083"
+    volumes:
+      - ./config/keycloak:/opt/keycloak/data/import/
+    depends_on:
+      - keycloak-postgres
+    networks:
+      default:
+        aliases:
+         - keycloak
+networks:
+  default:
+      name: sandbox_default
+volumes:
+  keycloak-db-data:
+    driver: local

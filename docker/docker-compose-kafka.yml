@@ -1,4 +1,4 @@
-version: "3"
+version: "3.9"
 services:
   zookeeper:
     image: 'bitnami/zookeeper:3.8.0'
@@ -43,7 +43,6 @@ services:
       - KAFKA_CLUSTERS_0_ZOOKEEPER=zookeeper:2181
 networks:
   default:
-    external:
       name: sandbox_default
 volumes:
   kafka-data:

@@ -2,7 +2,8 @@
 	"info": {
 		"_postman_id": "b15a81ae-85ef-4e41-a5e3-395820bc94e7",
 		"name": "Sandbox API",
-		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "3058999"
 	},
 	"item": [
 		{
@@ -147,7 +148,7 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:8080/objects?startDate=2022-05-05T16%3A30%3A00.000%2B03%3A00&endDate=2022-05-05T16%3A44%3A57.272%2B03%3A00",
+					"raw": "http://localhost:8080/objects?startDate=2022-05-05T16%3A30%3A00.000%2B03%3A00&endDate=2023-05-05T16%3A44%3A57.272%2B03%3A00",
 					"protocol": "http",
 					"host": [
 						"localhost"
@@ -163,12 +164,167 @@
 						},
 						{
 							"key": "endDate",
-							"value": "2022-05-05T16%3A44%3A57.272%2B03%3A00"
+							"value": "2023-05-05T16%3A44%3A57.272%2B03%3A00"
 						}
 					]
 				}
 			},
 			"response": []
+		},
+		{
+			"name": "Auth token (full permissions)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.collectionVariables.set(\"AUTH_TOKEN\", pm.response.json().access_token);",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "client_id",
+							"value": "sandbox-app",
+							"type": "text"
+						},
+						{
+							"key": "username",
+							"value": "user",
+							"type": "text"
+						},
+						{
+							"key": "password",
+							"value": "password",
+							"type": "text"
+						},
+						{
+							"key": "grant_type",
+							"value": "password",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "http://keycloak:8083/realms/sandbox/protocol/openid-connect/token",
+					"protocol": "http",
+					"host": [
+						"keycloak"
+					],
+					"port": "8083",
+					"path": [
+						"realms",
+						"sandbox",
+						"protocol",
+						"openid-connect",
+						"token"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Auth token (readonly permissions)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.collectionVariables.set(\"AUTH_TOKEN\", pm.response.json().access_token);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "client_id",
+							"value": "sandbox-app",
+							"type": "text"
+						},
+						{
+							"key": "username",
+							"value": "readonly_user",
+							"type": "text"
+						},
+						{
+							"key": "password",
+							"value": "password",
+							"type": "text"
+						},
+						{
+							"key": "grant_type",
+							"value": "password",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "http://keycloak:8083/realms/sandbox/protocol/openid-connect/token",
+					"protocol": "http",
+					"host": [
+						"keycloak"
+					],
+					"port": "8083",
+					"path": [
+						"realms",
+						"sandbox",
+						"protocol",
+						"openid-connect",
+						"token"
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"auth": {
+		"type": "bearer",
+		"bearer": [
+			{
+				"key": "token",
+				"value": "{{AUTH_TOKEN}}",
+				"type": "string"
+			}
+		]
+	},
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "AUTH_TOKEN",
+			"value": "eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJoSHllNHQxcEx6QWdLUmNmLXYxdTBqQjcwZ2tUQTcxX3Z5Q0UzVVRzcTdRIn0"
 		}
 	]
 }

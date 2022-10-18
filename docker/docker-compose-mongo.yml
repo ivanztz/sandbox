@@ -1,4 +1,4 @@
-version: "3"
+version: "3.9"
 services:
   mongo:
     image: mongo:5.0.8
@@ -23,7 +23,6 @@ services:
       ME_CONFIG_MONGODB_URL: mongodb://admin:password@mongo:27017/
 networks:
   default:
-    external:
       name: sandbox_default
 volumes:
   mongo-data:

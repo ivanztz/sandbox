@@ -1,4 +1,4 @@
-version: "3"
+version: "3.9"
 services:
   postgres:
     image: postgres:14.2
@@ -26,7 +26,6 @@ services:
           - adminer
 networks:
   default:
-    external:
       name: sandbox_default
 volumes:
   db-data:
