@@ -1,0 +1,46 @@
+receivers:
+  otlp:
+    protocols:
+      grpc:
+      http:
+  prometheus:
+    config:
+      scrape_configs:
+        - job_name: 'otel-metrics'
+          scrape_interval: 5s
+          static_configs:
+            - targets:
+              - 'object-service:9464'
+              - 'object-events:9464'
+        - job_name: "actuator-metrics"
+          scrape_interval: 5s
+          metrics_path: '/actuator/prometheus'
+          static_configs:
+            - targets:
+                - 'object-service:8080'
+                - 'object-events:8080'
+
+exporters:
+  jaeger:
+    endpoint: "jaeger:14250"
+    tls:
+      insecure: true
+      insecure_skip_verify: true
+  prometheus:
+    endpoint: "0.0.0.0:9464"
+  logging:
+    loglevel: debug
+
+processors:
+  batch:
+
+service:
+  pipelines:
+    traces:
+      receivers: [otlp]
+      exporters: [jaeger]
+      processors: [batch]
+    metrics:
+      receivers: [prometheus]
+      exporters: [prometheus]
+      processors: [batch]

@@ -44,7 +44,7 @@ Simplified data flow is described at [flow diagram](./object-api/src/main/resour
 
 ### Tracing/Monitoring
 
-- OpenTelemetry
+- OpenTelemetry + OTEL Collector
 - Jaeger
 - Prometheus
 - Grafana
@@ -57,7 +57,7 @@ Simplified data flow is described at [flow diagram](./object-api/src/main/resour
  - JDK 17+
 
 ### OS setup 
-To make JWT tokens generated from postman correctly work inside container environment it is required to ensure keycloak issue URL remains the same is it compares iss value during validation phase. For this purpose it is required to extend OS hosts configuration with: 
+To make JWT tokens generated from postman correctly work inside container environment it is required to ensure keycloak issue URL remains the same as it compares iss value during validation phase. For this purpose it is required to extend OS hosts configuration with: 
 ```127.0.0.1 keycloak```
 
 ### Docker environment
@@ -76,7 +76,7 @@ To make JWT tokens generated from postman correctly work inside container enviro
 - MongoDB Express - http://localhost:8081 (admin:password)
 - Jaeger - http://localhost:16686
 - Prometheus - http://localhost:9090
-- Grafana - http://localhost:3000 (admin:password)
+- Grafana - _http://localhost:3000_ (admin:password)
 - Keycloak http://keycloak:8083 (admin:password)
 
 ### Minikube environment

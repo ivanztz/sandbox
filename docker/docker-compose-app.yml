@@ -13,9 +13,10 @@ services:
       - database-user=admin
       - database-password=password
       - events-url=http://object-events:8080
-      - OTEL_TRACES_EXPORTER=jaeger
-      - OTEL_EXPORTER_JAEGER_ENDPOINT=http://jaeger:14250
+      - OTEL_TRACES_EXPORTER=otlp
+      - OTEL_EXPORTER_OTLP_TRACES_ENDPOINT=http://otel-collector:4317
       - OTEL_SERVICE_NAME=object-service
+      - OTEL_METRICS_EXPORTER=prometheus
     networks:
       default:
         aliases:
@@ -33,9 +34,10 @@ services:
       - database-name=local
       - database-user=admin
       - database-password=password
-      - OTEL_TRACES_EXPORTER=jaeger
-      - OTEL_EXPORTER_JAEGER_ENDPOINT=http://jaeger:14250
+      - OTEL_TRACES_EXPORTER=otlp
+      - OTEL_EXPORTER_OTLP_TRACES_ENDPOINT=http://otel-collector:4317
       - OTEL_SERVICE_NAME=object-events
+      - OTEL_METRICS_EXPORTER=prometheus
     networks:
       default:
         aliases:
