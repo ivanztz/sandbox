@@ -3,11 +3,14 @@
 Sandbox project with java microservices to be used for educational or project accelerator purposes  
 Simplified data flow is described at [flow diagram](./object-api/src/main/resources/flows/object-modify.puml)
 
+
 ## Modules
 
 - **object-api** - contains services specifications and UML flow diagrams
 - **object-service** - simple service for object CRUD operations and filtering
 - **object-events** - simple service for storing object events
+
+![Deployment](sandbox.png)
 
 ## Technologies\frameworks used:
 
