@@ -32,6 +32,9 @@ spec:
             - configMapRef:
                 name: kafka-config
           resources: { }
+          volumeMounts:
+            - mountPath: /bitnami/kafka
+              name: kafka-claim0
       restartPolicy: Always
       volumes:
         - name: kafka-claim0

@@ -1,7 +1,7 @@
-FROM openjdk:17-alpine
+FROM eclipse-temurin:17-jre
 
 COPY target/object-events*.jar app.jar
-COPY target/opentelemetry-javaagent*.jar otel.jar
+COPY target/otel/opentelemetry-javaagent*.jar otel.jar
 
 ENTRYPOINT ["java","-javaagent:/otel.jar","-jar","/app.jar"]
 

@@ -2,7 +2,7 @@ version: "3.9"
 services:
   object-service:
     container_name: object-service
-    build: ../object-service
+    image: object-service
     ports:
       - '8080:8080'
     environment:
@@ -23,7 +23,7 @@ services:
           - object-service
   object-events:
     container_name: object-events
-    build: ../object-events
+    image: object-events
     ports:
       - '8082:8080'
     environment:

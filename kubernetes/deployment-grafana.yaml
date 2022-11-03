@@ -35,10 +35,8 @@ spec:
               name: grafana-storage
             - mountPath: /etc/grafana/provisioning/datasources
               name: grafana-datasources
-              readOnly: false
             - mountPath: /etc/grafana/provisioning/dashboards
               name: grafana-dashboards
-              readOnly: false
       volumes:
         - name: grafana-datasources
           configMap:
@@ -216,7 +214,7 @@ data:
           "tableColumn": "",
           "targets": [
             {
-              "expr": "process_uptime_seconds{app=\"$application\", instance=\"$instance\"}",
+              "expr": "process_uptime_seconds{app=\"$application\", app_instance=\"$instance\"}",
               "format": "time_series",
               "intervalFactor": 2,
               "legendFormat": "",
@@ -303,7 +301,7 @@ data:
           "tableColumn": "",
           "targets": [
             {
-              "expr": "sum(jvm_memory_used_bytes{app=\"$application\", instance=\"$instance\", area=\"heap\"})*100/sum(jvm_memory_max_bytes{app=\"$application\",instance=\"$instance\", area=\"heap\"})",
+              "expr": "sum(jvm_memory_used_bytes{app=\"$application\", app_instance=\"$instance\", area=\"heap\"})*100/sum(jvm_memory_max_bytes{app=\"$application\",app_instance=\"$instance\", area=\"heap\"})",
               "format": "time_series",
               "intervalFactor": 1,
               "legendFormat": "",
@@ -393,7 +391,7 @@ data:
           "tableColumn": "",
           "targets": [
             {
-              "expr": "sum(jvm_memory_used_bytes{app=\"$application\", instance=\"$instance\", area=\"nonheap\"})*100/sum(jvm_memory_max_bytes{app=\"$application\",instance=\"$instance\", area=\"nonheap\"})",
+              "expr": "sum(jvm_memory_used_bytes{app=\"$application\", app_instance=\"$instance\", area=\"nonheap\"})*100/sum(jvm_memory_max_bytes{app=\"$application\",app_instance=\"$instance\", area=\"nonheap\"})",
               "format": "time_series",
               "intervalFactor": 2,
               "legendFormat": "",
@@ -456,14 +454,14 @@ data:
           "steppedLine": false,
           "targets": [
             {
-              "expr": "process_files_open_files{app=\"$application\", instance=\"$instance\"}",
+              "expr": "process_files_open_files{app=\"$application\", app_instance=\"$instance\"}",
               "format": "time_series",
               "intervalFactor": 1,
               "legendFormat": "Open Files",
               "refId": "A"
             },
             {
-              "expr": "process_files_max_files{app=\"$application\", instance=\"$instance\"}",
+              "expr": "process_files_max_files{app=\"$application\", app_instance=\"$instance\"}",
               "format": "time_series",
               "intervalFactor": 1,
               "legendFormat": "Max Files",
@@ -576,7 +574,7 @@ data:
           "tableColumn": "",
           "targets": [
             {
-              "expr": "process_start_time_seconds{app=\"$application\", instance=\"$instance\"}*1000",
+              "expr": "process_start_time_seconds{app=\"$application\", app_instance=\"$instance\"}*1000",
               "format": "time_series",
               "intervalFactor": 2,
               "legendFormat": "",
@@ -637,14 +635,14 @@ data:
           "steppedLine": false,
           "targets": [
             {
-              "expr": "system_cpu_usage{instance=\"$instance\", app=\"$application\"}",
+              "expr": "system_cpu_usage{app_instance=\"$instance\", app=\"$application\"}",
               "format": "time_series",
               "intervalFactor": 1,
               "legendFormat": "System CPU Usage",
               "refId": "A"
             },
             {
-              "expr": "process_cpu_usage{instance=\"$instance\", app=\"$application\"}",
+              "expr": "process_cpu_usage{app_instance=\"$instance\", app=\"$application\"}",
               "format": "time_series",
               "intervalFactor": 1,
               "legendFormat": "Process CPU Usage",
@@ -730,14 +728,14 @@ data:
           "steppedLine": false,
           "targets": [
             {
-              "expr": "system_load_average_1m{instance=\"$instance\", app=\"$application\"}",
+              "expr": "system_load_average_1m{app_instance=\"$instance\", app=\"$application\"}",
               "format": "time_series",
               "intervalFactor": 1,
               "legendFormat": "Load Average [1m]",
               "refId": "A"
             },
             {
-              "expr": "system_cpu_count{instance=\"$instance\", app=\"$application\"}",
+              "expr": "system_cpu_count{app_instance=\"$instance\", app=\"$application\"}",
               "format": "time_series",
               "intervalFactor": 1,
               "legendFormat": "CPU Core Size",
@@ -846,21 +844,21 @@ data:
           "steppedLine": false,
           "targets": [
             {
-              "expr": "jvm_memory_used_bytes{instance=\"$instance\", app=\"$application\", id=\"$memory_pool_heap\"}",
+              "expr": "jvm_memory_used_bytes{app_instance=\"$instance\", app=\"$application\", id=\"$memory_pool_heap\"}",
               "format": "time_series",
               "intervalFactor": 1,
               "legendFormat": "Used",
               "refId": "C"
             },
             {
-              "expr": "jvm_memory_committed_bytes{instance=\"$instance\", app=\"$application\", id=\"$memory_pool_heap\"}",
+              "expr": "jvm_memory_committed_bytes{app_instance=\"$instance\", app=\"$application\", id=\"$memory_pool_heap\"}",
               "format": "time_series",
               "intervalFactor": 1,
               "legendFormat": "Commited",
               "refId": "A"
             },
             {
-              "expr": "jvm_memory_max_bytes{instance=\"$instance\", app=\"$application\", id=\"$memory_pool_heap\"}",
+              "expr": "jvm_memory_max_bytes{app_instance=\"$instance\", app=\"$application\", id=\"$memory_pool_heap\"}",
               "format": "time_series",
               "intervalFactor": 1,
               "legendFormat": "Max",
@@ -958,21 +956,21 @@ data:
           "steppedLine": false,
           "targets": [
             {
-              "expr": "jvm_memory_used_bytes{instance=\"$instance\", app=\"$application\", id=\"$memory_pool_heap\"}",
+              "expr": "jvm_memory_used_bytes{app_instance=\"$instance\", app=\"$application\", id=\"$memory_pool_heap\"}",
               "format": "time_series",
               "intervalFactor": 1,
               "legendFormat": "Used",
               "refId": "C"
             },
             {
-              "expr": "jvm_memory_committed_bytes{instance=\"$instance\", app=\"$application\", id=\"$memory_pool_heap\"}",
+              "expr": "jvm_memory_committed_bytes{app_instance=\"$instance\", app=\"$application\", id=\"$memory_pool_heap\"}",
               "format": "time_series",
               "intervalFactor": 1,
               "legendFormat": "Commited",
               "refId": "A"
             },
             {
-              "expr": "jvm_memory_max_bytes{instance=\"$instance\", app=\"$application\", id=\"$memory_pool_heap\"}",
+              "expr": "jvm_memory_max_bytes{app_instance=\"$instance\", app=\"$application\", id=\"$memory_pool_heap\"}",
               "format": "time_series",
               "intervalFactor": 1,
               "legendFormat": "Max",
@@ -1070,21 +1068,21 @@ data:
           "steppedLine": false,
           "targets": [
             {
-              "expr": "jvm_memory_used_bytes{instance=\"$instance\", app=\"$application\", id=\"$memory_pool_heap\"}",
+              "expr": "jvm_memory_used_bytes{app_instance=\"$instance\", app=\"$application\", id=\"$memory_pool_heap\"}",
               "format": "time_series",
               "intervalFactor": 1,
               "legendFormat": "Used",
               "refId": "C"
             },
             {
-              "expr": "jvm_memory_committed_bytes{instance=\"$instance\", app=\"$application\", id=\"$memory_pool_heap\"}",
+              "expr": "jvm_memory_committed_bytes{app_instance=\"$instance\", app=\"$application\", id=\"$memory_pool_heap\"}",
               "format": "time_series",
               "intervalFactor": 1,
               "legendFormat": "Commited",
               "refId": "A"
             },
             {
-              "expr": "jvm_memory_max_bytes{instance=\"$instance\", app=\"$application\", id=\"$memory_pool_heap\"}",
+              "expr": "jvm_memory_max_bytes{app_instance=\"$instance\", app=\"$application\", id=\"$memory_pool_heap\"}",
               "format": "time_series",
               "intervalFactor": 1,
               "legendFormat": "Max",
@@ -1180,21 +1178,21 @@ data:
           "steppedLine": false,
           "targets": [
             {
-              "expr": "jvm_memory_used_bytes{instance=\"$instance\", app=\"$application\", id=\"$memory_pool_nonheap\"}",
+              "expr": "jvm_memory_used_bytes{app_instance=\"$instance\", app=\"$application\", id=\"$memory_pool_nonheap\"}",
               "format": "time_series",
               "intervalFactor": 1,
               "legendFormat": "Used",
               "refId": "C"
             },
             {
-              "expr": "jvm_memory_committed_bytes{instance=\"$instance\", app=\"$application\", id=\"$memory_pool_nonheap\"}",
+              "expr": "jvm_memory_committed_bytes{app_instance=\"$instance\", app=\"$application\", id=\"$memory_pool_nonheap\"}",
               "format": "time_series",
               "intervalFactor": 1,
               "legendFormat": "Commited",
               "refId": "A"
             },
             {
-              "expr": "jvm_memory_max_bytes{instance=\"$instance\", app=\"$application\", id=\"$memory_pool_nonheap\"}",
+              "expr": "jvm_memory_max_bytes{app_instance=\"$instance\", app=\"$application\", id=\"$memory_pool_nonheap\"}",
               "format": "time_series",
               "intervalFactor": 1,
               "legendFormat": "Max",
@@ -1279,7 +1277,7 @@ data:
           "steppedLine": false,
           "targets": [
             {
-              "expr": "irate(jvm_classes_unloaded_classes_total{instance=\"$instance\", app=\"$application\"}[5m])",
+              "expr": "irate(jvm_classes_unloaded_classes_total{app_instance=\"$instance\", app=\"$application\"}[5m])",
               "format": "time_series",
               "intervalFactor": 1,
               "legendFormat": "Classes Unloaded",
@@ -1377,21 +1375,21 @@ data:
           "steppedLine": false,
           "targets": [
             {
-              "expr": "jvm_memory_used_bytes{instance=\"$instance\", app=\"$application\", id=\"$memory_pool_nonheap\"}",
+              "expr": "jvm_memory_used_bytes{app_instance=\"$instance\", app=\"$application\", id=\"$memory_pool_nonheap\"}",
               "format": "time_series",
               "intervalFactor": 1,
               "legendFormat": "Used",
               "refId": "C"
             },
             {
-              "expr": "jvm_memory_committed_bytes{instance=\"$instance\", app=\"$application\", id=\"$memory_pool_nonheap\"}",
+              "expr": "jvm_memory_committed_bytes{app_instance=\"$instance\", app=\"$application\", id=\"$memory_pool_nonheap\"}",
               "format": "time_series",
               "intervalFactor": 1,
               "legendFormat": "Commited",
               "refId": "A"
             },
             {
-              "expr": "jvm_memory_max_bytes{instance=\"$instance\", app=\"$application\", id=\"$memory_pool_nonheap\"}",
+              "expr": "jvm_memory_max_bytes{app_instance=\"$instance\", app=\"$application\", id=\"$memory_pool_nonheap\"}",
               "format": "time_series",
               "intervalFactor": 1,
               "legendFormat": "Max",
@@ -1489,21 +1487,21 @@ data:
           "steppedLine": false,
           "targets": [
             {
-              "expr": "jvm_memory_used_bytes{instance=\"$instance\", app=\"$application\", id=\"$memory_pool_nonheap\"}",
+              "expr": "jvm_memory_used_bytes{app_instance=\"$instance\", app=\"$application\", id=\"$memory_pool_nonheap\"}",
               "format": "time_series",
               "intervalFactor": 1,
               "legendFormat": "Used",
               "refId": "C"
             },
             {
-              "expr": "jvm_memory_committed_bytes{instance=\"$instance\", app=\"$application\", id=\"$memory_pool_nonheap\"}",
+              "expr": "jvm_memory_committed_bytes{app_instance=\"$instance\", app=\"$application\", id=\"$memory_pool_nonheap\"}",
               "format": "time_series",
               "intervalFactor": 1,
               "legendFormat": "Commited",
               "refId": "A"
             },
             {
-              "expr": "jvm_memory_max_bytes{instance=\"$instance\", app=\"$application\", id=\"$memory_pool_nonheap\"}",
+              "expr": "jvm_memory_max_bytes{app_instance=\"$instance\", app=\"$application\", id=\"$memory_pool_nonheap\"}",
               "format": "time_series",
               "intervalFactor": 1,
               "legendFormat": "Max",
@@ -1601,21 +1599,21 @@ data:
           "steppedLine": false,
           "targets": [
             {
-              "expr": "jvm_memory_used_bytes{instance=\"$instance\", app=\"$application\", id=\"$memory_pool_nonheap\"}",
+              "expr": "jvm_memory_used_bytes{app_instance=\"$instance\", app=\"$application\", id=\"$memory_pool_nonheap\"}",
               "format": "time_series",
               "intervalFactor": 1,
               "legendFormat": "Used",
               "refId": "C"
             },
             {
-              "expr": "jvm_memory_committed_bytes{instance=\"$instance\", app=\"$application\", id=\"$memory_pool_nonheap\"}",
+              "expr": "jvm_memory_committed_bytes{app_instance=\"$instance\", app=\"$application\", id=\"$memory_pool_nonheap\"}",
               "format": "time_series",
               "intervalFactor": 1,
               "legendFormat": "Commited",
               "refId": "A"
             },
             {
-              "expr": "jvm_memory_max_bytes{instance=\"$instance\", app=\"$application\", id=\"$memory_pool_nonheap\"}",
+              "expr": "jvm_memory_max_bytes{app_instance=\"$instance\", app=\"$application\", id=\"$memory_pool_nonheap\"}",
               "format": "time_series",
               "intervalFactor": 1,
               "legendFormat": "Max",
@@ -1713,21 +1711,21 @@ data:
           "steppedLine": false,
           "targets": [
             {
-              "expr": "jvm_memory_used_bytes{instance=\"$instance\", app=\"$application\", id=\"$memory_pool_nonheap\"}",
+              "expr": "jvm_memory_used_bytes{app_instance=\"$instance\", app=\"$application\", id=\"$memory_pool_nonheap\"}",
               "format": "time_series",
               "intervalFactor": 1,
               "legendFormat": "Used",
               "refId": "C"
             },
             {
-              "expr": "jvm_memory_committed_bytes{instance=\"$instance\", app=\"$application\", id=\"$memory_pool_nonheap\"}",
+              "expr": "jvm_memory_committed_bytes{app_instance=\"$instance\", app=\"$application\", id=\"$memory_pool_nonheap\"}",
               "format": "time_series",
               "intervalFactor": 1,
               "legendFormat": "Commited",
               "refId": "A"
             },
             {
-              "expr": "jvm_memory_max_bytes{instance=\"$instance\", app=\"$application\", id=\"$memory_pool_nonheap\"}",
+              "expr": "jvm_memory_max_bytes{app_instance=\"$instance\", app=\"$application\", id=\"$memory_pool_nonheap\"}",
               "format": "time_series",
               "intervalFactor": 1,
               "legendFormat": "Max",
@@ -1814,7 +1812,7 @@ data:
           "steppedLine": false,
           "targets": [
             {
-              "expr": "jvm_classes_loaded_classes{instance=\"$instance\", app=\"$application\"}",
+              "expr": "jvm_classes_loaded_classes{app_instance=\"$instance\", app=\"$application\"}",
               "format": "time_series",
               "intervalFactor": 1,
               "legendFormat": "Classes Loaded",
@@ -1900,14 +1898,14 @@ data:
           "steppedLine": false,
           "targets": [
             {
-              "expr": "jvm_buffer_memory_used_bytes{instance=\"$instance\", app=\"$application\", id=\"mapped\"}",
+              "expr": "jvm_buffer_memory_used_bytes{app_instance=\"$instance\", app=\"$application\", id=\"mapped\"}",
               "format": "time_series",
               "intervalFactor": 1,
               "legendFormat": "Used Bytes",
               "refId": "A"
             },
             {
-              "expr": "jvm_buffer_total_capacity_bytes{instance=\"$instance\", app=\"$application\", id=\"mapped\"}",
+              "expr": "jvm_buffer_total_capacity_bytes{app_instance=\"$instance\", app=\"$application\", id=\"mapped\"}",
               "format": "time_series",
               "intervalFactor": 1,
               "legendFormat": "Capacity Bytes",
@@ -1992,14 +1990,14 @@ data:
           "steppedLine": false,
           "targets": [
             {
-              "expr": "irate(jvm_gc_memory_allocated_bytes_total{instance=\"$instance\", app=\"$application\"}[5m])",
+              "expr": "irate(jvm_gc_memory_allocated_bytes_total{app_instance=\"$instance\", app=\"$application\"}[5m])",
               "format": "time_series",
               "intervalFactor": 1,
               "legendFormat": "allocated",
               "refId": "A"
             },
             {
-              "expr": "irate(jvm_gc_memory_promoted_bytes_total{instance=\"$instance\", app=\"$application\"}[5m])",
+              "expr": "irate(jvm_gc_memory_promoted_bytes_total{app_instance=\"$instance\", app=\"$application\"}[5m])",
               "format": "time_series",
               "intervalFactor": 1,
               "legendFormat": "promoted",
@@ -2084,14 +2082,14 @@ data:
           "steppedLine": false,
           "targets": [
             {
-              "expr": "jvm_buffer_memory_used_bytes{instance=\"$instance\", app=\"$application\", id=\"direct\"}",
+              "expr": "jvm_buffer_memory_used_bytes{app_instance=\"$instance\", app=\"$application\", id=\"direct\"}",
               "format": "time_series",
               "intervalFactor": 1,
               "legendFormat": "Used Bytes",
               "refId": "A"
             },
             {
-              "expr": "jvm_buffer_total_capacity_bytes{instance=\"$instance\", app=\"$application\", id=\"direct\"}",
+              "expr": "jvm_buffer_total_capacity_bytes{app_instance=\"$instance\", app=\"$application\", id=\"direct\"}",
               "format": "time_series",
               "intervalFactor": 1,
               "legendFormat": "Capacity Bytes",
@@ -2177,21 +2175,21 @@ data:
           "steppedLine": false,
           "targets": [
             {
-              "expr": "jvm_threads_daemon_threads{instance=\"$instance\", app=\"$application\"}",
+              "expr": "jvm_threads_daemon_threads{app_instance=\"$instance\", app=\"$application\"}",
               "format": "time_series",
               "intervalFactor": 1,
               "legendFormat": "Daemon",
               "refId": "A"
             },
             {
-              "expr": "jvm_threads_live_threads{instance=\"$instance\", app=\"$application\"}",
+              "expr": "jvm_threads_live_threads{app_instance=\"$instance\", app=\"$application\"}",
               "format": "time_series",
               "intervalFactor": 1,
               "legendFormat": "Live",
               "refId": "B"
             },
             {
-              "expr": "jvm_threads_peak_threads{instance=\"$instance\", app=\"$application\"}",
+              "expr": "jvm_threads_peak_threads{app_instance=\"$instance\", app=\"$application\"}",
               "format": "time_series",
               "intervalFactor": 1,
               "legendFormat": "Peak",
@@ -2292,7 +2290,7 @@ data:
           "steppedLine": false,
           "targets": [
             {
-              "expr": "irate(jvm_gc_pause_seconds_count{instance=\"$instance\", app=\"$application\"}[5m])",
+              "expr": "irate(jvm_gc_pause_seconds_count{app_instance=\"$instance\", app=\"$application\"}[5m])",
               "format": "time_series",
               "intervalFactor": 1,
               "legendFormat": "{{action}} [{{cause}}]",
@@ -2380,7 +2378,7 @@ data:
           "steppedLine": false,
           "targets": [
             {
-              "expr": "irate(jvm_gc_pause_seconds_sum{instance=\"$instance\", app=\"$application\"}[5m])",
+              "expr": "irate(jvm_gc_pause_seconds_sum{app_instance=\"$instance\", app=\"$application\"}[5m])",
               "format": "time_series",
               "intervalFactor": 1,
               "legendFormat": "{{action}} [{{cause}}]",
@@ -2502,7 +2500,7 @@ data:
           "tableColumn": "",
           "targets": [
             {
-              "expr": "hikaricp_connections{instance=\"$instance\", app=\"$application\", pool=\"$hikaricp\"}",
+              "expr": "hikaricp_connections{app_instance=\"$instance\", app=\"$application\", pool=\"$hikaricp\"}",
               "format": "time_series",
               "intervalFactor": 1,
               "legendFormat": "",
@@ -2562,21 +2560,21 @@ data:
           "steppedLine": false,
           "targets": [
             {
-              "expr": "hikaricp_connections_active{instance=\"$instance\", app=\"$application\", pool=\"$hikaricp\"}",
+              "expr": "hikaricp_connections_active{app_instance=\"$instance\", app=\"$application\", pool=\"$hikaricp\"}",
               "format": "time_series",
               "intervalFactor": 1,
               "legendFormat": "Active",
               "refId": "B"
             },
             {
-              "expr": "hikaricp_connections_idle{instance=\"$instance\", app=\"$application\", pool=\"$hikaricp\"}",
+              "expr": "hikaricp_connections_idle{app_instance=\"$instance\", app=\"$application\", pool=\"$hikaricp\"}",
               "format": "time_series",
               "intervalFactor": 1,
               "legendFormat": "Idle",
               "refId": "A"
             },
             {
-              "expr": "hikaricp_connections_pending{instance=\"$instance\", app=\"$application\", pool=\"$hikaricp\"}",
+              "expr": "hikaricp_connections_pending{app_instance=\"$instance\", app=\"$application\", pool=\"$hikaricp\"}",
               "format": "time_series",
               "intervalFactor": 1,
               "legendFormat": "Pending",
@@ -2685,7 +2683,7 @@ data:
           "tableColumn": "",
           "targets": [
             {
-              "expr": "hikaricp_connections_timeout_total{instance=\"$instance\", app=\"$application\", pool=\"$hikaricp\"}",
+              "expr": "hikaricp_connections_timeout_total{app_instance=\"$instance\", app=\"$application\", pool=\"$hikaricp\"}",
               "format": "time_series",
               "intervalFactor": 1,
               "legendFormat": "",
@@ -2742,7 +2740,7 @@ data:
           "steppedLine": false,
           "targets": [
             {
-              "expr": "hikaricp_connections_creation_seconds_sum{instance=\"$instance\", app=\"$application\", pool=\"$hikaricp\"} / hikaricp_connections_creation_seconds_count{instance=\"$instance\", app=\"$application\", pool=\"$hikaricp\"}",
+              "expr": "hikaricp_connections_creation_seconds_sum{app_instance=\"$instance\", app=\"$application\", pool=\"$hikaricp\"} / hikaricp_connections_creation_seconds_count{app_instance=\"$instance\", app=\"$application\", pool=\"$hikaricp\"}",
               "format": "time_series",
               "intervalFactor": 1,
               "legendFormat": "Creation Time",
@@ -2827,7 +2825,7 @@ data:
           "steppedLine": false,
           "targets": [
             {
-              "expr": "hikaricp_connections_usage_seconds_sum{instance=\"$instance\", app=\"$application\", pool=\"$hikaricp\"} / hikaricp_connections_usage_seconds_count{instance=\"$instance\", app=\"$application\", pool=\"$hikaricp\"}",
+              "expr": "hikaricp_connections_usage_seconds_sum{app_instance=\"$instance\", app=\"$application\", pool=\"$hikaricp\"} / hikaricp_connections_usage_seconds_count{app_instance=\"$instance\", app=\"$application\", pool=\"$hikaricp\"}",
               "format": "time_series",
               "intervalFactor": 1,
               "legendFormat": "Usage Time",
@@ -2912,7 +2910,7 @@ data:
           "steppedLine": false,
           "targets": [
             {
-              "expr": "hikaricp_connections_acquire_seconds_sum{instance=\"$instance\", app=\"$application\", pool=\"$hikaricp\"} / hikaricp_connections_acquire_seconds_count{instance=\"$instance\", app=\"$application\", pool=\"$hikaricp\"}",
+              "expr": "hikaricp_connections_acquire_seconds_sum{app_instance=\"$instance\", app=\"$application\", pool=\"$hikaricp\"} / hikaricp_connections_acquire_seconds_count{app_instance=\"$instance\", app=\"$application\", pool=\"$hikaricp\"}",
               "format": "time_series",
               "intervalFactor": 1,
               "legendFormat": "Acquire Time",
@@ -3012,7 +3010,7 @@ data:
           "steppedLine": false,
           "targets": [
             {
-              "expr": "irate(http_server_requests_seconds_count{instance=\"$instance\", app=\"$application\", uri!~\".*actuator.*\"}[5m])",
+              "expr": "irate(http_server_requests_seconds_count{app_instance=\"$instance\", app=\"$application\", uri!~\".*actuator.*\"}[5m])",
               "format": "time_series",
               "intervalFactor": 1,
               "legendFormat": "{{method}} [{{status}}] - {{uri}}",
@@ -3100,7 +3098,7 @@ data:
           "steppedLine": false,
           "targets": [
             {
-              "expr": "irate(http_server_requests_seconds_sum{instance=\"$instance\", app=\"$application\", exception=\"None\", uri!~\".*actuator.*\"}[5m]) / irate(http_server_requests_seconds_count{instance=\"$instance\", app=\"$application\", exception=\"None\", uri!~\".*actuator.*\"}[5m])",
+              "expr": "irate(http_server_requests_seconds_sum{app_instance=\"$instance\", app=\"$application\", exception=\"None\", uri!~\".*actuator.*\"}[5m]) / irate(http_server_requests_seconds_count{app_instance=\"$instance\", app=\"$application\", exception=\"None\", uri!~\".*actuator.*\"}[5m])",
               "format": "time_series",
               "intervalFactor": 1,
               "legendFormat": "{{method}} [{{status}}] - {{uri}}",
@@ -3222,7 +3220,7 @@ data:
           "tableColumn": "",
           "targets": [
             {
-              "expr": "tomcat_global_error_total{instance=\"$instance\", app=\"$application\"}",
+              "expr": "tomcat_global_error_total{app_instance=\"$instance\", app=\"$application\"}",
               "format": "time_series",
               "intervalFactor": 1,
               "legendFormat": "",
@@ -3281,7 +3279,7 @@ data:
           "steppedLine": false,
           "targets": [
             {
-              "expr": "tomcat_sessions_active_current_sessions{instance=\"$instance\", app=\"$application\"}",
+              "expr": "tomcat_sessions_active_current_sessions{app_instance=\"$instance\", app=\"$application\"}",
               "format": "time_series",
               "intervalFactor": 1,
               "legendFormat": "active sessions",
@@ -3369,14 +3367,14 @@ data:
           "steppedLine": false,
           "targets": [
             {
-              "expr": "irate(tomcat_global_sent_bytes_total{instance=\"$instance\", app=\"$application\"}[5m])",
+              "expr": "irate(tomcat_global_sent_bytes_total{app_instance=\"$instance\", app=\"$application\"}[5m])",
               "format": "time_series",
               "intervalFactor": 1,
               "legendFormat": "Sent Bytes",
               "refId": "A"
             },
             {
-              "expr": "irate(tomcat_global_received_bytes_total{instance=\"$instance\", app=\"$application\"}[5m])",
+              "expr": "irate(tomcat_global_received_bytes_total{app_instance=\"$instance\", app=\"$application\"}[5m])",
               "format": "time_series",
               "intervalFactor": 1,
               "legendFormat": "Recieved Bytes",
@@ -3485,7 +3483,7 @@ data:
           "tableColumn": "",
           "targets": [
             {
-              "expr": "tomcat_threads_config_max{instance=\"$instance\", app=\"$application\"}",
+              "expr": "tomcat_threads_config_max{app_instance=\"$instance\", app=\"$application\"}",
               "format": "time_series",
               "intervalFactor": 1,
               "legendFormat": "",
@@ -3543,14 +3541,14 @@ data:
           "steppedLine": false,
           "targets": [
             {
-              "expr": "tomcat_threads_current_threads{instance=\"$instance\", app=\"$application\"}",
+              "expr": "tomcat_threads_current_threads{app_instance=\"$instance\", app=\"$application\"}",
               "format": "time_series",
               "intervalFactor": 1,
               "legendFormat": "Current thread",
               "refId": "A"
             },
             {
-              "expr": "tomcat_threads_busy_threads{instance=\"$instance\", app=\"$application\"}",
+              "expr": "tomcat_threads_busy_threads{app_instance=\"$instance\", app=\"$application\"}",
               "format": "time_series",
               "intervalFactor": 1,
               "legendFormat": "Current thread busy",
@@ -3650,7 +3648,7 @@ data:
           "targets": [
             {
               "alias": "",
-              "expr": "irate(logback_events_total{instance=\"$instance\", app=\"$application\", level=\"info\"}[5m])",
+              "expr": "irate(logback_events_total{app_instance=\"$instance\", app=\"$application\", level=\"info\"}[5m])",
               "format": "time_series",
               "intervalFactor": 1,
               "legendFormat": "info",
@@ -3738,7 +3736,7 @@ data:
           "targets": [
             {
               "alias": "",
-              "expr": "irate(logback_events_total{instance=\"$instance\", app=\"$application\", level=\"error\"}[5m])",
+              "expr": "irate(logback_events_total{app_instance=\"$instance\", app=\"$application\", level=\"error\"}[5m])",
               "format": "time_series",
               "intervalFactor": 1,
               "legendFormat": "error",
@@ -3826,7 +3824,7 @@ data:
           "targets": [
             {
               "alias": "",
-              "expr": "irate(logback_events_total{instance=\"$instance\", app=\"$application\", level=\"warn\"}[5m])",
+              "expr": "irate(logback_events_total{app_instance=\"$instance\", app=\"$application\", level=\"warn\"}[5m])",
               "format": "time_series",
               "intervalFactor": 1,
               "legendFormat": "warn",
@@ -3914,7 +3912,7 @@ data:
           "targets": [
             {
               "alias": "",
-              "expr": "irate(logback_events_total{instance=\"$instance\", app=\"$application\", level=\"debug\"}[5m])",
+              "expr": "irate(logback_events_total{app_instance=\"$instance\", app=\"$application\", level=\"debug\"}[5m])",
               "format": "time_series",
               "intervalFactor": 1,
               "legendFormat": "debug",
@@ -4002,7 +4000,7 @@ data:
           "targets": [
             {
               "alias": "",
-              "expr": "irate(logback_events_total{instance=\"$instance\", app=\"$application\", level=\"trace\"}[5m])",
+              "expr": "irate(logback_events_total{app_instance=\"$instance\", app=\"$application\", level=\"trace\"}[5m])",
               "format": "time_series",
               "intervalFactor": 1,
               "legendFormat": "trace",
@@ -4092,14 +4090,14 @@ data:
               "value": "object-service:8080"
             },
             "datasource": "Prometheus",
-            "definition": "label_values(jvm_classes_loaded_classes{app=\"$application\"}, instance)",
+            "definition": "label_values(jvm_classes_loaded_classes{app=\"$application\"}, app_instance)",
             "hide": 0,
             "includeAll": false,
             "label": "Instance",
             "multi": false,
             "name": "instance",
             "options": [],
-            "query": "label_values(jvm_classes_loaded_classes{app=\"$application\"}, instance)",
+            "query": "label_values(jvm_classes_loaded_classes{app=\"$application\"}, app_instance)",
             "refresh": 1,
             "regex": "",
             "skipUrlSync": false,
@@ -4125,7 +4123,7 @@ data:
             "multi": false,
             "name": "hikaricp",
             "options": [],
-            "query": "label_values(hikaricp_connections{instance=\"$instance\", app=\"$application\"}, pool)",
+            "query": "label_values(hikaricp_connections{app_instance=\"$instance\", app=\"$application\"}, pool)",
             "refresh": 1,
             "regex": "",
             "skipUrlSync": false,
@@ -4151,7 +4149,7 @@ data:
             "multi": false,
             "name": "memory_pool_heap",
             "options": [],
-            "query": "label_values(jvm_memory_used_bytes{app=\"$application\", instance=\"$instance\", area=\"heap\"},id)",
+            "query": "label_values(jvm_memory_used_bytes{app=\"$application\", app_instance=\"$instance\", area=\"heap\"},id)",
             "refresh": 1,
             "regex": "",
             "skipUrlSync": false,
@@ -4177,7 +4175,7 @@ data:
             "multi": false,
             "name": "memory_pool_nonheap",
             "options": [],
-            "query": "label_values(jvm_memory_used_bytes{app=\"$application\", instance=\"$instance\", area=\"nonheap\"},id)",
+            "query": "label_values(jvm_memory_used_bytes{app=\"$application\", app_instance=\"$instance\", area=\"nonheap\"},id)",
             "refresh": 1,
             "regex": "",
             "skipUrlSync": false,

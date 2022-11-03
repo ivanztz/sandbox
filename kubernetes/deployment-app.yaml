@@ -14,16 +14,21 @@ spec:
       labels:
         app: object-service
       annotations:
-        prometheus.io/scrape: 'true'
-        prometheus.io/path: /actuator/prometheus
-        prometheus.io/port: "8080"
+        actuator.prometheus.io/scrape: 'true'
+        actuator.prometheus.io/path: '/actuator/prometheus'
+        actuator.prometheus.io/port: '8080'
+        otel.prometheus.io/scrape: 'true'
+        otel.prometheus.io/port: '9464'
     spec:
       containers:
         - image: object-service:latest
           imagePullPolicy: IfNotPresent # using local image from docker
           name: object-service
-          ports:
-            - containerPort: 8080
+          ports: # naming ports to be able to use different prometheus relabel rules for multiple metric endpoints
+            - name: app
+              containerPort: 8080
+            - name: otel-metrics
+              containerPort: 9464
           livenessProbe:
             httpGet:
               path: /actuator/health/liveness
@@ -65,9 +70,10 @@ metadata:
 data:
   spring.kafka.bootstrap: 'kafka:9092'
   events-url: 'http://object-events:8080'
-  OTEL_TRACES_EXPORTER: 'jaeger'
-  OTEL_EXPORTER_JAEGER_ENDPOINT: 'http://jaeger:14250'
-  OTEL_SERVICE_NAME: 'object-service'
+  OTEL_TRACES_EXPORTER: otlp
+  OTEL_EXPORTER_OTLP_TRACES_ENDPOINT: http://otel-collector:4317
+  OTEL_SERVICE_NAME: object-service
+  OTEL_METRICS_EXPORTER: prometheus
 ---
 
 apiVersion: v1
@@ -80,6 +86,8 @@ spec:
   ports:
     - name: "8080"
       port: 8080
+    - name: "9464"
+      port: 9464
   selector:
     app: object-service
   type: LoadBalancer
@@ -101,16 +109,21 @@ spec:
       labels:
         app: object-events
       annotations:
-        prometheus.io/scrape: 'true'
-        prometheus.io/path: /actuator/prometheus
-        prometheus.io/port: "8080"
+        actuator.prometheus.io/scrape: 'true'
+        actuator.prometheus.io/path: '/actuator/prometheus'
+        actuator.prometheus.io/port: '8080'
+        otel.prometheus.io/scrape: 'true'
+        otel.prometheus.io/port: '9464'
     spec:
       containers:
         - image: object-events:latest
           imagePullPolicy: IfNotPresent # using local image from docker
           name: object-events
           ports:
-            - containerPort: 8080
+            - name: app
+              containerPort: 8080
+            - name: otel-metrics
+              containerPort: 9464
           livenessProbe:
             httpGet:
               path: /actuator/health/liveness
@@ -152,9 +165,10 @@ metadata:
 data:
   spring.kafka.bootstrap: 'kafka:9092'
   server-name: 'mongo'
-  OTEL_TRACES_EXPORTER: 'jaeger'
-  OTEL_EXPORTER_JAEGER_ENDPOINT: 'http://jaeger:14250'
-  OTEL_SERVICE_NAME: 'object-events'
+  OTEL_TRACES_EXPORTER: otlp
+  OTEL_EXPORTER_OTLP_TRACES_ENDPOINT: http://otel-collector:4317
+  OTEL_SERVICE_NAME: object-events
+  OTEL_METRICS_EXPORTER: prometheus
 
 ---
 
@@ -168,6 +182,8 @@ spec:
   ports:
     - name: "8080"
       port: 8080
+    - name: "9464"
+      port: 9464
   selector:
     app: object-events
   type: LoadBalancer

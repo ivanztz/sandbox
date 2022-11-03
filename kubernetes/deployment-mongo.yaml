@@ -31,6 +31,9 @@ spec:
             - secretRef:
                 name: mongo-secrets
           resources: { }
+          volumeMounts:
+            - mountPath: /data/db
+              name: mongo-claim0
       restartPolicy: Always
       volumes:
         - name: mongo-claim0

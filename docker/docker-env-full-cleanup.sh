@@ -15,6 +15,9 @@ docker compose -f docker-compose-tracing.yml -p sandbox-tracing down
 echo "Removing monitoring containers "
 docker compose -f docker-compose-monitoring.yml -p sandbox-monitoring down
 
+echo "Removing monitoring containers "
+docker compose -f docker-compose-keycloak.yml -p sandbox-keycloak down
+
 echo "Removing docker env"
 docker compose -f docker-compose-env.yml -p sandbox down
 
