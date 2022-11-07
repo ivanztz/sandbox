@@ -21,7 +21,7 @@ spec:
         otel.prometheus.io/port: '9464'
     spec:
       containers:
-        - image: object-service:latest
+        - image: object-service
           imagePullPolicy: IfNotPresent # using local image from docker
           name: object-service
           ports: # naming ports to be able to use different prometheus relabel rules for multiple metric endpoints
@@ -116,7 +116,7 @@ spec:
         otel.prometheus.io/port: '9464'
     spec:
       containers:
-        - image: object-events:latest
+        - image: object-events
           imagePullPolicy: IfNotPresent # using local image from docker
           name: object-events
           ports:

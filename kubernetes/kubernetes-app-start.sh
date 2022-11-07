@@ -6,8 +6,7 @@ echo "Starting applications"
 eval $(minikube docker-env)
 
 echo "Building app images"
-docker build -t object-service:latest ../object-service
-docker build -t object-events:latest ../object-events
+mvn -f ../pom.xml clean install -PbuildDocker -Dmaven.test.skip=true
 
 echo "Running app containers"
 kubectl apply -f deployment-app.yaml
