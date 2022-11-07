@@ -8,7 +8,7 @@ server:
 
 logging:
   level:
-    ROOT: INFO
+    ROOT: DEBUG
     com.iz: DEBUG
 
 server-name: localhost

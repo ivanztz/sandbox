@@ -172,7 +172,7 @@
 			"response": []
 		},
 		{
-			"name": "Auth token (full permissions)",
+			"name": "IDE Auth token (full permissions)",
 			"event": [
 				{
 					"listen": "test",
@@ -187,7 +187,13 @@
 			],
 			"request": {
 				"method": "POST",
-				"header": [],
+				"header": [
+					{
+						"key": "keycloak-server",
+						"value": "localhost",
+						"type": "text"
+					}
+				],
 				"body": {
 					"mode": "urlencoded",
 					"urlencoded": [
@@ -214,12 +220,12 @@
 					]
 				},
 				"url": {
-					"raw": "http://keycloak:8083/realms/sandbox/protocol/openid-connect/token",
+					"raw": "http://localhost:8888/realms/sandbox/protocol/openid-connect/token",
 					"protocol": "http",
 					"host": [
-						"keycloak"
+						"localhost"
 					],
-					"port": "8083",
+					"port": "8888",
 					"path": [
 						"realms",
 						"sandbox",
@@ -232,7 +238,73 @@
 			"response": []
 		},
 		{
-			"name": "Auth token (readonly permissions)",
+			"name": "Docker\\Kuber Auth token (full permissions)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.collectionVariables.set(\"AUTH_TOKEN\", pm.response.json().access_token);",
+							""
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "keycloak-server",
+						"value": "keycloak-proxy",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "client_id",
+							"value": "sandbox-app",
+							"type": "text"
+						},
+						{
+							"key": "username",
+							"value": "user",
+							"type": "text"
+						},
+						{
+							"key": "password",
+							"value": "password",
+							"type": "text"
+						},
+						{
+							"key": "grant_type",
+							"value": "password",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "http://localhost:8888/realms/sandbox/protocol/openid-connect/token",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8888",
+					"path": [
+						"realms",
+						"sandbox",
+						"protocol",
+						"openid-connect",
+						"token"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "IDE Auth token (readonly permissions)",
 			"event": [
 				{
 					"listen": "test",
@@ -246,7 +318,13 @@
 			],
 			"request": {
 				"method": "POST",
-				"header": [],
+				"header": [
+					{
+						"key": "keycloak-server",
+						"value": "localhost",
+						"type": "text"
+					}
+				],
 				"body": {
 					"mode": "urlencoded",
 					"urlencoded": [
@@ -273,12 +351,77 @@
 					]
 				},
 				"url": {
-					"raw": "http://keycloak:8083/realms/sandbox/protocol/openid-connect/token",
+					"raw": "http://localhost:8888/realms/sandbox/protocol/openid-connect/token",
 					"protocol": "http",
 					"host": [
-						"keycloak"
+						"localhost"
 					],
-					"port": "8083",
+					"port": "8888",
+					"path": [
+						"realms",
+						"sandbox",
+						"protocol",
+						"openid-connect",
+						"token"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Docker\\Kuber Auth token (readonly permissions)",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.collectionVariables.set(\"AUTH_TOKEN\", pm.response.json().access_token);"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "keycloak-server",
+						"value": "keycloak-proxy",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "urlencoded",
+					"urlencoded": [
+						{
+							"key": "client_id",
+							"value": "sandbox-app",
+							"type": "text"
+						},
+						{
+							"key": "username",
+							"value": "readonly_user",
+							"type": "text"
+						},
+						{
+							"key": "password",
+							"value": "password",
+							"type": "text"
+						},
+						{
+							"key": "grant_type",
+							"value": "password",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "http://localhost:8888/realms/sandbox/protocol/openid-connect/token",
+					"protocol": "http",
+					"host": [
+						"localhost"
+					],
+					"port": "8888",
 					"path": [
 						"realms",
 						"sandbox",

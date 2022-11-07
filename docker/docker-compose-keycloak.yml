@@ -26,8 +26,9 @@ services:
       DB_PASSWORD: password
       KEYCLOAK_ADMIN: admin
       KEYCLOAK_ADMIN_PASSWORD: password
+      PROXY_ADDRESS_FORWARDING: true
       #Sync with exposed port to make Spring JWT iss validation work properly in local setup when tokens are generated from postman as iss depends on url used for generating.
-    entrypoint: "/opt/keycloak/bin/kc.sh start-dev --import-realm --http-port=8083"
+    entrypoint: "/opt/keycloak/bin/kc.sh start-dev --import-realm --http-port=8083 --proxy=passthrough"
     ports:
       - "8083:8083"
     volumes:
@@ -38,6 +39,19 @@ services:
       default:
         aliases:
          - keycloak
+  keycloak-proxy:
+    image: nginx:1.23.2
+    ports:
+      - "8888:8888"
+    volumes:
+      - ./config/nginx/nginx.conf:/etc/nginx/conf.d/default.conf
+    networks:
+      default:
+        aliases:
+          - keycloak-proxy
+    depends_on:
+      - keycloak
+
 networks:
   default:
       name: sandbox_default

@@ -13,6 +13,7 @@ services:
       - database-user=admin
       - database-password=password
       - events-url=http://object-events:8080
+      - keycloak.url=keycloak-proxy:8888
       - OTEL_TRACES_EXPORTER=otlp
       - OTEL_EXPORTER_OTLP_TRACES_ENDPOINT=http://otel-collector:4317
       - OTEL_SERVICE_NAME=object-service
