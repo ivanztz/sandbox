@@ -29,8 +29,8 @@ spring:
     oauth2:
       resourceserver:
         jwt:
-          jwk-set-uri: http://${keycloak.url}/realms/sandbox/protocol/openid-connect/certs
-          issuer-uri: http://${keycloak.url}/realms/sandbox
+          jwk-set-uri: ${keycloak.url}/realms/sandbox/protocol/openid-connect/certs
+          issuer-uri: ${keycloak.url}/realms/sandbox
 
 feign:
   httpclient:
@@ -56,4 +56,4 @@ topics:
 clients:
   events: ${events-url:http://localhost:8082/}
 
-keycloak.url: localhost:8888
+keycloak.url: http://localhost:8888

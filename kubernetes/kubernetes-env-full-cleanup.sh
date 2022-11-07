@@ -38,4 +38,10 @@ kubectl delete -f deployment-prometheus-pvc.yaml
 echo "Removing grafana volumes"
 kubectl delete -f deployment-grafana-pvc.yaml
 
+echo "Removing keycloak containers"
+kubectl delete -f deployment-keycloak.yaml
+
+echo "Removing keycloak volumes"
+kubectl delete -f deployment-keycloak-postgres-pvc.yaml
+
 echo "Kubernetes env removed"

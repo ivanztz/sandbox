@@ -20,4 +20,7 @@ kubectl delete -f deployment-prometheus.yaml
 echo "Removing grafana containers"
 kubectl delete -f deployment-grafana.yaml
 
+echo "Removing mongo containers"
+kubectl delete -f deployment-keycloak.yaml
+
 echo "Kubernetes env stopped"

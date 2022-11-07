@@ -22,12 +22,11 @@
 					"raw": "{\n    \"stringField\": \"string value \",\n    \"intField\" : 1, \n    \"decimalField\": 3.15,\n    \"jsonField\": \"{\\\"field\\\":\\\"value\\\"}\"\n}"
 				},
 				"url": {
-					"raw": "http://localhost:8080/objects",
+					"raw": "http://{{SERVICE_URL}}/objects",
 					"protocol": "http",
 					"host": [
-						"localhost"
+						"{{SERVICE_URL}}"
 					],
-					"port": "8080",
 					"path": [
 						"objects"
 					]
@@ -47,12 +46,11 @@
 					}
 				],
 				"url": {
-					"raw": "http://localhost:8080/events",
+					"raw": "http://{{SERVICE_URL}}/events",
 					"protocol": "http",
 					"host": [
-						"localhost"
+						"{{SERVICE_URL}}"
 					],
-					"port": "8080",
 					"path": [
 						"events"
 					]
@@ -76,12 +74,11 @@
 					"raw": "{   \n    \"stringField\": \"string value 2\",\n    \"intField\" : 1, \n    \"decimalField\": 3.16,\n    \"jsonField\": \"{\\\"field\\\":\\\"value\\\"}\"\n}"
 				},
 				"url": {
-					"raw": "http://localhost:8080/objects/16f30674-bc91-4d79-8f2d-c1268869cd04",
+					"raw": "http://{{SERVICE_URL}}/objects/16f30674-bc91-4d79-8f2d-c1268869cd04",
 					"protocol": "http",
 					"host": [
-						"localhost"
+						"{{SERVICE_URL}}"
 					],
-					"port": "8080",
 					"path": [
 						"objects",
 						"16f30674-bc91-4d79-8f2d-c1268869cd04"
@@ -102,12 +99,11 @@
 					}
 				],
 				"url": {
-					"raw": "http://localhost:8080/objects/3d7ab4a5-499b-4da0-9fbd-588fcb1c710f",
+					"raw": "http://{{SERVICE_URL}}/objects/3d7ab4a5-499b-4da0-9fbd-588fcb1c710f",
 					"protocol": "http",
 					"host": [
-						"localhost"
+						"{{SERVICE_URL}}"
 					],
-					"port": "8080",
 					"path": [
 						"objects",
 						"3d7ab4a5-499b-4da0-9fbd-588fcb1c710f"
@@ -128,12 +124,11 @@
 					}
 				],
 				"url": {
-					"raw": "http://localhost:8080/objects/16f30674-bc91-4d79-8f2d-c1268869cd04",
+					"raw": "http://{{SERVICE_URL}}/objects/16f30674-bc91-4d79-8f2d-c1268869cd04",
 					"protocol": "http",
 					"host": [
-						"localhost"
+						"{{SERVICE_URL}}"
 					],
-					"port": "8080",
 					"path": [
 						"objects",
 						"16f30674-bc91-4d79-8f2d-c1268869cd04"
@@ -148,12 +143,11 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://localhost:8080/objects?startDate=2022-05-05T16%3A30%3A00.000%2B03%3A00&endDate=2023-05-05T16%3A44%3A57.272%2B03%3A00",
+					"raw": "http://{{SERVICE_URL}}/objects?startDate=2022-05-05T16%3A30%3A00.000%2B03%3A00&endDate=2023-05-05T16%3A44%3A57.272%2B03%3A00",
 					"protocol": "http",
 					"host": [
-						"localhost"
+						"{{SERVICE_URL}}"
 					],
-					"port": "8080",
 					"path": [
 						"objects"
 					],
@@ -220,12 +214,11 @@
 					]
 				},
 				"url": {
-					"raw": "http://localhost:8888/realms/sandbox/protocol/openid-connect/token",
+					"raw": "http://{{KEYCLOAK_URL_LOCAL}}/realms/sandbox/protocol/openid-connect/token",
 					"protocol": "http",
 					"host": [
-						"localhost"
+						"{{KEYCLOAK_URL_LOCAL}}"
 					],
-					"port": "8888",
 					"path": [
 						"realms",
 						"sandbox",
@@ -286,12 +279,11 @@
 					]
 				},
 				"url": {
-					"raw": "http://localhost:8888/realms/sandbox/protocol/openid-connect/token",
+					"raw": "http://{{KEYCLOAK_URL}}/realms/sandbox/protocol/openid-connect/token",
 					"protocol": "http",
 					"host": [
-						"localhost"
+						"{{KEYCLOAK_URL}}"
 					],
-					"port": "8888",
 					"path": [
 						"realms",
 						"sandbox",
@@ -351,12 +343,11 @@
 					]
 				},
 				"url": {
-					"raw": "http://localhost:8888/realms/sandbox/protocol/openid-connect/token",
+					"raw": "http://{{KEYCLOAK_URL_LOCAL}}/realms/sandbox/protocol/openid-connect/token",
 					"protocol": "http",
 					"host": [
-						"localhost"
+						"{{KEYCLOAK_URL_LOCAL}}"
 					],
-					"port": "8888",
 					"path": [
 						"realms",
 						"sandbox",
@@ -416,12 +407,11 @@
 					]
 				},
 				"url": {
-					"raw": "http://localhost:8888/realms/sandbox/protocol/openid-connect/token",
+					"raw": "http://{{KEYCLOAK_URL}}/realms/sandbox/protocol/openid-connect/token",
 					"protocol": "http",
 					"host": [
-						"localhost"
+						"{{KEYCLOAK_URL}}"
 					],
-					"port": "8888",
 					"path": [
 						"realms",
 						"sandbox",
@@ -468,6 +458,21 @@
 		{
 			"key": "AUTH_TOKEN",
 			"value": "eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJoSHllNHQxcEx6QWdLUmNmLXYxdTBqQjcwZ2tUQTcxX3Z5Q0UzVVRzcTdRIn0"
+		},
+		{
+			"key": "SERVICE_URL",
+			"value": "localhost:8080",
+			"type": "string"
+		},
+		{
+			"key": "KEYCLOAK_URL",
+			"value": "localhost:8888",
+			"type": "string"
+		},
+		{
+			"key": "KEYCLOAK_URL_LOCAL",
+			"value": "localhost:8888",
+			"type": "string"
 		}
 	]
 }
