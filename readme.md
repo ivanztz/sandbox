@@ -35,6 +35,7 @@ Simplified data flow is described at [flow diagram](./object-api/src/main/resour
     - MapStruct
     - Liquibase
     - Micrometer
+    - Springdoc
 - Maven
 - Postgresql
 - MongoDB

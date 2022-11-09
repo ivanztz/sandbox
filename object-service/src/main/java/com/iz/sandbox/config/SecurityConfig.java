@@ -39,7 +39,7 @@ public class SecurityConfig {
                 .csrf()
                 .disable()
                 .authorizeRequests()
-                .antMatchers("/actuator/**").permitAll()
+                .antMatchers("/actuator/**", "/swagger-ui/**", "/v3/api-docs/**", "/*-api.yaml").permitAll()
                 .antMatchers(HttpMethod.GET,"/objects*", "/events*").hasAnyRole(ROLE_READONLY_USER, ROLE_USER)
                 .antMatchers("/objects*", "/events*").hasRole(ROLE_USER)
                 .anyRequest()
