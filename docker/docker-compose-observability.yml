@@ -1,0 +1,104 @@
+version: "3.9"
+services:
+  jaeger:
+    image: jaegertracing/all-in-one:1.34
+    ports:
+      - '16686:16686'
+      - '14250:14250'
+      - '9411:9411'
+    environment:
+      - SPAN_STORAGE_TYPE=memory
+  otel-collector:
+    # switch to latest version after it will be stable  https://github.com/open-telemetry/opentelemetry-collector-contrib/pull/16088
+    image: otel/opentelemetry-collector-contrib:0.56.0
+    command: [ "--config=/conf/collector-config.yaml" ]
+    volumes:
+      - ./config/tracing/otel-collector-config.yaml:/conf/collector-config.yaml
+    ports:
+      - "4317:4317"
+      - "9464:9464"
+    depends_on:
+      - jaeger
+  tempo:
+    image: grafana/tempo:latest
+    command: [ "-config.file=/etc/tempo.yaml" ]
+    volumes:
+      - ./config//tracing/tempo-local.yaml:/etc/tempo.yaml
+      - tempo-data:/tmp/tempo
+    ports:
+      - "3200"
+      - "4317"
+    networks:
+      default:
+        aliases:
+          - tempo
+  node-exporter:
+    image: prom/node-exporter:latest
+    container_name: node-exporter
+    restart: unless-stopped
+    ports:
+      - '9100:9100'
+    networks:
+      default:
+        aliases:
+          - node_exporter
+  prometheus:
+    image: prom/prometheus:v2.40.1
+    container_name: prometheus
+    restart: unless-stopped
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--web.enable-remote-write-receiver' #for tempo metrics
+    ports:
+      - '9090:9090'
+    volumes:
+      # scraper configuration
+      - ./config/monitoring/prometheus.yml:/etc/prometheus/prometheus.yml
+      # file system
+      - prometheus-data:/prometheus
+    networks:
+      default:
+        aliases:
+          - prometheus
+  grafana:
+    image: grafana/grafana:9.2.4
+    container_name: grafana
+    restart: unless-stopped
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=password
+      - GF_USERS_ALLOW_SIGN_UP=true
+      - GF_FEATURE_TOGGLES_ENABLE=traceToMetrics #disabled by default
+    ports:
+      - '3000:3000'
+    volumes:
+      # file system
+      - grafana-data:/var/lib/grafana
+      # provisioning
+      - ./config/monitoring/provisioning:/etc/grafana/provisioning
+    networks:
+      default:
+        aliases:
+          - grafana
+  loki:
+    image: grafana/loki:latest
+    ports:
+      - "3100:3100"
+    command: '-config.file=/etc/loki/local-config.yaml'
+    volumes:
+      - ./config/monitoring/loki-local.yaml:/etc/loki/local-config.yaml
+    networks:
+      default:
+        aliases:
+          - loki
+volumes:
+  prometheus-data:
+    driver: local
+  grafana-data:
+    driver: local
+  tempo-data:
+    driver: local
+
+networks:
+  default:
+      name: sandbox_default

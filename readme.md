@@ -53,7 +53,7 @@ Simplified data flow is described at [flow diagram](./object-api/src/main/resour
 - OpenTelemetry + OTEL Collector
 - Jaeger
 - Prometheus
-- Grafana
+- Grafana + Tempo + Loki
 
 ## Deployment instructions
 

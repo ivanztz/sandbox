@@ -12,11 +12,8 @@ docker compose -f docker-compose-mongo.yml -p sandbox-mongo down
 echo "Removing keycloak containers "
 docker compose -f docker-compose-keycloak.yml -p sandbox-keycloak down
 
-echo "Removing tracing containers "
-docker compose -f docker-compose-tracing.yml -p sandbox-tracing down
-
-echo "Removing monitoring containers "
-docker compose -f docker-compose-monitoring.yml -p sandbox-monitoring down
+echo "Removing observability containers "
+docker compose -f docker-compose-observability.yml -p sandbox-observability down
 
 echo "Removing docker env"
 docker compose -f docker-compose-env.yml -p sandbox down

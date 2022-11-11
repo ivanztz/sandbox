@@ -53,6 +53,8 @@ logging:
   level:
     ROOT: INFO
     com.iz: DEBUG
+  pattern:
+    level: trace_id=%mdc{trace_id} span_id=%mdc{span_id} trace_flags=%mdc{trace_flags} %5p
 
 
 management.endpoints.web.exposure.include: '*'

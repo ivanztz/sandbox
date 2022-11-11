@@ -19,7 +19,6 @@ receivers:
             - targets:
                 - 'object-service:8080'
                 - 'object-events:8080'
-
 exporters:
   jaeger:
     endpoint: "jaeger:14250"
@@ -28,8 +27,22 @@ exporters:
       insecure_skip_verify: true
   prometheus:
     endpoint: "0.0.0.0:9464"
-  logging:
-    loglevel: debug
+  otlp:
+    endpoint: tempo:4317
+    tls:
+      insecure: true
+    headers:
+      x-scope-orgid: "Organization 1"
+  loki:
+    endpoint: "http://loki:3100/loki/api/v1/push"
+    tls:
+      insecure: true
+    labels:
+      # mapping OTLP resource attributes to Loki labels
+      resource:
+        service.name: "service_name"
+        host.name: "host_name"
+    format: "body"
 
 processors:
   batch:
@@ -38,9 +51,16 @@ service:
   pipelines:
     traces:
       receivers: [otlp]
-      exporters: [jaeger]
+      exporters: [jaeger, otlp]
       processors: [batch]
     metrics:
       receivers: [prometheus]
       exporters: [prometheus]
       processors: [batch]
+    logs:
+      receivers: [otlp]
+      exporters: [loki]
+      processors: [batch]
+  telemetry:
+    logs:
+      level: "debug"

@@ -15,9 +15,10 @@ services:
       - events-url=http://object-events:8080
       - keycloak.url=http://keycloak-proxy:8888
       - OTEL_TRACES_EXPORTER=otlp
-      - OTEL_EXPORTER_OTLP_TRACES_ENDPOINT=http://otel-collector:4317
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4317
       - OTEL_SERVICE_NAME=object-service
       - OTEL_METRICS_EXPORTER=prometheus
+      - OTEL_LOGS_EXPORTER=otlp
     networks:
       default:
         aliases:
@@ -36,9 +37,10 @@ services:
       - database-user=admin
       - database-password=password
       - OTEL_TRACES_EXPORTER=otlp
-      - OTEL_EXPORTER_OTLP_TRACES_ENDPOINT=http://otel-collector:4317
+      - OTEL_EXPORTER_OTLP_ENDPOINT=http://otel-collector:4317
       - OTEL_SERVICE_NAME=object-events
       - OTEL_METRICS_EXPORTER=prometheus
+      - OTEL_LOGS_EXPORTER=otlp
     networks:
       default:
         aliases:

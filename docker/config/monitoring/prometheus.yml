@@ -25,3 +25,4 @@ scrape_configs:
         replacement: "${1}"
       - source_labels: ['exported_instance']
         target_label: "app_instance"
+  -
