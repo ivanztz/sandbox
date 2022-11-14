@@ -32,6 +32,8 @@ services:
       default:
         aliases:
           - tempo
+    depends_on:
+      - prometheus
   node-exporter:
     image: prom/node-exporter:latest
     container_name: node-exporter
@@ -42,6 +44,8 @@ services:
       default:
         aliases:
           - node_exporter
+    depends_on:
+      - prometheus
   prometheus:
     image: prom/prometheus:v2.40.1
     container_name: prometheus
@@ -80,6 +84,8 @@ services:
       default:
         aliases:
           - grafana
+    depends_on:
+      - prometheus
   loki:
     image: grafana/loki:latest
     ports:
@@ -91,6 +97,21 @@ services:
       default:
         aliases:
           - loki
+
+  vector:
+    # https://dev.to/max_kray/top-5-open-source-log-shippers-alternatives-to-logstash-in-2022-5f24
+    image: timberio/vector:latest-alpine
+    ports:
+      - "9000:9000"
+    volumes:
+      - ./config/monitoring/vector-local.toml:/etc/vector/vector.toml:ro
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      default:
+        aliases:
+          - vector
+    depends_on:
+      - loki
 volumes:
   prometheus-data:
     driver: local

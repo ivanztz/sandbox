@@ -30,13 +30,14 @@ datasources:
       serviceMap:
         datasourceUid: prometheus
       tracesToLogs: # mapping traces to logs datasource
-        mappedTags: [{ key: 'service.name', value: 'service_name' }]
+        mappedTags: [{ key: 'service.name', value: 'container_name' }]
         datasourceUid: 'loki'
         mapTagNamesEnabled: true
-        spanStartTimeShift: '1h'
-        spanEndTimeShift: '1h'
+        #spanStartTimeShift: '5s' #shifts grafana timerange forward and can cause empty search result
+        spanEndTimeShift: '5s'
         filterByTraceID: true
-        filterBySpanID: true
+        filterBySpanID: true # not all spans have logs but link is displayed for both
+        lokiSearch: true
       tracesToMetrics:
         datasourceUid: 'prometheus'
         tags: [ { key: 'service.name', value: 'application' } ]
@@ -57,7 +58,7 @@ datasources:
       maxLines: 1000
       derivedFields:
         - datasourceUid: tempo
-          matcherRegex: "traceID=(\\w+)"
+          matcherRegex: "trace_id=(\\w+)"
           name: TraceID
           url: '$${__value.raw}'
     editable: true
