@@ -1,0 +1,450 @@
+# https://devopscube.com/setup-prometheus-monitoring-on-kubernetes/
+# https://devopscube.com/node-exporter-kubernetes/#:~:text=What%20is%20Prometheus%20Node%20Exporter,from%20all%20your%20Linux%20systems.
+# https://devopscube.com/setup-grafana-kubernetes/
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: observability-service-account
+
+---
+
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: observability
+rules:
+  - apiGroups: [ "" ]
+    resources:
+      - nodes
+      - services
+      - endpoints
+      - pods
+    verbs: [ "get", "list", "watch" ]
+  - apiGroups: [ "" ]
+    resources:
+      - configmaps
+    verbs: [ "get" ]
+  - nonResourceURLs: [ "/metrics" ]
+    verbs: [ "get" ]
+
+---
+
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: observability
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: observability
+subjects:
+  - kind: ServiceAccount
+    name: observability-service-account
+    namespace: default
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: prometheus-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: prometheus
+  template:
+    metadata:
+      labels:
+        app: prometheus
+    spec:
+      serviceAccountName: observability-service-account
+      containers:
+        - name: prometheus-cont
+          image: prom/prometheus:v2.40.1
+          volumeMounts:
+            - name: config-volume
+              mountPath: /etc/prometheus
+            - name: prometheus-storage-volume
+              mountPath: /prometheus/
+          ports:
+            - containerPort: 9090
+          args:
+            - '--config.file=/etc/prometheus/prometheus.yml'
+            - '--web.enable-remote-write-receiver' #for tempo metrics
+      volumes:
+        - name: config-volume
+          configMap:
+            defaultMode: 420
+            name: prometheus-config
+        - name: prometheus-storage-volume
+          persistentVolumeClaim:
+            claimName: prometheus-claim0
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: prometheus
+  name: prometheus
+spec:
+  ports:
+    - name: "9090"
+      port: 9090
+  selector:
+    app: prometheus
+  type: LoadBalancer
+---
+
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  labels:
+    app.kubernetes.io/component: exporter
+    app.kubernetes.io/name: node-exporter
+  name: node-exporter
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: exporter
+      app.kubernetes.io/name: node-exporter
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/component: exporter
+        app.kubernetes.io/name: node-exporter
+    spec:
+      serviceAccountName: prometheus-service-account
+      containers:
+        - args:
+            - --path.sysfs=/host/sys
+            - --path.rootfs=/host/root
+            - --no-collector.wifi
+            - --no-collector.hwmon
+            - --collector.filesystem.ignored-mount-points=^/(dev|proc|sys|var/lib/docker/.+|var/lib/kubelet/pods/.+)($|/)
+            - --collector.netclass.ignored-devices=^(veth.*)$
+          name: node-exporter
+          image: prom/node-exporter
+          ports:
+            - containerPort: 9100
+              protocol: TCP
+          resources:
+            limits:
+              cpu: 250m
+              memory: 180Mi
+            requests:
+              cpu: 102m
+              memory: 180Mi
+          volumeMounts:
+            - mountPath: /host/sys
+              mountPropagation: HostToContainer
+              name: sys
+              readOnly: true
+            - mountPath: /host/root
+              mountPropagation: HostToContainer
+              name: root
+              readOnly: true
+      volumes:
+        - hostPath:
+            path: /sys
+          name: sys
+        - hostPath:
+            path: /
+          name: root
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: node-exporter
+  annotations:
+    prometheus.io/scrape: 'true'
+    prometheus.io/port: '9100'
+spec:
+  selector:
+    app.kubernetes.io/component: exporter
+    app.kubernetes.io/name: node-exporter
+  ports:
+    - name: node-exporter
+      protocol: TCP
+      port: 9100
+      targetPort: 9100
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: grafana
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: grafana
+  template:
+    metadata:
+      name: grafana
+      labels:
+        app: grafana
+    spec:
+      serviceAccountName: observability-service-account
+      containers:
+        - name: grafana
+          image: grafana/grafana:9.2.4
+          ports:
+            - name: grafana
+              containerPort: 3000
+          envFrom:
+            - secretRef:
+                name: grafana-secrets
+          env:
+            - name: GF_FEATURE_TOGGLES_ENABLE #disabled by default
+              value: traceToMetrics
+          volumeMounts:
+            - mountPath: /var/lib/grafana
+              name: grafana-storage
+            - mountPath: /etc/grafana/provisioning/datasources
+              name: grafana-datasources
+            - mountPath: /etc/grafana/provisioning/dashboards
+              name: grafana-dashboards
+      volumes:
+        - name: grafana-datasources
+          configMap:
+            defaultMode: 420
+            name: grafana-datasources
+        - name: grafana-dashboards
+          configMap:
+            defaultMode: 420
+            name: grafana-dashboards
+        - name: grafana-storage
+          persistentVolumeClaim:
+            claimName: grafana-claim0
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: grafana
+  annotations:
+    prometheus.io/scrape: 'true'
+    prometheus.io/port: '3000'
+spec:
+  selector:
+    app: grafana
+  type: LoadBalancer
+  ports:
+    - port: 3000
+      targetPort: 3000
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: jaeger
+  name: jaeger
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: jaeger
+  template:
+    metadata:
+      labels:
+        app: jaeger
+    spec:
+      serviceAccountName: observability-service-account
+      containers:
+        - image: 'jaegertracing/all-in-one:1.34'
+          name: jaeger
+          ports:
+            - containerPort: 9411
+            - containerPort: 14250
+            - containerPort: 16686
+          env:
+            - name: SPAN_STORAGE_TYPE
+              value: 'memory'
+          resources: { }
+      restartPolicy: Always
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: jaeger
+  name: jaeger
+spec:
+  ports:
+    - name: "9411"
+      port: 9411
+    - name: "14250"
+      port: 14250
+    - name: "16686"
+      port: 16686
+  selector:
+    app: jaeger
+  type: LoadBalancer
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: otel-collector
+  name: otel-collector
+spec:
+  selector:
+    matchLabels:
+      app: otel-collector
+  template:
+    metadata:
+      labels:
+        app: otel-collector
+    spec:
+      serviceAccountName: observability-service-account
+      containers:
+        - image: 'otel/opentelemetry-collector:0.63.1'
+          name: otel-collector
+          ports:
+            - containerPort: 4317
+            - containerPort: 9464
+          args:
+            - '--config=/conf/collector-config.yaml'
+          resources: { }
+          volumeMounts:
+            - mountPath: /conf
+              name: otel-config
+      restartPolicy: Always
+      volumes:
+        - name: otel-config
+          configMap:
+            defaultMode: 420
+            name: otel-config
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: otel-collector
+  name: otel-collector
+spec:
+  ports:
+    - name: "4317"
+      port: 4317
+    - name: "9464"
+      port: 9464
+  selector:
+    app: otel-collector
+  type: LoadBalancer
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: tempo
+  name: tempo
+spec:
+  selector:
+    matchLabels:
+      app: tempo
+  template:
+    metadata:
+      labels:
+        app: tempo
+    spec:
+      serviceAccountName: observability-service-account
+      containers:
+        - image: 'grafana/tempo:latest'
+          name: tempo
+          ports:
+            - containerPort: 3200
+            - containerPort: 4317
+          args:
+            - '-config.file=/etc//tempo/tempo.yaml'
+          resources: { }
+          volumeMounts:
+            - mountPath: /etc/tempo
+              name: tempo-config
+            - mountPath: /tmp/tempo
+              name: tempo-data
+      restartPolicy: Always
+      volumes:
+        - name: tempo-config
+          configMap:
+            defaultMode: 420
+            name: tempo-config
+        - name: tempo-data
+          persistentVolumeClaim:
+            claimName: tempo-claim0
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: tempo
+  name: tempo
+spec:
+  ports:
+    - name: "4317"
+      port: 4317
+    - name: "3200"
+      port: 3200
+  selector:
+    app: tempo
+  type: LoadBalancer
+
+---
+
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: loki
+  name: loki
+spec:
+  selector:
+    matchLabels:
+      app: loki
+  template:
+    metadata:
+      labels:
+        app: loki
+    spec:
+      serviceAccountName: observability-service-account
+      containers:
+        - image: 'grafana/loki:latest'
+          name: loki
+          ports:
+            - containerPort: 3100
+          args:
+            - '-config.file=/etc/loki/loki.yaml'
+          resources: { }
+          volumeMounts:
+            - mountPath: /etc/loki
+              name: loki-config
+      restartPolicy: Always
+      volumes:
+        - name: loki-config
+          configMap:
+            defaultMode: 420
+            name: loki-config
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: loki
+  name: loki
+spec:
+  ports:
+    - name: "3100"
+      port: 3100
+  selector:
+    app: loki
+  type: LoadBalancer
+

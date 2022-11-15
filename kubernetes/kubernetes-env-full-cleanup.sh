@@ -11,14 +11,11 @@ kubectl delete -f deployment-kafka.yaml
 echo "Removing mongo containers"
 kubectl delete -f deployment-mongo.yaml
 
-echo "Removing tracing containers"
-kubectl delete -f deployment-tracing.yaml
+echo "Removing observability containers"
+kubectl delete -f deployment-observability.yaml
 
-echo "Removing prometheus containers"
-kubectl delete -f deployment-prometheus.yaml
-
-echo "Removing grafana containers"
-kubectl delete -f deployment-grafana.yaml
+echo "Removing vector containers"
+kubectl delete -k ./kustomize/vector
 
 echo  "Removing pods"
 kubectl delete --all pods --namespace=default --force
@@ -32,11 +29,11 @@ kubectl delete -f deployment-kafka-pvc.yaml
 echo "Removing mongo volumes"
 kubectl delete -f deployment-mongo-pvc.yaml
 
-echo "Removing prometheus volumes"
-kubectl delete -f deployment-prometheus-pvc.yaml
+echo "Removing observability volumes"
+kubectl delete -f deployment-observability-pvc.yaml
 
-echo "Removing grafana volumes"
-kubectl delete -f deployment-grafana-pvc.yaml
+echo "Removing observability configs"
+kubectl delete -f deployment-observability-config.yaml
 
 echo "Removing keycloak containers"
 kubectl delete -f deployment-keycloak.yaml
