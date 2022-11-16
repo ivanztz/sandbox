@@ -15,23 +15,27 @@
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <opentelemetry-sdk-extension-autoconfigure.version>1.20.0-alpha
+        </opentelemetry-sdk-extension-autoconfigure.version>
+        <auto-service.version>1.0.1</auto-service.version>
+        <opentelemetry-sdk-trace.version>1.20.0</opentelemetry-sdk-trace.version>
     </properties>
 
     <dependencies>
         <dependency>
             <groupId>io.opentelemetry</groupId>
             <artifactId>opentelemetry-sdk-extension-autoconfigure</artifactId>
-            <version>1.20.0-alpha</version>
+            <version>${opentelemetry-sdk-extension-autoconfigure.version}</version>
         </dependency>
         <dependency>
             <groupId>com.google.auto.service</groupId>
             <artifactId>auto-service</artifactId>
-            <version>1.0.1</version>
+            <version>${auto-service.version}</version>
         </dependency>
         <dependency>
             <groupId>io.opentelemetry</groupId>
             <artifactId>opentelemetry-sdk-trace</artifactId>
-            <version>1.20.0</version>
+            <version>${opentelemetry-sdk-trace.version}</version>
         </dependency>
     </dependencies>
 
@@ -46,7 +50,7 @@
                         <path>
                             <groupId>com.google.auto.service</groupId>
                             <artifactId>auto-service</artifactId>
-                            <version>1.0.1</version>
+                            <version>${auto-service.version}</version>
                         </path>
                     </annotationProcessorPaths>
                 </configuration>

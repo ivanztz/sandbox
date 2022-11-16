@@ -29,6 +29,7 @@
         <opentelemetry-javaagent.version>1.18.0</opentelemetry-javaagent.version>
         <micrometer-registry-prometheus.version>1.9.4</micrometer-registry-prometheus.version>
         <otel-extension.version>0.0.1-SNAPSHOT</otel-extension.version>
+        <springdoc-openapi-ui.version>1.6.12</springdoc-openapi-ui.version>
     </properties>
 
     <dependencies>
@@ -126,7 +127,7 @@
         <dependency>
             <groupId>org.springdoc</groupId>
             <artifactId>springdoc-openapi-ui</artifactId>
-            <version>1.6.12</version>
+            <version>${springdoc-openapi-ui.version}</version>
         </dependency>
     </dependencies>
 
