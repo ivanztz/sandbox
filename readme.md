@@ -10,7 +10,7 @@ Simplified data flow is described at [flow diagram](./object-api/src/main/resour
 - **object-service** - simple service for object CRUD operations and filtering
 - **object-events** - simple service for storing object events
 
-## Architecture (component view) 
+## Architecture
 ![Deployment](sandbox.png)
 
 ## Technologies\frameworks used:
