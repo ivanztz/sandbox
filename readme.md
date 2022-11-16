@@ -48,12 +48,13 @@ Simplified data flow is described at [flow diagram](./object-api/src/main/resour
 - Docker
 - Kubernetes
 
-### Tracing/Monitoring
+### Tracing/Monitoring/Logging
 
 - OpenTelemetry + OTEL Collector
 - Jaeger
 - Prometheus
 - Grafana + Tempo + Loki
+- Vector
 
 ## Deployment instructions
 
