@@ -18,6 +18,8 @@ services:
       - OTEL_EXPORTER_OTLP_TRACES_ENDPOINT=http://otel-collector:4317
       - OTEL_SERVICE_NAME=object-service
       - OTEL_METRICS_EXPORTER=prometheus
+      - OTEL_TRACES_SAMPLER=sandbox_sampler
+      - OTEL_TRACES_SAMPLER_ARG=1.0
     networks:
       default:
         aliases:
@@ -39,6 +41,8 @@ services:
       - OTEL_EXPORTER_OTLP_TRACES_ENDPOINT=http://otel-collector:4317
       - OTEL_SERVICE_NAME=object-events
       - OTEL_METRICS_EXPORTER=prometheus
+      - OTEL_TRACES_SAMPLER=sandbox_sampler
+      - OTEL_TRACES_SAMPLER_ARG=1.0
     networks:
       default:
         aliases:

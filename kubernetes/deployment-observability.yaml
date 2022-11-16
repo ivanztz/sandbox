@@ -197,7 +197,7 @@ spec:
                 name: grafana-secrets
           env:
             - name: GF_FEATURE_TOGGLES_ENABLE #disabled by default
-              value: traceToMetrics
+              value: 'traceToMetrics tempoApmTable'
           volumeMounts:
             - mountPath: /var/lib/grafana
               name: grafana-storage

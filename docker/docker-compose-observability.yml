@@ -72,7 +72,7 @@ services:
       - GF_SECURITY_ADMIN_USER=admin
       - GF_SECURITY_ADMIN_PASSWORD=password
       - GF_USERS_ALLOW_SIGN_UP=true
-      - GF_FEATURE_TOGGLES_ENABLE=traceToMetrics #disabled by default
+      - GF_FEATURE_TOGGLES_ENABLE=traceToMetrics tempoApmTable #disabled by default
     ports:
       - '3000:3000'
     volumes:

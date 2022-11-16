@@ -50,7 +50,7 @@ Simplified data flow is described at [flow diagram](./object-api/src/main/resour
 
 ### Tracing/Monitoring/Logging
 
-- OpenTelemetry + OTEL Collector
+- OpenTelemetry + OTEL Collector + Custom agent extension for sampling
 - Jaeger
 - Prometheus
 - Grafana + Tempo + Loki

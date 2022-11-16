@@ -28,6 +28,7 @@
         <spring-cloud-dependencies.version>2021.0.2</spring-cloud-dependencies.version>
         <opentelemetry-javaagent.version>1.18.0</opentelemetry-javaagent.version>
         <micrometer-registry-prometheus.version>1.9.4</micrometer-registry-prometheus.version>
+        <otel-extension.version>0.0.1-SNAPSHOT</otel-extension.version>
     </properties>
 
     <dependencies>
@@ -35,6 +36,11 @@
             <groupId>com.iz.sandbox</groupId>
             <artifactId>object-api</artifactId>
             <version>${object-api.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.iz.sandbox</groupId>
+            <artifactId>otel-extension</artifactId>
+            <version>${otel-extension.version}</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
