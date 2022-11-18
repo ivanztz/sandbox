@@ -21,7 +21,7 @@ echo "Deploying mongo containers"
 kubectl apply -f deployment-mongo.yaml
 
 echo "Deploying keycloak volumes"
-kubectl apply -f deployment-keycloak-postgres-pvc.yaml
+kubectl apply -f deployment-keycloak-pvc.yaml
 
 echo "Deploying keycloak containers"
 kubectl apply -f deployment-keycloak.yaml

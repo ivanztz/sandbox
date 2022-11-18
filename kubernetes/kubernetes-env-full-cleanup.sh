@@ -39,6 +39,6 @@ echo "Removing keycloak containers"
 kubectl delete -f deployment-keycloak.yaml
 
 echo "Removing keycloak volumes"
-kubectl delete -f deployment-keycloak-postgres-pvc.yaml
+kubectl delete -f deployment-keycloak-pvc.yaml
 
 echo "Kubernetes env removed"
