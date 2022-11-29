@@ -18,6 +18,25 @@ spring:
     change-log: changelog.yml
   kafka:
     bootstrap-servers: kafka:9092
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: io.confluent.kafka.serializers.KafkaAvroSerializer
+      properties:
+        # https://docs.confluent.io/platform/current/schema-registry/serdes-develop/serdes-json.html#json-schema-serializer-and-deserializer
+        auto.register.schemas: true
+        use.latest.version: false # not used with auto register enabled
+        use.schema.id: 1
+        value.subject.name.strategy: io.confluent.kafka.serializers.subject.RecordNameStrategy
+
+        # json config
+        # https://github.com/confluentinc/schema-registry/blob/master/schema-serializer/src/main/java/io/confluent/kafka/serializers/AbstractKafkaSchemaSerDeConfig.java
+        # https://github.com/confluentinc/schema-registry/blob/master/json-schema-serializer/src/main/java/io/confluent/kafka/serializers/json/KafkaJsonSchemaSerializerConfig.java
+        #json:
+          #schema.spec.version: draft_2019_09
+          #write.dates.iso8601: true
+          #fail.invalid.schema: true
+    properties:
+      schema.registry.url: ${schemaregistry.url}
   cloud:
     #disabling ribbon
     loadbalancer:
@@ -46,8 +65,8 @@ springdoc:
     enabled: false
   swagger-ui:
     urls:
-     - name: Rest API
-       url: /objects-api.yaml
+      - name: Rest API
+        url: /objects-api.yaml
 
 logging:
   level:
@@ -65,5 +84,5 @@ topics:
 clients:
   events: ${events-url:http://localhost:8082/}
 
-
 keycloak.url: http://localhost:8888
+schemaregistry.url: http://localhost:8081

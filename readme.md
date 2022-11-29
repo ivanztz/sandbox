@@ -19,6 +19,8 @@ Simplified data flow is described at [flow diagram](./object-api/src/main/resour
 
 - OpenApi 3
 - AsyncApi 2.3
+- JSON Schema
+- Avro
 - PlantUml
 
 ### Development
@@ -39,7 +41,7 @@ Simplified data flow is described at [flow diagram](./object-api/src/main/resour
 - Maven
 - Postgresql
 - MongoDB
-- Kafka
+- Kafka + Schema registry
 - Keycloak
 - Nginx
 
@@ -76,7 +78,7 @@ Simplified data flow is described at [flow diagram](./object-api/src/main/resour
 - REST endpoints - http://localhost:8080
 - Postgres adminer - http://localhost:8088 (admin:password)
 - Kafka UI - http://localhost:8092
-- MongoDB Express - http://localhost:8081 (admin:password)
+- MongoDB Express - http://localhost:8085 (admin:password)
 - Jaeger - http://localhost:16686
 - Prometheus - http://localhost:9090
 - Grafana - http://localhost:3000 (admin:password)

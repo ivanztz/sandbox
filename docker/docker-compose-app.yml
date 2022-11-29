@@ -14,6 +14,7 @@ services:
       - database-password=password
       - events-url=http://object-events:8080
       - keycloak.url=http://keycloak-proxy:8888
+      - schemaregistry.url=http://schemaregistry:8081
       - OTEL_TRACES_EXPORTER=otlp
       - OTEL_EXPORTER_OTLP_TRACES_ENDPOINT=http://otel-collector:4317
       - OTEL_SERVICE_NAME=object-service
@@ -37,6 +38,7 @@ services:
       - database-name=local
       - database-user=admin
       - database-password=password
+      - schemaregistry.url=http://schemaregistry:8081
       - OTEL_TRACES_EXPORTER=otlp
       - OTEL_EXPORTER_OTLP_TRACES_ENDPOINT=http://otel-collector:4317
       - OTEL_SERVICE_NAME=object-events

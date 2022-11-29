@@ -32,7 +32,7 @@ services:
     volumes:
       - kafka-data:/bitnami/kafka
   kafka-ui:
-    image: provectuslabs/kafka-ui:v0.4.0
+    image: provectuslabs/kafka-ui:latest
     container_name: kafka-ui
     ports:
       - "8092:8080"
@@ -41,9 +41,28 @@ services:
       - KAFKA_CLUSTERS_0_NAME=local
       - KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS=kafka:9092
       - KAFKA_CLUSTERS_0_ZOOKEEPER=zookeeper:2181
+      - KAFKA_CLUSTERS_0_SCHEMAREGISTRY=http://schemaregistry:8081
+  schemaregistry:
+    image: confluentinc/cp-schema-registry:7.3.0
+    restart: always
+    depends_on:
+      - zookeeper
+      - kafka
+    environment:
+      SCHEMA_REGISTRY_KAFKASTORE_BOOTSTRAP_SERVERS: "PLAINTEXT://kafka:9092"
+      SCHEMA_REGISTRY_HOST_NAME: schemaregistry
+      SCHEMA_REGISTRY_LISTENERS: "http://schemaregistry:8081"
+      SCHEMA_REGISTRY_ACCESS_CONTROL_ALLOW_ORIGIN: '*'
+      SCHEMA_REGISTRY_ACCESS_CONTROL_ALLOW_METHODS: 'GET,POST,PUT,OPTIONS'
+    ports:
+      - "8081:8081"
+    networks:
+      default:
+        aliases:
+          - schemaregistry
 networks:
   default:
-      name: sandbox_default
+    name: sandbox_default
 volumes:
   kafka-data:
     driver: local

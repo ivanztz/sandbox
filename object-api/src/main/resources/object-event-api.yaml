@@ -53,7 +53,7 @@ components:
             - UPDATED
             - DELETED
         data:
-          $ref: '#/components/schemas/objectData'
+          $ref: '#/components/schemas/eventObjectData'
       required:
         - createdAt
         - eventType

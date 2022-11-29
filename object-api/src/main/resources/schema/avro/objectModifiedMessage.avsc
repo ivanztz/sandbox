@@ -1,0 +1,50 @@
+{
+  "type": "record",
+  "namespace": "com.iz.sandbox.event",
+  "name": "ObjectModifiedMessage",
+  "javaAnnotation": "javax.annotation.Generated(\"avro\")",
+  "fields": [
+    {
+      "name": "objectId",
+      "type": {
+        "type": "string",
+        "logicalType": "uuid"
+      }
+    },
+    {
+      "name": "publishedAt",
+      "type": {
+        "type": "string",
+        "logicalType": "offset-date-time"
+      }
+    },
+    {
+      "name": "principal",
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    {
+      "name": "eventType",
+      "type": {
+        "type": "enum",
+        "name": "EventType",
+        "symbols": [
+          "CREATED",
+          "UPDATED",
+          "DELETED"
+        ]
+      }
+    },
+    {
+      "name": "data",
+      "type": [
+        {
+          "type": "com.iz.sandbox.event.EventObjectData"
+        },
+        "null"
+      ]
+    }
+  ]
+}

@@ -21,7 +21,8 @@
 		<module>object-api</module>
         <module>object-events</module>
 		<module>otel-extension</module>
-	</modules>
+        <module>object-common</module>
+    </modules>
 
 	<properties>
 		<image.registry.path>localhost:5000</image.registry.path>
@@ -132,4 +133,12 @@
 			</build>
 		</profile>
 	</profiles>
+
+	<repositories>
+		<repository>
+			<id>confluent</id>
+			<name>confluent</name>
+			<url>https://packages.confluent.io/maven/</url>
+		</repository>
+	</repositories>
 </project>

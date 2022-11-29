@@ -1,12 +1,14 @@
 package com.iz.sandbox.service.impl;
 
 import com.iz.sandbox.event.EventObjectData;
+import com.iz.sandbox.event.EventType;
 import com.iz.sandbox.event.ObjectModifiedMessage;
 import com.iz.sandbox.service.EventPublishingService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.producer.ProducerRecord;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.kafka.core.KafkaTemplate;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,7 +35,7 @@ public class EventPublishingServiceIml implements EventPublishingService {
 
         final ObjectModifiedMessage event = createEventFromDto(data);
         event.setObjectId(data.getId());
-        event.setEventType(ObjectModifiedMessage.EventTypeEnum.OBJECT_CREATED);
+        event.setEventType(EventType.CREATED);
         final ProducerRecord<String, Object> record = new ProducerRecord<>(eventsTopic, event);
         kafkaTemplate.send(record);
     }
@@ -45,7 +47,7 @@ public class EventPublishingServiceIml implements EventPublishingService {
 
         final ObjectModifiedMessage event = createEventFromDto(data);
         event.setObjectId(data.getId());
-        event.setEventType(ObjectModifiedMessage.EventTypeEnum.OBJECT_UPDATED);
+        event.setEventType(EventType.UPDATED);
         final ProducerRecord<String, Object> record = new ProducerRecord<>(eventsTopic, event);
         kafkaTemplate.send(record);
     }
@@ -57,7 +59,7 @@ public class EventPublishingServiceIml implements EventPublishingService {
 
         final ObjectModifiedMessage event = new ObjectModifiedMessage();
         event.setObjectId(id);
-        event.setEventType(ObjectModifiedMessage.EventTypeEnum.OBJECT_DELETED);
+        event.setEventType(EventType.DELETED);
         event.setPublishedAt(OffsetDateTime.now());
         final ProducerRecord<String, Object> record = new ProducerRecord<>(eventsTopic, event);
         kafkaTemplate.send(record);
@@ -74,6 +76,7 @@ public class EventPublishingServiceIml implements EventPublishingService {
         event.getData().setIntField(data.getIntField());
         event.getData().setDecimalField(data.getDecimalField());
         event.getData().setJsonField(data.getJsonField());
+        event.setPrincipal(SecurityContextHolder.getContext().getAuthentication().getName());
 
         return event;
     }

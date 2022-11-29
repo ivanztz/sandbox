@@ -21,8 +21,22 @@ spring:
         spring.json.trusted.packages: '*'
         request.timeout.ms: '60000'
         session.timeout.ms: '180000'
+        # https://docs.confluent.io/platform/current/schema-registry/serdes-develop/serdes-json.html#json-schema-serializer-and-deserializer
+        use.latest.version: true
+        # avro config
+        specific.avro.reader: true
+
+        # json config
+        # https://github.com/confluentinc/schema-registry/blob/master/json-schema-serializer/src/main/java/io/confluent/kafka/serializers/json/KafkaJsonSchemaDeserializerConfig.java
+        # https://github.com/confluentinc/schema-registry/blob/master/schema-serializer/src/main/java/io/confluent/kafka/serializers/AbstractKafkaSchemaSerDeConfig.java
+        #json:
+          #value.type: com.fasterxml.jackson.databind.JsonNode
+          #schema.spec.version:
     listener:
       concurrency: 1
+    properties:
+      schema.registry.url: ${schemaregistry.url}
+
 
 logging:
   level:

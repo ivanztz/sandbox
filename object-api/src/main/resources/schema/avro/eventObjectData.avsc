@@ -1,0 +1,60 @@
+{
+  "type": "record",
+  "namespace": "com.iz.sandbox.event",
+  "name": "EventObjectData",
+  "javaAnnotation": "javax.annotation.Generated(\"avro\")",
+  "fields": [
+    {
+      "name": "id",
+      "type": {
+        "type": "string",
+        "logicalType": "uuid"
+      }
+    },
+    {
+      "name": "stringField",
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    {
+      "name": "intField",
+      "type": [
+        "int",
+        "null"
+      ]
+    },
+    {
+      "name": "decimalField",
+      "type": [
+        "double",
+        "null"
+      ]
+    },
+    {
+      "name": "jsonField",
+      "type": [
+        "string",
+        "null"
+      ]
+    },
+    {
+      "name": "createdAt",
+      "type": {
+        "type": "string",
+        "logicalType": "offset-date-time"
+      }
+    },
+    {
+      "name": "updatedAt",
+      "type": [
+        {
+          "type": "string",
+          "logicalType": "offset-date-time"
+        },
+        "null"
+      ]
+    }
+  ]
+}

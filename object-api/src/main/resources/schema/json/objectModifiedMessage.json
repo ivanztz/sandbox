@@ -1,0 +1,30 @@
+{
+  "$id": "https://iz.sandbox.com/schemas/event/objectModifiedMesage",
+  "title": "objectModifiedMessage",
+  "properties": {
+    "objectId": {
+      "type": "string",
+      "format": "uuid"
+    },
+    "publishedAt": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "principal": {
+      "type": "string"
+    },
+    "eventType": {
+      "type": "string",
+      "enum": [
+        "CREATED",
+        "UPDATED",
+        "DELETED"
+      ]
+    },
+    "data": {
+      "$ref": "eventObjectData.json"
+    }
+  }
+}
+
+

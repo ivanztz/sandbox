@@ -1,6 +1,7 @@
 package com.iz.sandbox.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import io.confluent.kafka.serializers.KafkaAvroDeserializer;
 import lombok.AllArgsConstructor;
 import org.apache.kafka.common.serialization.StringDeserializer;
 import org.springframework.boot.autoconfigure.kafka.KafkaProperties;
@@ -12,7 +13,6 @@ import org.springframework.kafka.core.DefaultKafkaConsumerFactory;
 import org.springframework.kafka.listener.ContainerProperties;
 import org.springframework.kafka.listener.DefaultErrorHandler;
 import org.springframework.kafka.support.serializer.ErrorHandlingDeserializer;
-import org.springframework.kafka.support.serializer.JsonDeserializer;
 
 import java.util.Map;
 
@@ -26,13 +26,10 @@ public class KafkaConfig {
     @Bean
     public ConsumerFactory<String, Object> consumerFactory() {
         Map<String, Object> consumerProperties = kafkaProperties.buildConsumerProperties();
-        // making spring object mapper work with kafka json serializer
-        JsonDeserializer<Object> valueDeserializer = new JsonDeserializer<>(objectMapper);
-        valueDeserializer.configure(consumerProperties, false);
 
         return new DefaultKafkaConsumerFactory<>(consumerProperties,
                 new ErrorHandlingDeserializer<>(new StringDeserializer()),
-                new ErrorHandlingDeserializer<>(valueDeserializer));
+                new ErrorHandlingDeserializer<>(new KafkaAvroDeserializer()));
     }
 
     @Bean
@@ -44,7 +41,7 @@ public class KafkaConfig {
         factory.setConsumerFactory(consumerFactory());
         factory.getContainerProperties().setAckMode(ContainerProperties.AckMode.RECORD);
         final DefaultErrorHandler errorHandler = new DefaultErrorHandler();
-        errorHandler.setAckAfterHandle(true);
+        errorHandler.setAckAfterHandle(false);
         factory.setCommonErrorHandler(errorHandler);
         return factory;
     }
