@@ -60,6 +60,16 @@ services:
       default:
         aliases:
           - schemaregistry
+  schemaregistry-provision:
+    build: ./config/schema
+    depends_on:
+      - schemaregistry
+    environment:
+      SCHEMA_REGISTRY: "http://schemaregistry:8081"
+    volumes:
+      - ../object-api/src/main/resources/schema/avro:/etc/schema/import
+    networks:
+      default:
 networks:
   default:
     name: sandbox_default

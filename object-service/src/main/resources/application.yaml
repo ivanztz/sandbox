@@ -23,9 +23,8 @@ spring:
       value-serializer: io.confluent.kafka.serializers.KafkaAvroSerializer
       properties:
         # https://docs.confluent.io/platform/current/schema-registry/serdes-develop/serdes-json.html#json-schema-serializer-and-deserializer
-        auto.register.schemas: true
-        use.latest.version: false # not used with auto register enabled
-        use.schema.id: 1
+        auto.register.schemas: false
+        use.latest.version: true # not used with auto register enabled
         value.subject.name.strategy: io.confluent.kafka.serializers.subject.RecordNameStrategy
 
         # json config
