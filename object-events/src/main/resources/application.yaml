@@ -13,6 +13,9 @@ spring:
     default-property-inclusion: non_null
   kafka:
     bootstrap-servers: kafka:9092
+    producer:
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.apache.kafka.common.serialization.ByteArraySerializer
     consumer:
       enable-auto-commit: false
       group-id: object-events

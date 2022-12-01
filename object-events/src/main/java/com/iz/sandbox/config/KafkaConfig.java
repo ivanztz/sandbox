@@ -14,7 +14,6 @@ import org.springframework.kafka.listener.CommonErrorHandler;
 import org.springframework.kafka.listener.ContainerProperties;
 import org.springframework.kafka.listener.DeadLetterPublishingRecoverer;
 import org.springframework.kafka.listener.DefaultErrorHandler;
-import org.springframework.kafka.support.ExponentialBackOffWithMaxRetries;
 
 @Configuration
 @AllArgsConstructor
@@ -35,13 +34,8 @@ public class KafkaConfig {
     }
 
     @Bean
-    public DefaultErrorHandler errorHandler(DeadLetterPublishingRecoverer deadLetterPublishingRecoverer) {
-        ExponentialBackOffWithMaxRetries exponentialBackOff = new ExponentialBackOffWithMaxRetries(2);
-        exponentialBackOff.setInitialInterval(1000);
-        exponentialBackOff.setMultiplier(1.2);
-        exponentialBackOff.setMaxInterval(5000);
-
-        return new DefaultErrorHandler(deadLetterPublishingRecoverer, exponentialBackOff);
+    public CommonErrorHandler errorHandler(DeadLetterPublishingRecoverer deadLetterPublishingRecoverer) {
+        return new DefaultErrorHandler(deadLetterPublishingRecoverer);
     }
 
     @Bean
