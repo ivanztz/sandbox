@@ -3,11 +3,11 @@
 echo "Checking schema registry status at $SCHEMA_REGISTRY"
 
 status=undefined
-while [ "$status" == "undefined" ]; do
+while [ "$status" = "undefined" ]; do
   subjects=$(curl $SCHEMA_REGISTRY/subjects)
   echo "Check result: $subjects"
 
-  if [[ "$subjects" =~ ^[\[].*[\]]$ ]]; then
+  if expr "$subjects" : "^\[.*\]$" > /dev/null ; then
     status="provision"
   else
     echo "Waiting for schema registry is up"
@@ -15,28 +15,12 @@ while [ "$status" == "undefined" ]; do
   fi
 done
 
-if [ $status == "provision" ]; then
+if [ "$status" = "provision" ]; then
   echo "Starting importing schemas from /etc/schema/import"
-  for schema in $(find /etc/schema/import -type f -name "*.avsc"); do
-    echo "Importing schema $schema to $SCHEMA_REGISTRY"
-    # extracting subject value from avro file
-    subject=$(cat $schema | grep subject | awk -F"\"" '{print $4}')
 
-    if [[ $subjects == *$subject* ]]; then
-      echo "Subject $subject is already provisioned. Skipping execution"
-    else
-      # building schema request string from avro file. Sed replaces new lines and escapes backslashes and double quotes
-      data="{\"schema\":\"$(cat $schema | tr -d '\n' | sed 's/\n//g; s/\\/\\\\/g; s/"/\\"/g')\", \"schemaType\": \"AVRO\"}"
-      echo "Provisioning schema for subject $subject : $data"
-
-      result=$(curl -X POST -H "Content-Type: application/vnd.schemaregistry.v1+json" --data "$data" $SCHEMA_REGISTRY/subjects/$subject/versions)
-      echo "Result for $subject: $result"
-    fi
-  done
+  mvn -f /etc/schema/import/provision.pom.xml io.confluent:kafka-schema-registry-maven-plugin:register -Dschema.path=/etc/schema/import -Dschema.registry.url=$SCHEMA_REGISRTY
 
   echo "Finishing import"
-else
-  echo "Skipping provisioning"
 fi
 
 exit 0

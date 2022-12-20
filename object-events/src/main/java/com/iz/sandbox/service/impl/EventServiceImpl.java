@@ -2,7 +2,9 @@ package com.iz.sandbox.service.impl;
 
 import com.iz.sandbox.config.ObjectEventTypeMapper;
 import com.iz.sandbox.dto.ObjectEventData;
-import com.iz.sandbox.event.ObjectModifiedMessage;
+import com.iz.sandbox.event.ObjectCreatedMessage;
+import com.iz.sandbox.event.ObjectDeletedMessage;
+import com.iz.sandbox.event.ObjectUpdatedMessage;
 import com.iz.sandbox.model.MessageInfo;
 import com.iz.sandbox.model.ObjectEventDocument;
 import com.iz.sandbox.repository.EventRepository;
@@ -25,12 +27,22 @@ public class EventServiceImpl implements EventService {
     private final EventRepository repository;
 
     @Override
-    public void processEvent(ObjectModifiedMessage message, MessageInfo messageInfo) {
-        log.debug("Saving event data: {} from message {}", message, messageInfo);
+    public void processEvent(Object data, String eventClassName, MessageInfo messageInfo) {
+        final ObjectEventDocument eventDocument;
+        switch (eventClassName) {
+            case "com.iz.sandbox.event.ObjectCreatedMessage":
+                eventDocument = dataMapper.mapMessageDataToDocument((ObjectCreatedMessage) data);
+                break;
+            case "com.iz.sandbox.event.ObjectUpdatedMessage":
+                eventDocument = dataMapper.mapMessageDataToDocument((ObjectUpdatedMessage) data);
+                break;
+            case "com.iz.sandbox.event.ObjectDeletedMessage":
+                eventDocument = dataMapper.mapMessageDataToDocument((ObjectDeletedMessage) data);
+                break;
+            default:
+                throw new IllegalArgumentException();
+        }
 
-        final ObjectEventDocument eventDocument = dataMapper.mapMessageDataToDocument(message);
-        eventDocument.setPublishedAt(OffsetDateTime.now());
-        eventDocument.setMessageInfo(messageInfo);
         repository.save(eventDocument);
     }
 

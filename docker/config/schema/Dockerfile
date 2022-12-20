@@ -1,4 +1,4 @@
-FROM curlimages/curl:7.86.0
+FROM maven:latest
 
 USER root
 

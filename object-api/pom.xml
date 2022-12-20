@@ -93,6 +93,11 @@
                     <!-- Defining custom logical type and conversions -->
                     <customConversions>org.apache.avro.Conversions$UUIDConversion,com.iz.sandbox.avro.data.OffsetDateTimeConversion</customConversions>
                     <customLogicalTypeFactories>com.iz.sandbox.avro.data.OffsetDateTimeLogicalTypeFactory</customLogicalTypeFactories>
+                    <!-- Linking schemas -->
+                    <imports>
+                        <import>${project.basedir}/src/main/resources/schema/avro/eventData.avsc</import>
+                        <import>${project.basedir}/src/main/resources/schema/avro/eventObjectData.avsc</import>
+                    </imports>
                 </configuration>
                 <dependencies>
                     <dependency>
