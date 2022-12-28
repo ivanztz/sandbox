@@ -9,5 +9,6 @@ COPY ./schemaregistry_provision.sh /etc/schema/schemaregistry_provision.sh
 RUN chmod -R +x /etc/schema/schemaregistry_provision.sh
 
 VOLUME /etc/schema/import
+VOLUME /etc/schema/.m2
 
 ENTRYPOINT ["/bin/sh","/etc/schema/schemaregistry_provision.sh"]
