@@ -26,3 +26,18 @@ spec:
     requests:
       storage: 100Mi
 
+---
+
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  labels:
+    app: schema-registry-claim0
+  name: schema-registry-claim0
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 500Mi
+

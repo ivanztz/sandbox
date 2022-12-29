@@ -1,0 +1,19 @@
+{
+  "type": "record",
+  "namespace": "com.iz.sandbox.event",
+  "name": "ObjectDeletedMessage",
+  "javaAnnotation": "javax.annotation.Generated(\"avro\")",
+  "fields": [
+    {
+      "name": "objectId",
+      "type": {
+        "type": "string",
+        "logicalType": "uuid"
+      }
+    },
+    {
+      "name": "eventData",
+      "type": "com.iz.sandbox.event.EventData"
+    }
+  ]
+}

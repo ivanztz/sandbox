@@ -26,10 +26,14 @@
                     <!-- Subject definitions -->
                     <subjects>
                         <com.iz.sandbox.event.EventData>${schema.path}/eventData.avsc</com.iz.sandbox.event.EventData>
-                        <com.iz.sandbox.event.EventObjectData>${schema.path}/eventObjectData.avsc</com.iz.sandbox.event.EventObjectData>
-                        <com.iz.sandbox.event.ObjectCreatedMessage>${schema.path}/objectCreatedMessage.avsc</com.iz.sandbox.event.ObjectCreatedMessage>
-                        <com.iz.sandbox.event.ObjectDeletedMessage>${schema.path}/objectDeletedMessage.avsc</com.iz.sandbox.event.ObjectDeletedMessage>
-                        <com.iz.sandbox.event.ObjectUpdatedMessage>${schema.path}/objectUpdatedMessage.avsc</com.iz.sandbox.event.ObjectUpdatedMessage>
+                        <com.iz.sandbox.event.EventObjectData>${schema.path}/eventObjectData.avsc
+                        </com.iz.sandbox.event.EventObjectData>
+                        <com.iz.sandbox.event.ObjectCreatedMessage>${schema.path}/objectCreatedMessage.avsc
+                        </com.iz.sandbox.event.ObjectCreatedMessage>
+                        <com.iz.sandbox.event.ObjectDeletedMessage>${schema.path}/objectDeletedMessage.avsc
+                        </com.iz.sandbox.event.ObjectDeletedMessage>
+                        <com.iz.sandbox.event.ObjectUpdatedMessage>${schema.path}/objectUpdatedMessage.avsc
+                        </com.iz.sandbox.event.ObjectUpdatedMessage>
                     </subjects>
                     <schemaTypes>
                         <com.iz.sandbox.event.EventData>AVRO</com.iz.sandbox.event.EventData>
@@ -73,6 +77,15 @@
                 </goals>
             </plugin>
         </plugins>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-dependency-plugin</artifactId>
+                    <version>3.3.0</version>
+                </plugin>
+            </plugins>
+        </pluginManagement>
     </build>
 
     <pluginRepositories>

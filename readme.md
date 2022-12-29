@@ -68,6 +68,7 @@ Simplified data flow is described at [flow diagram](./object-api/src/main/resour
 ### Docker environment
 
 - Run ```mvn clean install``` to build project artifacts
+- Use ```build-docker-images.sh``` to build all utility images 
 - Use ```./docker/docker-env-start.sh``` to setup project environment and ```./docker/docker-env-stop.sh``` to clean it.
   In case persistent data needs to be removed use ```docker-env-full-cleanup.sh```
 - After environment is initialized use ```./docker/docker-app-start.sh``` to start services
@@ -91,6 +92,7 @@ Simplified data flow is described at [flow diagram](./object-api/src/main/resour
 
 - Run ```mvn clean install``` to build project artifacts
 - Ensure minikube is running. Use ```minikube dashboard``` to access web UI
+- Use ```kubernetes-build-env-images.sh``` to build all utility images
 - Use ```./kubernetes/kubernetes-env-start.sh``` to setup project environment
   and ```./kubernetes/kubernetes-env-stop.sh``` to clean it. In case persistent data needs to be removed
   use ```kubernetes-env-full-cleanup.sh```

@@ -61,14 +61,11 @@ services:
         aliases:
           - schemaregistry
   schemaregistry-provision:
-    build: ./config/schema
+    image: "schema-registry-provisioning:latest"
     depends_on:
       - schemaregistry
     environment:
       SCHEMA_REGISTRY: "http://schemaregistry:8081"
-    volumes:
-      - ../object-api/src/main/resources/schema/avro:/etc/schema/import
-      - ~/.m2:/etc/schema/.m2 #maven plugin dependencies
     networks:
       default:
 networks:
