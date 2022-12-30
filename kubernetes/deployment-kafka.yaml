@@ -57,21 +57,6 @@ data:
   KAFKA_CFG_AUTO_CREATE_TOPICS_ENABLE: 'true'
   KAFKA_ADVERTISED_HOST_NAME: 'kafka'
   KAFKA_CFG_INTER_BROKER_LISTENER_NAME: 'CLIENT'
----
-
-apiVersion: v1
-kind: Service
-metadata:
-  labels:
-    app: kafka
-  name: kafka
-spec:
-  ports:
-    - name: "9092"
-      port: 9092
-  selector:
-    app: kafka
-  type: LoadBalancer
 
 ---
 
@@ -108,20 +93,6 @@ spec:
         - name: zookeeper-claim0
           persistentVolumeClaim:
             claimName: zookeeper-claim0
----
-apiVersion: v1
-kind: Service
-metadata:
-  labels:
-    app: zookeeper
-  name: zookeeper
-spec:
-  ports:
-    - name: "2181"
-      port: 2181
-  selector:
-    app: zookeeper
-  type: LoadBalancer
 
 ---
 apiVersion: apps/v1
@@ -163,20 +134,6 @@ data:
   KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: 'kafka:9092'
   KAFKA_CLUSTERS_0_ZOOKEEPER: 'zookeeper:2181'
   KAFKA_CLUSTERS_0_SCHEMAREGISTRY: 'http://schema-registry:8081'
----
-apiVersion: v1
-kind: Service
-metadata:
-  labels:
-    app: kafka-ui
-  name: kafka-ui
-spec:
-  ports:
-    - name: "8080"
-      port: 8080
-  selector:
-    app: kafka-ui
-  type: LoadBalancer
 
 ---
 apiVersion: apps/v1
@@ -224,21 +181,6 @@ data:
   SCHEMA_REGISTRY_LISTENERS: "http://0.0.0.0:8081"
   SCHEMA_REGISTRY_ACCESS_CONTROL_ALLOW_ORIGIN: '*'
   SCHEMA_REGISTRY_ACCESS_CONTROL_ALLOW_METHODS: 'GET,POST,PUT,OPTIONS'
-
----
-apiVersion: v1
-kind: Service
-metadata:
-  labels:
-    app: schema-registry
-  name: schema-registry
-spec:
-  ports:
-    - name: "8081"
-      port: 8081
-  selector:
-    app: schema-registry
-  type: LoadBalancer
 
 
 ---

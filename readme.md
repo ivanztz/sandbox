@@ -69,8 +69,7 @@ Simplified data flow is described at [flow diagram](./object-api/src/main/resour
 
 - Run ```mvn clean install``` to build project artifacts
 - Use ```build-docker-images.sh``` to build all utility images 
-- Use ```./docker/docker-env-start.sh``` to setup project environment and ```./docker/docker-env-stop.sh``` to clean it.
-  In case persistent data needs to be removed use ```docker-env-full-cleanup.sh```
+- Use ```./docker/docker-env-start.sh``` to setup project environment and ```./docker/docker-env-stop.sh``` to clean it
 - After environment is initialized use ```./docker/docker-app-start.sh``` to start services
   and ```./docker/docker-app-stop.sh``` to stop them.
 
@@ -94,8 +93,7 @@ Simplified data flow is described at [flow diagram](./object-api/src/main/resour
 - Ensure minikube is running. Use ```minikube dashboard``` to access web UI
 - Use ```kubernetes-build-env-images.sh``` to build all utility images
 - Use ```./kubernetes/kubernetes-env-start.sh``` to setup project environment
-  and ```./kubernetes/kubernetes-env-stop.sh``` to clean it. In case persistent data needs to be removed
-  use ```kubernetes-env-full-cleanup.sh```
+  and ```./kubernetes/kubernetes-env-stop.sh``` to clean it. Services are kept for redeployment purposes to avoid reconfiguring postman every time. Use ```kubernetes-env-full-cleanup.sh``` for full cleanup.
 - After environment is initialized use ```./kubernetes/kubernetes-app-start.sh``` to start services
   and ```./kubernetes/kubernetes-app-stop.sh``` to stop them.
 - Use ```minikube tunnel``` to expose services to local machine

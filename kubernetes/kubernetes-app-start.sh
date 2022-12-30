@@ -11,4 +11,7 @@ mvn -f ../pom.xml clean install -PbuildDocker -Dmaven.test.skip=true
 echo "Running app containers"
 kubectl apply -f deployment-app.yaml
 
+echo "Running app services"
+kubectl apply -f deployment-app-svc.yaml
+
 echo "Docker env started"

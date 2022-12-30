@@ -32,22 +32,6 @@ spec:
 
 ---
 
-apiVersion: v1
-kind: Service
-metadata:
-  labels:
-    app: adminer
-  name: adminer
-spec:
-  ports:
-    - name: "8080"
-      port: 8080
-  selector:
-    app: adminer
-  type: LoadBalancer
-
----
-
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -95,21 +79,6 @@ stringData:
   POSTGRES_DB: 'objects'
   POSTGRES_PASSWORD: 'password'
   POSTGRES_USER: 'admin'
-
----
-apiVersion: v1
-kind: Service
-metadata:
-  labels:
-    app: postgres
-  name: postgres
-spec:
-  ports:
-    - name: "5432"
-      port: 5432
-  selector:
-    app: postgres
-  type: LoadBalancer
       
 
 

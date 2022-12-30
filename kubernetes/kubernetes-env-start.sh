@@ -38,5 +38,12 @@ kubectl apply -f deployment-observability-config.yaml
 echo "Deploying observability containers"
 kubectl apply -f deployment-observability.yaml
 
+echo "Deploying env services"
+
+kubectl apply -f deployment-kafka-svc.yaml
+kubectl apply -f deployment-keycloak-svc.yaml
+kubectl apply -f deployment-mongo-svc.yaml
+kubectl apply -f deployment-observability-svc.yaml
+kubectl apply -f deployment-postgres-svc.yaml
 
 echo "Kubernetes env started"

@@ -51,22 +51,6 @@ stringData:
   MONGO_INITDB_ROOT_PASSWORD: password
 ---
 
-apiVersion: v1
-kind: Service
-metadata:
-  labels:
-    app: mongo
-  name: mongo
-spec:
-  ports:
-    - name: "27017"
-      port: 27017
-  selector:
-    app: mongo
-  type: LoadBalancer
-
----
-
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -109,20 +93,5 @@ stringData:
   ME_CONFIG_MONGODB_ADMINPASSWORD: 'password'
   ME_CONFIG_MONGODB_URL: 'mongodb://admin:password@mongo:27017/'
 
----
-apiVersion: v1
-kind: Service
-metadata:
-  labels:
-    app: mongo-express
-  name: mongo-express
-spec:
-  ports:
-    - name: "8081"
-      port: 8081
-  selector:
-    app: mongo-express
-  type: LoadBalancer
-      
 
 

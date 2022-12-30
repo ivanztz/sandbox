@@ -43,21 +43,6 @@ spec:
         - name: keycloak-data
           configMap:
             name: keycloak-data
----
-apiVersion: v1
-kind: Service
-metadata:
-  name: keycloak
-  labels:
-    app: keycloak
-spec:
-  ports:
-    - name: http
-      port: 8080
-      targetPort: 8080
-  selector:
-    app: keycloak
-  type: LoadBalancer
 
 ---
 apiVersion: v1
@@ -121,21 +106,6 @@ spec:
           persistentVolumeClaim:
             claimName: keycloak-postgres-claim0
 ---
-apiVersion: v1
-kind: Service
-metadata:
-  labels:
-    app: keycloak-postgres
-  name: keycloak-postgres
-spec:
-  ports:
-    - name: "5432"
-      port: 5432
-  selector:
-    app: keycloak-postgres
-  type: LoadBalancer
-
----
 
 apiVersion: v1
 kind: Secret
@@ -175,21 +145,6 @@ spec:
         - name: nginx-config
           configMap:
             name: nginx-config
----
-
-apiVersion: v1
-kind: Service
-metadata:
-  labels:
-    app: keycloak-proxy
-  name: keycloak-proxy
-spec:
-  ports:
-    - name: "8888"
-      port: 8888
-  selector:
-    app: keycloak-proxy
-  type: LoadBalancer
 
 ---
 

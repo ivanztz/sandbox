@@ -1,0 +1,61 @@
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: kafka
+  name: kafka
+spec:
+  ports:
+    - name: "9092"
+      port: 9092
+  selector:
+    app: kafka
+  type: LoadBalancer
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: zookeeper
+  name: zookeeper
+spec:
+  ports:
+    - name: "2181"
+      port: 2181
+  selector:
+    app: zookeeper
+  type: LoadBalancer
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: kafka-ui
+  name: kafka-ui
+spec:
+  ports:
+    - name: "8080"
+      port: 8080
+  selector:
+    app: kafka-ui
+  type: LoadBalancer
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: schema-registry
+  name: schema-registry
+spec:
+  ports:
+    - name: "8081"
+      port: 8081
+  selector:
+    app: schema-registry
+  type: LoadBalancer
+
+
+

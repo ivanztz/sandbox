@@ -1,44 +1,19 @@
 #!/bin/bash
 
-echo "Removing kubernetes env"
+echo "Running full cleanup"
 
-echo "Removing postgres containers"
-kubectl delete -f deployment-postgres.yaml
+echo "Removing env services"
 
-echo "Removing kafka containers"
-kubectl delete -f deployment-kafka.yaml
+kubectl delete -f deployment-kafka-svc.yaml
+kubectl delete -f deployment-keycloak-svc.yaml
+kubectl delete -f deployment-mongo-svc.yaml
+kubectl delete -f deployment-observability-svc.yaml
+kubectl delete -f deployment-postgres-svc.yaml
 
-echo "Removing mongo containers"
-kubectl delete -f deployment-mongo.yaml
+echo "Removing app services"
 
-echo "Removing observability containers"
-kubectl delete -f deployment-observability.yaml
+kubectl delete -f deployment-app-svc.yaml
 
-echo "Removing vector containers"
-kubectl delete -k ./kustomize/vector
+sh ./kubernetes-env-stop.sh
 
-echo  "Removing pods"
-kubectl delete --all pods --namespace=default --force
-
-echo "Removing postgres volumes"
-kubectl delete -f deployment-postgres-pvc.yaml
-
-echo "Removing kafka volumes"
-kubectl delete -f deployment-kafka-pvc.yaml
-
-echo "Removing mongo volumes"
-kubectl delete -f deployment-mongo-pvc.yaml
-
-echo "Removing observability volumes"
-kubectl delete -f deployment-observability-pvc.yaml
-
-echo "Removing observability configs"
-kubectl delete -f deployment-observability-config.yaml
-
-echo "Removing keycloak containers"
-kubectl delete -f deployment-keycloak.yaml
-
-echo "Removing keycloak volumes"
-kubectl delete -f deployment-keycloak-pvc.yaml
-
-echo "Kubernetes env removed"
+echo "Cleanup complete"
