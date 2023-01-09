@@ -27,13 +27,13 @@ spring:
         use.latest.version: true # not used with auto register enabled
         value.subject.name.strategy: io.confluent.kafka.serializers.subject.RecordNameStrategy
 
-        # json config
-        # https://github.com/confluentinc/schema-registry/blob/master/schema-serializer/src/main/java/io/confluent/kafka/serializers/AbstractKafkaSchemaSerDeConfig.java
-        # https://github.com/confluentinc/schema-registry/blob/master/json-schema-serializer/src/main/java/io/confluent/kafka/serializers/json/KafkaJsonSchemaSerializerConfig.java
-        #json:
+          # json config
+          # https://github.com/confluentinc/schema-registry/blob/master/schema-serializer/src/main/java/io/confluent/kafka/serializers/AbstractKafkaSchemaSerDeConfig.java
+          # https://github.com/confluentinc/schema-registry/blob/master/json-schema-serializer/src/main/java/io/confluent/kafka/serializers/json/KafkaJsonSchemaSerializerConfig.java
+          #json:
           #schema.spec.version: draft_2019_09
           #write.dates.iso8601: true
-          #fail.invalid.schema: true
+        #fail.invalid.schema: true
     properties:
       schema.registry.url: ${schemaregistry.url}
   cloud:
@@ -85,3 +85,14 @@ clients:
 
 keycloak.url: http://localhost:8888
 schemaregistry.url: http://localhost:8081
+
+validation:
+  definitions:
+    - type: kotlin
+      name: intFieldValidation
+      path: validation/scripts/intFieldValidation.kts
+      order: 1
+    - type: kotlin
+      name: stringFieldValidation
+      path: validation/scripts/stringFieldValidation.kts
+      order: 2

@@ -9,6 +9,8 @@ import com.iz.sandbox.repository.ObjectSpecifications;
 import com.iz.sandbox.service.EventPublishingService;
 import com.iz.sandbox.service.ObjectNotFoundException;
 import com.iz.sandbox.service.ObjectService;
+import com.iz.sandbox.service.validation.ValidationService;
+import com.iz.sandbox.service.validation.Violation;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.jpa.domain.Specification;
@@ -30,11 +32,15 @@ public class ObjectServiceImpl implements ObjectService {
 
     private final EventPublishingService eventPublishingService;
 
+    private final ValidationService validationService;
+
     @Override
     @Transactional
     public ObjectData createObject(ObjectDataRequest dto) {
         log.debug("Creating object: {}", dto);
 
+        List<Violation> violations = validationService.validateObject(dto);
+        //TODO add validation processing
         final ObjectEntity entity = repository.saveAndFlush(dataMapper.mapRequestToEntity(dto));
         eventPublishingService.publishObjectCreatedEvent(dataMapper.mapEntityToEventDto(entity));
         return dataMapper.mapEntityToDto(entity);
