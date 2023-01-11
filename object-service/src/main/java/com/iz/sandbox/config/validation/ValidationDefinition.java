@@ -10,12 +10,13 @@ import lombok.Setter;
 public class ValidationDefinition {
     private ValidationScriptType type;
     private String name;
+    private String className;
     private String path;
     private int order;
 
     public enum ValidationScriptType {
         KOTLIN,
         GROOVY,
-        SPI
+        BEAN
     }
 }

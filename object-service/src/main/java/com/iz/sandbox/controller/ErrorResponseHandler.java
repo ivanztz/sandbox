@@ -3,6 +3,7 @@ package com.iz.sandbox.controller;
 import com.iz.sandbox.dto.Error;
 import com.iz.sandbox.dto.Response;
 import com.iz.sandbox.service.ObjectNotFoundException;
+import com.iz.sandbox.service.validation.exception.ValidationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.TypeMismatchException;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -16,6 +17,7 @@ import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 import javax.persistence.EntityNotFoundException;
+import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
@@ -40,6 +42,18 @@ public class ErrorResponseHandler extends ResponseEntityExceptionHandler {
         return new ResponseEntity<>(createErrorResponse("Entity Not found", ex.getMessage()), HttpStatus.NOT_FOUND);
     }
 
+    @ExceptionHandler({ValidationException.class})
+    protected ResponseEntity<Object> validationException(ValidationException ex) {
+        log.error(ex.getMessage(), ex);
+        Response response = createErrorResponse("Entity validation failed", "");
+        ex.getViolations().forEach(v -> {
+            final Error error = new Error();
+            error.setDescription(v.getDescription());
+            response.getErrors().add(error);
+        });
+        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+    }
+
     @ExceptionHandler({Exception.class})
     protected ResponseEntity<Object> handleExceptionInternal(Exception ex) {
         log.error(ex.getMessage(), ex);
@@ -51,7 +65,8 @@ public class ErrorResponseHandler extends ResponseEntityExceptionHandler {
         error.setDescription(decription);
         error.setDetails(details);
         final Response response = new Response();
-        response.setErrors(List.of(error));
+        final List<Error> errors = new ArrayList<>();
+        response.setErrors(errors);
         return response;
     }
 }
