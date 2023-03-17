@@ -263,9 +263,6 @@ metadata:
   name: tempo-config
 data:
   tempo.yaml: |-
-    search_enabled: true
-    metrics_generator_enabled: true
-    
     server:
       http_listen_port: 3200
     
@@ -312,11 +309,11 @@ data:
         backend: local                     # backend configuration to use
         block:
           bloom_filter_false_positive: .05 # bloom filter false positive rate.  lower values create larger filters but fewer false positives
-          index_downsample_bytes: 1000     # number of bytes per index record
-          encoding: zstd                   # block encoding/compression.  options: none, gzip, lz4-64k, lz4-256k, lz4-1M, lz4, snappy, zstd, s2
+          #index_downsample_bytes: 1000     # number of bytes per index record
+          #encoding: zstd                   # block encoding/compression.  options: none, gzip, lz4-64k, lz4-256k, lz4-1M, lz4, snappy, zstd, s2
         wal:
           path: /tmp/tempo/wal             # where to store the wal locally
-          encoding: snappy                 # wal encoding/compression.  options: none, gzip, lz4-64k, lz4-256k, lz4-1M, lz4, snappy, zstd, s2
+          #encoding: snappy                 # wal encoding/compression.  options: none, gzip, lz4-64k, lz4-256k, lz4-1M, lz4, snappy, zstd, s2
         local:
           path: /tmp/tempo/blocks
         pool:
@@ -402,8 +399,8 @@ data:
             mappedTags: [{ key: 'service.name', value: 'container_name' }]
             datasourceUid: 'loki'
             mapTagNamesEnabled: true
-            #spanStartTimeShift: '5s' #shifts grafana timerange forward and can cause empty search result
-            spanEndTimeShift: '5s'
+            spanStartTimeShift: '-5m' #shifts grafana timerange forward and can cause empty search result
+            spanEndTimeShift: '5m'
             filterByTraceID: true
             filterBySpanID: true # not all spans have logs but link is displayed for both
             lokiSearch: true

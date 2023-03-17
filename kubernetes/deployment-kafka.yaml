@@ -157,7 +157,7 @@ spec:
       serviceAccountName: kafka-service-account
       enableServiceLinks: false
       containers:
-        - image: 'confluentinc/cp-schema-registry:7.3.0'
+        - image: 'confluentinc/cp-schema-registry:7.3.2'
           name: schema-registry
           envFrom:
             - configMapRef:

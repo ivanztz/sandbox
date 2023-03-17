@@ -155,7 +155,7 @@ spec:
       serviceAccountName: observability-service-account
       containers:
         - name: grafana
-          image: grafana/grafana:9.2.4
+          image: grafana/grafana:9.4.3
           ports:
             - name: grafana
               containerPort: 3000
@@ -272,7 +272,7 @@ spec:
     spec:
       serviceAccountName: observability-service-account
       containers:
-        - image: 'grafana/tempo:latest'
+        - image: 'grafana/tempo:2.0.1'
           name: tempo
           ports:
             - containerPort: 3200
