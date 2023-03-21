@@ -232,14 +232,21 @@ data:
           x-scope-orgid: "Organization 1"
 
     processors:
-      batch:
-
+      filter/spans:
+        spans:
+          exclude:
+            match_type: strict
+            attributes:
+              - key: http.route
+                value: "/actuator/health/**"
+      batch: 
+  
     service:
       pipelines:
         traces:
           receivers: [ otlp ]
           exporters: [ jaeger, otlp ]
-          processors: [ batch ]
+          processors: [filter/spans, batch]
       telemetry:
         logs:
           level: "debug"

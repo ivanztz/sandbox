@@ -67,7 +67,7 @@
 							<jvmFlags>
 								<jvmFlag>--add-opens=java.base/java.lang=ALL-UNNAMED</jvmFlag>
 								<jvmFlag>-javaagent:/otel/opentelemetry-javaagent.jar</jvmFlag>
-								<jvmFlag>-Dotel.javaagent.extensions=/otel/otel-extension.jar</jvmFlag>
+								<!--<jvmFlag>-Dotel.javaagent.extensions=/otel/otel-extension.jar</jvmFlag>-->
 							</jvmFlags>
 						</container>
 					</configuration>
