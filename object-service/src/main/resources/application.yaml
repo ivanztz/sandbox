@@ -6,6 +6,8 @@ spring:
     username: ${database-user:admin}
     password: ${database-password:password}
     driverClassName: org.postgresql.Driver
+    hikari:
+      maximum-pool-size: 5
   jpa:
     generate-ddl: false
     database: postgresql
@@ -72,7 +74,7 @@ logging:
     ROOT: INFO
     com.iz: DEBUG
   pattern:
-    level: trace_id=%mdc{trace_id} span_id=%mdc{span_id} trace_flags=%mdc{trace_flags} %5p
+    level: trace_id=%mdc{trace_id} span_id=%mdc{span_id} trace_flags=%mdc{trace_flags} level=%p
 
 
 management.endpoints.web.exposure.include: '*'
