@@ -310,6 +310,15 @@ data:
         remote_write:
           - url: http://prometheus:9090/api/v1/write
             send_exemplars: true
+      processor:
+        service_graphs:
+          dimensions: 
+            - service.instance.id
+            - service.namespace
+        span_metrics:
+          dimensions:
+            - service.instance.id
+            - service.namespace
     
     storage:
       trace:
@@ -328,7 +337,7 @@ data:
     
     overrides:
       metrics_generator_processors: [service-graphs, span-metrics]
-
+      
 ---
 apiVersion: v1
 kind: ConfigMap
