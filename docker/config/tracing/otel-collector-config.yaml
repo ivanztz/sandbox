@@ -4,8 +4,8 @@ receivers:
       grpc:
       http:
 exporters:
-  jaeger:
-    endpoint: "jaeger:14250"
+  otlp/jaeger:
+    endpoint: jaeger:4317
     tls:
       insecure: true
       insecure_skip_verify: true
@@ -23,7 +23,7 @@ service:
   pipelines:
     traces:
       receivers: [otlp]
-      exporters: [jaeger, otlp]
+      exporters: [otlp, otlp/jaeger]
       processors: [batch]
   telemetry:
     logs:

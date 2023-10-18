@@ -1,7 +1,8 @@
 version: "3.9"
 services:
   jaeger:
-    image: jaegertracing/all-in-one:1.34
+    image: jaegertracing/all-in-one:1.44.0
+    command: [ "--collector.otlp.enabled=true" ]
     ports:
       - '16686:16686'
       - '14250:14250'
