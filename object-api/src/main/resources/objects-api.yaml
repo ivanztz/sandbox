@@ -214,6 +214,9 @@ components:
           example: 3.14
         jsonField:
           type: string
+        objectFiled:
+          type: object
+          format: json
 
     ObjectDataResponse:
       description: Single object data response

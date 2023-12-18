@@ -52,6 +52,12 @@
                         </configuration>
                     </execution>
                 </executions>
+                <configuration>
+                    <typeMappings>
+                        <typeMapping>object+json=JsonNode</typeMapping>
+                    </typeMappings>
+                    <importMappings>JsonNode=com.fasterxml.jackson.databind.JsonNode</importMappings>
+                </configuration>
             </plugin>
             <!--<plugin>
                 <groupId>org.jsonschema2pojo</groupId>

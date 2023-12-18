@@ -60,14 +60,14 @@ services:
       default:
         aliases:
           - schemaregistry
-  schemaregistry-provision:
-    image: "schema-registry-provisioning:latest"
-    depends_on:
-      - schemaregistry
-    environment:
-      SCHEMA_REGISTRY: "http://schemaregistry:8081"
-    networks:
-      default:
+  #schemaregistry-provision:
+  #  image: "schema-registry-provisioning:latest"
+  #  depends_on:
+  #    - schemaregistry
+  #  environment:
+  #    SCHEMA_REGISTRY: "http://schemaregistry:8081"
+  #  networks:
+  #    default:
 networks:
   default:
     name: sandbox_default
