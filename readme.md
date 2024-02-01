@@ -47,13 +47,11 @@ Simplified data flow is described at [flow diagram](./object-api/src/main/resour
 
 ### Deployment
 
-- Docker
 - Kubernetes
 
 ### Tracing/Monitoring/Logging
 
 - OpenTelemetry + OTEL Collector + Custom agent extension for sampling
-- Jaeger
 - Prometheus
 - Grafana + Tempo + Loki
 - Vector
@@ -61,39 +59,42 @@ Simplified data flow is described at [flow diagram](./object-api/src/main/resour
 ## Deployment instructions
 
 ### Pre-requirements
- - Docker or Minikube
+ - Minikube or other Kubernetes cluster
  - Maven
  - JDK 17+
 
-### Docker environment
-
-- Run ```mvn clean install``` to build project artifacts
-- Use ```build-docker-images.sh``` to build all utility images 
-- Use ```./docker/docker-env-start.sh``` to setup project environment and ```./docker/docker-env-stop.sh``` to clean it
-- After environment is initialized use ```./docker/docker-app-start.sh``` to start services
-  and ```./docker/docker-app-stop.sh``` to stop them.
-
-#### Endpoints by default available at:
-
-- REST endpoints - http://localhost:8080
-- Postgres adminer - http://localhost:8088 (admin:password)
-- Kafka UI - http://localhost:8092
-- MongoDB Express - http://localhost:8085 (admin:password)
-- Jaeger - http://localhost:16686
-- Prometheus - http://localhost:9090
-- Grafana - http://localhost:3000 (admin:password)
-- Keycloak http://keycloak:8083 (admin:password)
-
 ### Minikube environment
-
-> **Important**. Minikube specifics is only used for pushing application images inside Kubernetes. Environment scripts
+[deployment-mongo.yaml](kubernetes%2Fdeployment-mongo.yaml)
+> **Important**. Minikube specifics in bash scripts is only used for pushing application images inside Kubernetes. Environment scripts
 > can be used with any other Kubernetes deployment
 
-- Run ```mvn clean install``` to build project artifacts
+#### Pre-requisites 
+Ensure minikube ingress addon is enabled by running:
+```minikube addons enable ingress```
+
+#### Setup
+
+- Run ```./kubernetes/kubernetes-app-build-images.sh``` to build project artifacts
 - Ensure minikube is running. Use ```minikube dashboard``` to access web UI
-- Use ```kubernetes-build-env-images.sh``` to build all utility images
 - Use ```./kubernetes/kubernetes-env-start.sh``` to setup project environment
-  and ```./kubernetes/kubernetes-env-stop.sh``` to clean it. Services are kept for redeployment purposes to avoid reconfiguring postman every time. Use ```kubernetes-env-full-cleanup.sh``` for full cleanup.
+  and ```./kubernetes/kubernetes-env-stop.sh``` to clean it. Services are kept for redeployment purposes to avoid reconfiguring postman every time. Use ```kubernetes-env-full-cleanup.sh``` for full cleanup. 
 - After environment is initialized use ```./kubernetes/kubernetes-app-start.sh``` to start services
   and ```./kubernetes/kubernetes-app-stop.sh``` to stop them.
-- Use ```minikube tunnel``` to expose services to local machine
+
+
+> Minikube IP can be obtained with ```minikube ip``` command
+
+## Usage
+
+Postman collection for services REST APIs [Sandbox API.postman_collection.json](Sandbox%20API.postman_collection.json)
+
+### Endpoints by default available at:
+
+- REST endpoints - http://MINIKUBE_IP/object-service
+- Postgres adminer - http://MINIKUBE_IP/adminer (admin:password)
+- Kafka UI - http://MINIKUBE_IP/kafka-ui
+- MongoDB Express - http://MINIKUBE_IP/mongo-express (admin:password)
+- Prometheus Graph - http://MINIKUBE_IP/prometheus/graph
+- Grafana - http://MINIKUBE_IP/grafana (admin:password)
+- Keycloak http://MINIKUBE_IP/keycloak (admin:password)
+

@@ -24,6 +24,7 @@
         <otel-extension.version>0.0.1-SNAPSHOT</otel-extension.version>
         <json-schema-registry.version>7.3.0</json-schema-registry.version>
         <kafka-avro-serializer.version>7.3.0</kafka-avro-serializer.version>
+        <logback-ecs-encoder.version>1.5.0</logback-ecs-encoder.version>
     </properties>
 
     <dependencies>
@@ -104,6 +105,11 @@
             <groupId>io.confluent</groupId>
             <artifactId>kafka-avro-serializer</artifactId>
             <version>${kafka-avro-serializer.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>co.elastic.logging</groupId>
+            <artifactId>logback-ecs-encoder</artifactId>
+            <version>${logback-ecs-encoder.version}</version>
         </dependency>
     </dependencies>
 

@@ -8,6 +8,6 @@ eval $(minikube docker-env)
 
 echo "Building schema-registry-provisioning"
 
-(cd ../deploy_common/schema/ && sh ./build-docker-image.sh)
+(cd ../schema-registry && sh ./build-docker-image.sh)
 
-echo "Build finished "
+echo "Build finished"

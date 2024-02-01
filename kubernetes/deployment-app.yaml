@@ -1,3 +1,4 @@
+# Object service
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -15,7 +16,7 @@ spec:
         app: object-service
       annotations:
         actuator.prometheus.io/scrape: 'true'
-        actuator.prometheus.io/path: '/actuator/prometheus'
+        actuator.prometheus.io/path: '/object-service/actuator/prometheus'
         actuator.prometheus.io/port: '8080'
         otel.prometheus.io/scrape: 'true'
         otel.prometheus.io/port: '9464'
@@ -31,13 +32,13 @@ spec:
               containerPort: 9464
           livenessProbe:
             httpGet:
-              path: /actuator/health/liveness
+              path: /object-service/actuator/health/liveness
               port: 8080
             initialDelaySeconds: 5
             periodSeconds: 30
           readinessProbe:
             httpGet:
-              path: /actuator/health/readiness
+              path: /object-service/actuator/health/readiness
               port: 8080
             initialDelaySeconds: 5
             periodSeconds: 15
@@ -80,17 +81,35 @@ metadata:
   name: object-service-config
 data:
   spring.kafka.bootstrap: 'kafka:9092'
-  events-url: 'http://object-events:8080'
-  keycloak.url: 'http://keycloak-proxy:8888'
+  events-url: 'http://object-events:8080/object-events'
+  keycloak.url: 'http://keycloak:8080/keycloak'
   schemaregistry.url: 'http://schema-registry:8081'
   OTEL_TRACES_EXPORTER: otlp
   OTEL_EXPORTER_OTLP_TRACES_ENDPOINT: 'http://otel-collector:4317'
   OTEL_SERVICE_NAME: object-service
   OTEL_METRICS_EXPORTER: prometheus
+  # Ingress specific setup
+  server.servlet.context-path: /object-service
   #OTEL_TRACES_SAMPLER: sandbox_sampler
   #OTEL_TRACES_SAMPLER_ARG: '1.0'
 ---
-
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: object-service
+  name: object-service
+spec:
+  ports:
+    - name: "8080"
+      port: 8080
+    - name: "9464"
+      port: 9464
+  selector:
+    app: object-service
+  type: LoadBalancer
+# Object Events
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -108,7 +127,7 @@ spec:
         app: object-events
       annotations:
         actuator.prometheus.io/scrape: 'true'
-        actuator.prometheus.io/path: '/actuator/prometheus'
+        actuator.prometheus.io/path: '/object-events/actuator/prometheus'
         actuator.prometheus.io/port: '8080'
         otel.prometheus.io/scrape: 'true'
         otel.prometheus.io/port: '9464'
@@ -124,13 +143,13 @@ spec:
               containerPort: 9464
           livenessProbe:
             httpGet:
-              path: /actuator/health/liveness
+              path: /object-events/actuator/health/liveness
               port: 8080
             initialDelaySeconds: 5
             periodSeconds: 30
           readinessProbe:
             httpGet:
-              path: /actuator/health/readiness
+              path: /object-events/actuator/health/readiness
               port: 8080
             initialDelaySeconds: 5
             periodSeconds: 15
@@ -179,5 +198,23 @@ data:
   OTEL_EXPORTER_OTLP_TRACES_ENDPOINT: http://otel-collector:4317
   OTEL_SERVICE_NAME: object-events
   OTEL_METRICS_EXPORTER: prometheus
+  # Ingress specific setup
+  server.servlet.context-path: /object-events
   #OTEL_TRACES_SAMPLER: sandbox_sampler
   #OTEL_TRACES_SAMPLER_ARG: '1.0'
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: object-events
+  name: object-events
+spec:
+  ports:
+    - name: "8080"
+      port: 8080
+    - name: "9464"
+      port: 9464
+  selector:
+    app: object-events
+  type: LoadBalancer

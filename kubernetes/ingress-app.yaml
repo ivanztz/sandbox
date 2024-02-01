@@ -1,0 +1,17 @@
+# Important. Services configured to have context-path equal to ingress /path
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: ingress-services
+spec:
+  rules:
+    - http:
+        paths:
+          - path: /object-service
+            pathType: Prefix
+            backend:
+              service:
+                name: object-service
+                port:
+                  number: 8080
+  ingressClassName: nginx

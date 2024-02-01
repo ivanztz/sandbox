@@ -2,8 +2,8 @@ apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: keycloak-service-account
+#Keycloak
 ---
-
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -22,8 +22,9 @@ spec:
     spec:
       containers:
         - name: keycloak
-          image: quay.io/keycloak/keycloak:19.0.2
-          args: ["start-dev", "--import-realm", "--http-port=8080", "--proxy=passthrough"]
+          image: quay.io/keycloak/keycloak:23.0.2
+          # using proxy mode and http-relative-path for ingress controller
+          args: ["start-dev", "--proxy=passthrough", "--hostname-strict=false", "--http-relative-path=/keycloak", "--import-realm", "--http-port=8080"]
           envFrom:
             - secretRef:
                 name: keycloak-database-secrets
@@ -34,7 +35,7 @@ spec:
               containerPort: 8080
           readinessProbe:
             httpGet:
-              path: /realms/master
+              path: /keycloak/realms/master
               port: 8080
           volumeMounts:
             - mountPath: /opt/keycloak/data/import/
@@ -43,22 +44,7 @@ spec:
         - name: keycloak-data
           configMap:
             name: keycloak-data
-
 ---
-apiVersion: v1
-kind: Secret
-metadata:
-  name: keycloak-database-secrets
-type: Opaque
-stringData:
-  DB_VENDOR: 'POSTGRES'
-  DB_ADDR: 'keycloak-postgres'
-  DB_DATABASE: 'keycloak'
-  DB_USER: 'admin'
-  DB_SCHEMA: 'public'
-  DB_PASSWORD: 'password'
----
-
 apiVersion: v1
 kind: ConfigMap
 metadata:
@@ -68,7 +54,23 @@ data:
   KEYCLOAK_ADMIN_PASSWORD: 'password'
   PROXY_ADDRESS_FORWARDING: 'true'
 ---
+apiVersion: v1
+kind: Service
+metadata:
+  name: keycloak
+  labels:
+    app: keycloak
+spec:
+  ports:
+    - name: http
+      port: 8080
+      targetPort: 8080
+  selector:
+    app: keycloak
+  type: LoadBalancer
 
+# Keycloak database
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -92,7 +94,7 @@ spec:
         - envFrom:
             - secretRef:
                 name: keycloak-postgres-secrets
-          image: postgres:14.2
+          image: postgres:16.1
           name: postgres
           ports:
             - containerPort: 5432
@@ -106,7 +108,19 @@ spec:
           persistentVolumeClaim:
             claimName: keycloak-postgres-claim0
 ---
-
+apiVersion: v1
+kind: Secret
+metadata:
+  name: keycloak-database-secrets
+type: Opaque
+stringData:
+  DB_VENDOR: 'POSTGRES'
+  DB_ADDR: 'keycloak-postgres'
+  DB_DATABASE: 'keycloak'
+  DB_USER: 'admin'
+  DB_SCHEMA: 'public'
+  DB_PASSWORD: 'password'
+---
 apiVersion: v1
 kind: Secret
 metadata:
@@ -116,82 +130,35 @@ stringData:
   POSTGRES_DB: 'keycloak'
   POSTGRES_PASSWORD: 'password'
   POSTGRES_USER: 'admin'
-
 ---
-
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: keycloak-proxy
-spec:
-  selector:
-    matchLabels:
-      app: keycloak-proxy
-  replicas: 1
-  template:
-    metadata:
-      labels:
-        app: keycloak-proxy
-    spec:
-      containers:
-        - name: keycloak-proxy
-          image: nginx:1.23.2
-          ports:
-            - containerPort: 8888
-          volumeMounts:
-            - mountPath: /etc/nginx/conf.d
-              name: nginx-config
-      volumes:
-        - name: nginx-config
-          configMap:
-            name: nginx-config
-
----
-
 apiVersion: v1
-kind: ConfigMap
+kind: Service
 metadata:
-  name: nginx-config
   labels:
-    name: nginx-config
-data:
-  default.conf: |-
-    upstream keycloak {
-        server keycloak:8080;
-    }
-
-    map $http_keycloak_server $app_server {
-        "~.+"    $http_keycloak_server;
-        default $host;
-    }
-
-    server {
-        listen 8888;
-
-        server_name local.keycloak.com;
-        location / {
-
-        proxy_set_header Host $app_server;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-
-        # forcing nginx to pass predefined server address for keycloak to make Jwt issue-uri validation work for Postman generated auth tokens
-        proxy_set_header X-Forwarded-Host $app_server;
-        proxy_set_header X-Forwarded-Server $app_server;
-
-        proxy_set_header X-Forwarded-Port $server_port;
-        proxy_set_header X-Forwarded-Proto $scheme;
-
-        proxy_buffer_size 128k;
-        proxy_buffers 4 256k;
-        proxy_busy_buffers_size 256k;
-
-        proxy_pass http://keycloak;
-
-        }
-    }
+    app: keycloak-postgres
+  name: keycloak-postgres
+spec:
+  ports:
+    - name: "5432"
+      port: 5432
+  selector:
+    app: keycloak-postgres
+  type: LoadBalancer
 ---
-
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  labels:
+    app: keycloak-postgres-claim0
+  name: keycloak-postgres-claim0
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 100Mi
+#Keycloak realm
+---
 apiVersion: v1
 kind: ConfigMap
 metadata:

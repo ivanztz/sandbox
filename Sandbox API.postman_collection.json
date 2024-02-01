@@ -19,11 +19,10 @@
 				],
 				"body": {
 					"mode": "raw",
-					"raw": "{\n    \"stringField\": \"string value \",\n    \"intField\" : 1, \n    \"decimalField\": 3.15,\n    \"jsonField\": \"{\\\"field\\\":\\\"value\\\"}\"\n}"
+					"raw": "{\n    \"stringField\": \"string value \",\n    \"intField\" : 1, \n    \"decimalField\": 3.15,\n    \"jsonField\": \"{\\\"field\\\":\\\"value\\\"}\",\n    \"objectFiled\": {\n        \"test\": \"1\"\n    }\n}"
 				},
 				"url": {
-					"raw": "http://{{SERVICE_URL}}/objects",
-					"protocol": "http",
+					"raw": "{{SERVICE_URL}}/objects",
 					"host": [
 						"{{SERVICE_URL}}"
 					],
@@ -46,8 +45,7 @@
 					}
 				],
 				"url": {
-					"raw": "http://{{SERVICE_URL}}/events",
-					"protocol": "http",
+					"raw": "{{SERVICE_URL}}/events",
 					"host": [
 						"{{SERVICE_URL}}"
 					],
@@ -74,8 +72,7 @@
 					"raw": "{   \n    \"stringField\": \"string value 2\",\n    \"intField\" : 1, \n    \"decimalField\": 3.16,\n    \"jsonField\": \"{\\\"field\\\":\\\"value\\\"}\"\n}"
 				},
 				"url": {
-					"raw": "http://{{SERVICE_URL}}/objects/16f30674-bc91-4d79-8f2d-c1268869cd04",
-					"protocol": "http",
+					"raw": "{{SERVICE_URL}}/objects/16f30674-bc91-4d79-8f2d-c1268869cd04",
 					"host": [
 						"{{SERVICE_URL}}"
 					],
@@ -99,8 +96,7 @@
 					}
 				],
 				"url": {
-					"raw": "http://{{SERVICE_URL}}/objects/3d7ab4a5-499b-4da0-9fbd-588fcb1c710f",
-					"protocol": "http",
+					"raw": "{{SERVICE_URL}}/objects/3d7ab4a5-499b-4da0-9fbd-588fcb1c710f",
 					"host": [
 						"{{SERVICE_URL}}"
 					],
@@ -124,8 +120,7 @@
 					}
 				],
 				"url": {
-					"raw": "http://{{SERVICE_URL}}/objects/16f30674-bc91-4d79-8f2d-c1268869cd04",
-					"protocol": "http",
+					"raw": "{{SERVICE_URL}}/objects/16f30674-bc91-4d79-8f2d-c1268869cd04",
 					"host": [
 						"{{SERVICE_URL}}"
 					],
@@ -143,8 +138,7 @@
 				"method": "GET",
 				"header": [],
 				"url": {
-					"raw": "http://{{SERVICE_URL}}/objects?startDate=2022-05-05T16%3A30%3A00.000%2B03%3A00&endDate=2023-05-05T16%3A44%3A57.272%2B03%3A00",
-					"protocol": "http",
+					"raw": "{{SERVICE_URL}}/objects?startDate=2022-05-05T16%3A30%3A00.000%2B03%3A00&endDate=2023-05-05T16%3A44%3A57.272%2B03%3A00",
 					"host": [
 						"{{SERVICE_URL}}"
 					],
@@ -166,7 +160,7 @@
 			"response": []
 		},
 		{
-			"name": "IDE Auth token (full permissions)",
+			"name": "Auth token (full permissions)",
 			"event": [
 				{
 					"listen": "test",
@@ -181,13 +175,7 @@
 			],
 			"request": {
 				"method": "POST",
-				"header": [
-					{
-						"key": "keycloak-server",
-						"value": "localhost",
-						"type": "text"
-					}
-				],
+				"header": [],
 				"body": {
 					"mode": "urlencoded",
 					"urlencoded": [
@@ -214,73 +202,7 @@
 					]
 				},
 				"url": {
-					"raw": "http://{{KEYCLOAK_URL_LOCAL}}/realms/sandbox/protocol/openid-connect/token",
-					"protocol": "http",
-					"host": [
-						"{{KEYCLOAK_URL_LOCAL}}"
-					],
-					"path": [
-						"realms",
-						"sandbox",
-						"protocol",
-						"openid-connect",
-						"token"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Docker\\Kuber Auth token (full permissions)",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"pm.collectionVariables.set(\"AUTH_TOKEN\", pm.response.json().access_token);",
-							""
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"request": {
-				"method": "POST",
-				"header": [
-					{
-						"key": "keycloak-server",
-						"value": "keycloak-proxy",
-						"type": "text"
-					}
-				],
-				"body": {
-					"mode": "urlencoded",
-					"urlencoded": [
-						{
-							"key": "client_id",
-							"value": "sandbox-app",
-							"type": "text"
-						},
-						{
-							"key": "username",
-							"value": "user",
-							"type": "text"
-						},
-						{
-							"key": "password",
-							"value": "password",
-							"type": "text"
-						},
-						{
-							"key": "grant_type",
-							"value": "password",
-							"type": "text"
-						}
-					]
-				},
-				"url": {
-					"raw": "http://{{KEYCLOAK_URL}}/realms/sandbox/protocol/openid-connect/token",
-					"protocol": "http",
+					"raw": "{{KEYCLOAK_URL}}/realms/sandbox/protocol/openid-connect/token",
 					"host": [
 						"{{KEYCLOAK_URL}}"
 					],
@@ -296,7 +218,7 @@
 			"response": []
 		},
 		{
-			"name": "IDE Auth token (readonly permissions)",
+			"name": "Auth token (readonly permissions)",
 			"event": [
 				{
 					"listen": "test",
@@ -310,13 +232,7 @@
 			],
 			"request": {
 				"method": "POST",
-				"header": [
-					{
-						"key": "keycloak-server",
-						"value": "localhost",
-						"type": "text"
-					}
-				],
+				"header": [],
 				"body": {
 					"mode": "urlencoded",
 					"urlencoded": [
@@ -343,72 +259,7 @@
 					]
 				},
 				"url": {
-					"raw": "http://{{KEYCLOAK_URL_LOCAL}}/realms/sandbox/protocol/openid-connect/token",
-					"protocol": "http",
-					"host": [
-						"{{KEYCLOAK_URL_LOCAL}}"
-					],
-					"path": [
-						"realms",
-						"sandbox",
-						"protocol",
-						"openid-connect",
-						"token"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Docker\\Kuber Auth token (readonly permissions)",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"pm.collectionVariables.set(\"AUTH_TOKEN\", pm.response.json().access_token);"
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"request": {
-				"method": "POST",
-				"header": [
-					{
-						"key": "keycloak-server",
-						"value": "keycloak-proxy",
-						"type": "text"
-					}
-				],
-				"body": {
-					"mode": "urlencoded",
-					"urlencoded": [
-						{
-							"key": "client_id",
-							"value": "sandbox-app",
-							"type": "text"
-						},
-						{
-							"key": "username",
-							"value": "readonly_user",
-							"type": "text"
-						},
-						{
-							"key": "password",
-							"value": "password",
-							"type": "text"
-						},
-						{
-							"key": "grant_type",
-							"value": "password",
-							"type": "text"
-						}
-					]
-				},
-				"url": {
-					"raw": "http://{{KEYCLOAK_URL}}/realms/sandbox/protocol/openid-connect/token",
-					"protocol": "http",
+					"raw": "{{KEYCLOAK_URL}}/realms/sandbox/protocol/openid-connect/token",
 					"host": [
 						"{{KEYCLOAK_URL}}"
 					],
@@ -461,17 +312,17 @@
 		},
 		{
 			"key": "SERVICE_URL",
-			"value": "localhost:8080",
+			"value": "http://{{HOST}}/object-service",
 			"type": "string"
 		},
 		{
 			"key": "KEYCLOAK_URL",
-			"value": "localhost:8888",
+			"value": "http://{{HOST}}/keycloak",
 			"type": "string"
 		},
 		{
-			"key": "KEYCLOAK_URL_LOCAL",
-			"value": "localhost:8888",
+			"key": "HOST",
+			"value": "192.168.49.2",
 			"type": "string"
 		}
 	]

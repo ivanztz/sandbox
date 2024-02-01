@@ -32,6 +32,12 @@
         <springdoc-openapi-ui.version>1.6.12</springdoc-openapi-ui.version>
         <json-schema-registry.version>7.3.0</json-schema-registry.version>
         <kafka-avro-serializer.version>7.3.0</kafka-avro-serializer.version>
+        <kotlin-scripting-common.version>1.7.10</kotlin-scripting-common.version>
+        <feign-micrometer.version>13.2</feign-micrometer.version>
+        <groovy.lang.version>4.0.18</groovy.lang.version>
+        <groovy-jsr223.version>3.0.14</groovy-jsr223.version>
+        <hibernate-validator.version>6.2.5.Final</hibernate-validator.version>
+        <logback-ecs-encoder.version>1.5.0</logback-ecs-encoder.version>
     </properties>
 
     <dependencies>
@@ -150,45 +156,56 @@
         <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-validator</artifactId>
-            <version>6.2.5.Final</version>
+            <version>${hibernate-validator.version}</version>
         </dependency>
 
         <dependency>
             <groupId>org.jetbrains.kotlin</groupId>
             <artifactId>kotlin-script-util</artifactId>
-            <version>1.7.10</version>
+            <version>${kotlin-scripting-common.version}</version>
             <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>org.jetbrains.kotlin</groupId>
             <artifactId>kotlin-scripting-common</artifactId>
-            <version>1.7.10</version>
+            <version>${kotlin-scripting-common.version}</version>
             <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>org.jetbrains.kotlin</groupId>
             <artifactId>kotlin-compiler-embeddable</artifactId>
-            <version>1.7.10</version>
+            <version>${kotlin-scripting-common.version}</version>
             <scope>runtime</scope>
         </dependency>
         <dependency>
             <groupId>org.jetbrains.kotlin</groupId>
             <artifactId>kotlin-scripting-compiler-embeddable</artifactId>
-            <version>1.7.10</version>
+            <version>${kotlin-scripting-common.version}</version>
             <scope>runtime</scope>
         </dependency>
+
+        <dependency>
+            <groupId>io.github.openfeign</groupId>
+            <artifactId>feign-micrometer</artifactId>
+            <version>${feign-micrometer.version}</version>
+        </dependency>
+
         <dependency>
             <groupId>org.apache.groovy</groupId>
             <artifactId>groovy</artifactId>
-            <version>4.0.6</version>
+            <version>${groovy.lang.version}</version>
             <scope>compile</scope>
         </dependency>
         <dependency>
             <groupId>org.codehaus.groovy</groupId>
             <artifactId>groovy-jsr223</artifactId>
-            <version>3.0.14</version>
+            <version>${groovy-jsr223.version}</version>
         </dependency>
-
+        <dependency>
+            <groupId>co.elastic.logging</groupId>
+            <artifactId>logback-ecs-encoder</artifactId>
+            <version>${logback-ecs-encoder.version}</version>
+        </dependency>
     </dependencies>
 
     <build>

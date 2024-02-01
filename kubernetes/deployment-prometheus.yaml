@@ -1,0 +1,387 @@
+# https://devopscube.com/setup-prometheus-monitoring-on-kubernetes/
+# https://devopscube.com/node-exporter-kubernetes/#:~:text=What%20is%20Prometheus%20Node%20Exporter,from%20all%20your%20Linux%20systems.
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: prometheus-service-account
+#Prometheus
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: prometheus
+rules:
+  - apiGroups: [ "" ]
+    resources:
+      - nodes
+      - services
+      - endpoints
+      - pods
+    verbs: [ "get", "list", "watch" ]
+  - apiGroups: [ "" ]
+    resources:
+      - configmaps
+    verbs: [ "get" ]
+  - nonResourceURLs: [ "/metrics" ]
+    verbs: [ "get" ]
+
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: prometheus
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: ClusterRole
+  name: prometheus
+subjects:
+  - kind: ServiceAccount
+    name: prometheus-service-account
+    namespace: default
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: prometheus-deployment
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: prometheus
+  template:
+    metadata:
+      labels:
+        app: prometheus
+    spec:
+      serviceAccountName: prometheus-service-account
+      containers:
+        - name: prometheus-cont
+          image: prom/prometheus:v2.49.1
+          volumeMounts:
+            - name: config-volume
+              mountPath: /etc/prometheus
+            - name: prometheus-storage-volume
+              mountPath: /prometheus/
+          ports:
+            - containerPort: 9090
+          args:
+            - '--config.file=/etc/prometheus/prometheus.yml'
+            - '--web.enable-remote-write-receiver' #for tempo metrics
+            - '--web.route-prefix=/prometheus' #Ingress specific setup
+      volumes:
+        - name: config-volume
+          configMap:
+            defaultMode: 420
+            name: prometheus-config
+        - name: prometheus-storage-volume
+          persistentVolumeClaim:
+            claimName: prometheus-claim0
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  labels:
+    app: prometheus-claim0
+  name: prometheus-claim0
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 500Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: prometheus
+  name: prometheus
+spec:
+  ports:
+    - name: "9090"
+      port: 9090
+  selector:
+    app: prometheus
+  type: LoadBalancer
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: prometheus-config
+  labels:
+    name: prometheus-config
+data:
+  prometheus.rules: |-
+    groups:
+    - name: Demo alert
+      rules:
+      - alert: High Pod Memory
+        expr: sum(container_memory_usage_bytes) > 1
+        for: 1m
+        labels:
+          severity: slack
+        annotations:
+          summary: High Memory Usage
+  prometheus.yml: |-
+    global:
+      scrape_interval: 5s
+      evaluation_interval: 5s
+    rule_files:
+      - /etc/prometheus/prometheus.rules
+    alerting:
+      alertmanagers:
+        - scheme: http
+          static_configs:
+            - targets:
+                - "alertmanager.monitoring.svc:9093"
+    scrape_configs:
+      - job_name: 'node-exporter'
+        kubernetes_sd_configs:
+          - role: endpoints
+        relabel_configs:
+          - source_labels: [ __meta_kubernetes_endpoints_name ]
+            regex: 'node-exporter'
+            action: keep
+      - job_name: 'kubernetes-apiservers'
+        kubernetes_sd_configs:
+          - role: endpoints
+        scheme: https
+        tls_config:
+          ca_file: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
+        bearer_token_file: /var/run/secrets/kubernetes.io/serviceaccount/token
+        relabel_configs:
+          - source_labels: [ __meta_kubernetes_namespace, __meta_kubernetes_service_name, __meta_kubernetes_endpoint_port_name ]
+            action: keep
+            regex: default;kubernetes;https
+      - job_name: 'kubernetes-nodes'
+        scheme: https
+        tls_config:
+          ca_file: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
+        bearer_token_file: /var/run/secrets/kubernetes.io/serviceaccount/token
+        kubernetes_sd_configs:
+          - role: node
+        relabel_configs:
+          - action: labelmap
+            regex: __meta_kubernetes_node_label_(.+)
+          - target_label: __address__
+            replacement: kubernetes.default.svc:443
+          - source_labels: [ __meta_kubernetes_node_name ]
+            regex: (.+)
+            target_label: __metrics_path__
+            replacement: /api/v1/nodes/${1}/proxy/metrics
+    
+      - job_name: 'kubernetes-pods'
+        kubernetes_sd_configs:
+          - role: pod
+        relabel_configs:
+          - source_labels: [ __meta_kubernetes_pod_annotation_prometheus_io_scrape ]
+            action: keep
+            regex: true
+          - source_labels: [ __meta_kubernetes_pod_annotation_prometheus_io_path ]
+            action: replace
+            target_label: __metrics_path__
+            regex: (.+)
+          - source_labels: [ __address__, __meta_kubernetes_pod_annotation_prometheus_io_port ]
+            action: replace
+            regex: ([^:]+)(?::\d+)?;(\d+)
+            replacement: $1:$2
+            target_label: __address__
+          - action: labelmap
+            regex: __meta_kubernetes_pod_label_(.+)
+          - source_labels: [ __meta_kubernetes_namespace ]
+            action: replace
+            target_label: kubernetes_namespace
+          - source_labels: [ __meta_kubernetes_pod_name ]
+            action: replace
+            target_label: kubernetes_pod_name
+    
+      - job_name: 'kube-state-metrics'
+        static_configs:
+          - targets: [ 'kube-state-metrics.kube-system.svc.cluster.local:8080' ]
+      - job_name: 'kubernetes-cadvisor'
+        scheme: https
+        tls_config:
+          ca_file: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
+        bearer_token_file: /var/run/secrets/kubernetes.io/serviceaccount/token
+        kubernetes_sd_configs:
+          - role: node
+        relabel_configs:
+          - action: labelmap
+            regex: __meta_kubernetes_node_label_(.+)
+          - target_label: __address__
+            replacement: kubernetes.default.svc:443
+          - source_labels: [ __meta_kubernetes_node_name ]
+            regex: (.+)
+            target_label: __metrics_path__
+            replacement: /api/v1/nodes/${1}/proxy/metrics/cadvisor
+    
+      - job_name: 'kubernetes-service-endpoints'
+        kubernetes_sd_configs:
+          - role: endpoints
+        relabel_configs:
+          - source_labels: [ __meta_kubernetes_service_annotation_prometheus_io_scrape ]
+            action: keep
+            regex: true
+          - source_labels: [ __meta_kubernetes_service_annotation_prometheus_io_scheme ]
+            action: replace
+            target_label: __scheme__
+            regex: (https?)
+          - source_labels: [ __meta_kubernetes_service_annotation_prometheus_io_path ]
+            action: replace
+            target_label: __metrics_path__
+            regex: (.+)
+          - source_labels: [ __address__, __meta_kubernetes_service_annotation_prometheus_io_port ]
+            action: replace
+            target_label: __address__
+            regex: ([^:]+)(?::\d+)?;(\d+)
+            replacement: $1:$2
+          - action: labelmap
+            regex: __meta_kubernetes_service_label_(.+)
+          - source_labels: [ __meta_kubernetes_namespace ]
+            action: replace
+            target_label: kubernetes_namespace
+          - source_labels: [ __meta_kubernetes_service_name ]
+            action: replace
+            target_label: kubernetes_name
+      - job_name: 'kubernetes-pods-actuator'
+        scrape_interval: 5s
+        kubernetes_sd_configs:
+          - role: pod
+        relabel_configs:
+          - source_labels: [ __meta_kubernetes_pod_annotation_actuator_prometheus_io_scrape,__meta_kubernetes_pod_container_port_name ]
+            separator: '@'
+            action: keep
+            regex: 'true@app' #checking scraping enabled for actuator and container port belongs to application
+          - source_labels: [ __meta_kubernetes_pod_annotation_actuator_prometheus_io_path ]
+            action: replace
+            target_label: __metrics_path__
+            regex: (.+)
+          - source_labels: [ __instance__, __meta_kubernetes_pod_annotation_actuator_prometheus_io_port ]
+            action: replace
+            regex: ([^:]+)(?::\d+)?;(\d+)
+            replacement: $1:$2
+            target_label: __address__
+          - action: labelmap
+            regex: __meta_kubernetes_pod_label_(.+)
+          - source_labels: [ __meta_kubernetes_namespace ]
+            action: replace
+            target_label: kubernetes_namespace
+          - source_labels: [ __meta_kubernetes_pod_name ]
+            action: replace
+            target_label: kubernetes_pod_name
+          - target_label: source
+            replacement: 'actuator'
+        # Transforming otel labels for prometheus/grafana needs
+        metric_relabel_configs:
+          - source_labels: ['app']
+            target_label: "application"
+          - source_labels: ['instance']
+            target_label: "app_instance"
+      - job_name: 'kubernetes-pods-otel'
+        scrape_interval: 5s
+        kubernetes_sd_configs:
+          - role: pod
+        relabel_configs:
+          - source_labels: [ __meta_kubernetes_pod_annotation_otel_prometheus_io_scrape,__meta_kubernetes_pod_container_port_name ]
+            separator: '@'
+            action: keep
+            regex: 'true@otel-metrics' #checking scraping enabled for otel and container port belongs to otel agent
+          - source_labels: [ __meta_kubernetes_pod_annotation_otel_prometheus_io_path ]
+            action: replace
+            target_label: __metrics_path__
+            regex: (.+)
+          - source_labels: [ __instance__, __meta_kubernetes_pod_annotation_otel_prometheus_io_port ]
+            action: replace
+            regex: ([^:]+)(?::\d+)?;(\d+)
+            replacement: $1:$2
+            target_label: __address__
+          - action: labelmap
+            regex: __meta_kubernetes_pod_label_(.+)
+          - source_labels: [ __meta_kubernetes_namespace ]
+            action: replace
+            target_label: kubernetes_namespace
+          - source_labels: [ __meta_kubernetes_pod_name ]
+            action: replace
+            target_label: kubernetes_pod_name
+          - target_label: source
+            replacement: 'otel'
+        metric_relabel_configs:
+          - source_labels: ['app']
+            target_label: "application"
+          - source_labels: ['instance']
+            target_label: "app_instance"
+---
+#Node exporter
+---
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  labels:
+    app.kubernetes.io/component: exporter
+    app.kubernetes.io/name: node-exporter
+  name: node-exporter
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/component: exporter
+      app.kubernetes.io/name: node-exporter
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/component: exporter
+        app.kubernetes.io/name: node-exporter
+    spec:
+      serviceAccountName: prometheus-service-account
+      containers:
+        - args:
+            - --path.sysfs=/host/sys
+            - --path.rootfs=/host/root
+            - --no-collector.wifi
+            - --no-collector.hwmon
+            - --collector.filesystem.ignored-mount-points=^/(dev|proc|sys|var/lib/docker/.+|var/lib/kubelet/pods/.+)($|/)
+            - --collector.netclass.ignored-devices=^(veth.*)$
+          name: node-exporter
+          image: prom/node-exporter:v1.7.0
+          ports:
+            - containerPort: 9100
+              protocol: TCP
+          resources:
+            limits:
+              cpu: 250m
+              memory: 180Mi
+            requests:
+              cpu: 102m
+              memory: 180Mi
+          volumeMounts:
+            - mountPath: /host/sys
+              mountPropagation: HostToContainer
+              name: sys
+              readOnly: true
+            - mountPath: /host/root
+              mountPropagation: HostToContainer
+              name: root
+              readOnly: true
+      volumes:
+        - hostPath:
+            path: /sys
+          name: sys
+        - hostPath:
+            path: /
+          name: root
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: node-exporter
+  annotations:
+    prometheus.io/scrape: 'true'
+    prometheus.io/port: '9100'
+spec:
+  selector:
+    app.kubernetes.io/component: exporter
+    app.kubernetes.io/name: node-exporter
+  ports:
+    - name: node-exporter
+      protocol: TCP
+      port: 9100
+      targetPort: 9100

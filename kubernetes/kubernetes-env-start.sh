@@ -1,49 +1,33 @@
 #!/bin/bash
-
 echo "Starting kubernetes env"
 
-echo "Configuring postgres volumes"
-kubectl apply -f deployment-postgres-pvc.yaml
-
-echo "Deploying postgres containers"
+echo "Deploying postgres"
 kubectl apply -f deployment-postgres.yaml
 
-echo "Configuring kafka volumes"
-kubectl apply -f deployment-kafka-pvc.yaml
-
-echo "Deploying kafka containers"
+echo "Deploying kafka"
 kubectl apply -f deployment-kafka.yaml
 
-echo "Configuring mongo volumes"
-kubectl apply -f deployment-mongo-pvc.yaml
-
-echo "Deploying mongo containers"
+echo "Deploying mongo "
 kubectl apply -f deployment-mongo.yaml
 
-echo "Deploying keycloak volumes"
-kubectl apply -f deployment-keycloak-pvc.yaml
-
-echo "Deploying keycloak containers"
+echo "Deploying keycloak"
 kubectl apply -f deployment-keycloak.yaml
 
-echo "Deploying vector containers"
-kubectl apply -k ./kustomize/vector
+echo "Deploying logging"
+kubectl apply -f deployment-logging.yaml
 
-echo "Configuring observability volumes"
-kubectl apply -f deployment-observability-pvc.yaml
+echo "Deploying prometheus"
+kubectl apply -f deployment-prometheus.yaml
 
-echo "Configuring observability configs"
-kubectl apply -f deployment-observability-config.yaml
+echo "Deploying tracing"
+kubectl apply -f deployment-tracing.yaml
 
-echo "Deploying observability containers"
-kubectl apply -f deployment-observability.yaml
+echo "Deploying grafana"
+kubectl apply -f deployment-grafana-dashboards.yaml
+kubectl apply -f deployment-grafana.yaml
 
-echo "Deploying env services"
 
-kubectl apply -f deployment-kafka-svc.yaml
-kubectl apply -f deployment-keycloak-svc.yaml
-kubectl apply -f deployment-mongo-svc.yaml
-kubectl apply -f deployment-observability-svc.yaml
-kubectl apply -f deployment-postgres-svc.yaml
+echo  "Configuring ingresses"
+kubectl apply -f ingress-env.yaml
 
 echo "Kubernetes env started"

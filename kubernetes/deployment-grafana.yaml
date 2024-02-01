@@ -1,0 +1,168 @@
+# https://devopscube.com/setup-grafana-kubernetes/
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: grafana-service-account
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: grafana
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: grafana
+  template:
+    metadata:
+      name: grafana
+      labels:
+        app: grafana
+    spec:
+      serviceAccountName: grafana-service-account
+      containers:
+        - name: grafana
+          image: grafana/grafana:10.3.1
+          ports:
+            - name: grafana
+              containerPort: 3000
+          envFrom:
+            - secretRef:
+                name: grafana-secrets
+          env:
+            - name: GF_FEATURE_TOGGLES_ENABLE #disabled by default
+              value: 'traceToMetrics'
+            # Ingress specific setup
+            - name: GF_SERVER_ROOT_URL
+              value: 'http://%(domain)s/grafana/'
+            # Ingress specific setup
+            - name: GF_SERVER_SERVE_FROM_SUB_PATH
+              value: 'true'
+          volumeMounts:
+            - mountPath: /var/lib/grafana
+              name: grafana-storage
+            - mountPath: /etc/grafana/provisioning/datasources
+              name: grafana-datasources
+            - mountPath: /etc/grafana/provisioning/dashboards
+              name: grafana-dashboards
+      volumes:
+        - name: grafana-datasources
+          configMap:
+            defaultMode: 420
+            name: grafana-datasources
+        - name: grafana-dashboards
+          configMap:
+            defaultMode: 420
+            name: grafana-dashboards
+        - name: grafana-storage
+          persistentVolumeClaim:
+            claimName: grafana-claim0
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  labels:
+    app: grafana-claim0
+  name: grafana-claim0
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 100Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: grafana
+  annotations:
+    prometheus.io/scrape: 'true'
+    prometheus.io/port: '3000'
+spec:
+  selector:
+    app: grafana
+  type: LoadBalancer
+  ports:
+    - port: 3000
+      targetPort: 3000
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: grafana-secrets
+type: Opaque
+stringData:
+  GF_SECURITY_ADMIN_USER: 'admin'
+  GF_SECURITY_ADMIN_PASSWORD: 'password'
+  GF_USERS_ALLOW_SIGN_UP: 'true'
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: grafana-datasources
+data:
+  datasource.yml: |-
+    apiVersion: 1
+
+    datasources:
+      - name: prometheus
+        type: prometheus
+        uid: prometheus
+        url: http://prometheus:9090/prometheus
+        access: proxy
+        orgId: 1
+        isDefault: true
+        version: 1
+        editable: true
+        jsonData:
+          httpMethod: GET
+      - name: tempo
+        type: tempo
+        uid: tempo
+        access: proxy
+        orgId: 1
+        url: http://tempo:3200
+        basicAuth: false
+        isDefault: false
+        version: 1
+        editable: true
+        apiVersion: 1
+        jsonData:
+          httpHeaderTenant: 'X-Scope-OrgID'
+          httpMethod: GET
+          serviceMap:
+            datasourceUid: prometheus
+          tracesToLogs: # mapping traces to logs datasource
+            mappedTags: [{ key: 'service.name', value: 'container_name' }]
+            datasourceUid: 'loki'
+            mapTagNamesEnabled: true
+            spanStartTimeShift: '-5m' #shifts grafana timerange forward and can cause empty search result
+            spanEndTimeShift: '5m'
+            filterByTraceID: true
+            filterBySpanID: false # not all spans have logs but link is displayed for both
+            lokiSearch: true
+          tracesToMetrics:
+            datasourceUid: 'prometheus'
+            tags: [ { key: 'service.name', value: 'application' } ]
+            queries:
+              - name: 'Request rate'
+                query: 'sum by(uri) (rate(http_server_requests_count{$$__tags}[5m])) '
+              - name: 'Request error rate'
+                query: 'sum by(uri, outcome) (rate(http_server_requests_count{$$__tags, outcome=~"CLIENT_ERROR|SERVER_ERROR"}[5m])) '
+        secureJsonData:
+          httpHeaderTenant: 'Organization 1'
+      - name: Loki
+        type: loki
+        uid: loki
+        access: proxy
+        url: http://loki:3100
+        basicAuth: false
+        jsonData:
+          maxLines: 1000
+          derivedFields:
+            - datasourceUid: tempo
+              matcherRegex: "\"trace_id\":\"(\\w+)\""
+              name: TraceID
+              url: '$${__value.raw}'
+        editable: true
+    

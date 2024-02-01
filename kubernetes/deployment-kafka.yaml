@@ -2,9 +2,8 @@ apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: kafka-service-account
-
+# Kafka
 ---
-
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -24,7 +23,7 @@ spec:
       serviceAccountName: kafka-service-account
       hostname: kafka #required to make advertised listeners work properly
       containers:
-        - image: 'bitnami/kafka:2.8.1'
+        - image: 'bitnami/kafka:3.3.2'
           name: kafka
           ports:
             - containerPort: 9092
@@ -40,6 +39,20 @@ spec:
         - name: kafka-claim0
           persistentVolumeClaim:
             claimName: kafka-claim0
+
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  labels:
+    app: kafka-claim0
+  name: kafka-claim0
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 100Mi
 
 ---
 
@@ -59,7 +72,22 @@ data:
   KAFKA_CFG_INTER_BROKER_LISTENER_NAME: 'CLIENT'
 
 ---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: kafka
+  name: kafka
+spec:
+  ports:
+    - name: "9092"
+      port: 9092
+  selector:
+    app: kafka
+  type: LoadBalancer
 
+# Zookeeper
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -80,7 +108,7 @@ spec:
     spec:
       serviceAccountName: kafka-service-account
       containers:
-        - image: 'bitnami/zookeeper:3.8.0'
+        - image: 'bitnami/zookeeper:3.9.1'
           name: zookeeper
           env:
             - name: ALLOW_ANONYMOUS_LOGIN
@@ -93,7 +121,35 @@ spec:
         - name: zookeeper-claim0
           persistentVolumeClaim:
             claimName: zookeeper-claim0
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  labels:
+    app: zookeeper-claim0
+  name: zookeeper-claim0
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 100Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: zookeeper
+  name: zookeeper
+spec:
+  ports:
+    - name: "2181"
+      port: 2181
+  selector:
+    app: zookeeper
+  type: LoadBalancer
 
+# Kafka-UI
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -115,7 +171,7 @@ spec:
     spec:
       serviceAccountName: kafka-service-account
       containers:
-        - image: 'provectuslabs/kafka-ui:v0.4.0'
+        - image: 'provectuslabs/kafka-ui:v0.7.1'
           name: kafka-ui
           envFrom:
             - configMapRef:
@@ -134,7 +190,24 @@ data:
   KAFKA_CLUSTERS_0_BOOTSTRAPSERVERS: 'kafka:9092'
   KAFKA_CLUSTERS_0_ZOOKEEPER: 'zookeeper:2181'
   KAFKA_CLUSTERS_0_SCHEMAREGISTRY: 'http://schema-registry:8081'
+  # Ingress specific setup
+  server.servlet.context-path: /kafka-ui
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: kafka-ui
+  name: kafka-ui
+spec:
+  ports:
+    - name: "8080"
+      port: 8080
+  selector:
+    app: kafka-ui
+  type: LoadBalancer
 
+# Schema registry
 ---
 apiVersion: apps/v1
 kind: Deployment
@@ -157,7 +230,7 @@ spec:
       serviceAccountName: kafka-service-account
       enableServiceLinks: false
       containers:
-        - image: 'confluentinc/cp-schema-registry:7.3.2'
+        - image: 'confluentinc/cp-schema-registry:7.5.3'
           name: schema-registry
           envFrom:
             - configMapRef:
@@ -182,27 +255,52 @@ data:
   SCHEMA_REGISTRY_ACCESS_CONTROL_ALLOW_ORIGIN: '*'
   SCHEMA_REGISTRY_ACCESS_CONTROL_ALLOW_METHODS: 'GET,POST,PUT,OPTIONS'
 
-
+#---
+#apiVersion: batch/v1
+#kind: Job
+#metadata:
+#  labels:
+#    app: schema-registry-provisioning
+#  name: schema-registry-provisioning
+#spec:
+#  backoffLimit: 1
+#  completions: 1
+#  template:
+#    spec:
+#      serviceAccountName: kafka-service-account
+#      containers:
+#        - image: 'schema-registry-provisioning:latest'
+#          imagePullPolicy: IfNotPresent # using local image from docker
+#          name: schema-registry-provisioning
+#          env:
+#            - name: SCHEMA_REGISTRY
+#              value: 'http://schema-registry:8081'
+#      restartPolicy: OnFailure
 ---
-apiVersion: batch/v1
-kind: Job
+apiVersion: v1
+kind: Service
 metadata:
   labels:
-    app: schema-registry-provisioning
-  name: schema-registry-provisioning
+    app: schema-registry
+  name: schema-registry
 spec:
-  backoffLimit: 1
-  completions: 1
-  template:
-    spec:
-      serviceAccountName: kafka-service-account
-      containers:
-        - image: 'schema-registry-provisioning:latest'
-          imagePullPolicy: IfNotPresent # using local image from docker
-          name: schema-registry-provisioning
-          env:
-            - name: SCHEMA_REGISTRY
-              value: 'http://schema-registry:8081'
-      restartPolicy: OnFailure
-
-
+  ports:
+    - name: "8081"
+      port: 8081
+  selector:
+    app: schema-registry
+  type: LoadBalancer
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  labels:
+    app: schema-registry-claim0
+  name: schema-registry-claim0
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 500Mi
+---

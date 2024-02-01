@@ -1,0 +1,247 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: tracing-service-account
+#Otel
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: otel-collector
+  name: otel-collector
+spec:
+  selector:
+    matchLabels:
+      app: otel-collector
+  template:
+    metadata:
+      labels:
+        app: otel-collector
+    spec:
+      serviceAccountName: tracing-service-account
+      containers:
+        - image: 'otel/opentelemetry-collector:0.93.0'
+          name: otel-collector
+          ports:
+            - containerPort: 4317
+            - containerPort: 9464
+          args:
+            - '--config=/conf/collector-config.yaml'
+          resources: { }
+          volumeMounts:
+            - mountPath: /conf
+              name: otel-config
+      restartPolicy: Always
+      volumes:
+        - name: otel-config
+          configMap:
+            defaultMode: 420
+            name: otel-config
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: otel-config
+  labels:
+    name: otel-config
+data:
+  collector-config.yaml: |-
+    receivers:
+     otlp:
+       protocols:
+         grpc:
+         http:
+    exporters:
+     otlp:
+       endpoint: tempo:4317
+       tls:
+         insecure: true
+       headers:
+         x-scope-orgid: "Organization 1"
+
+    processors:
+     filter/ottl:
+       error_mode: ignore
+       traces:
+         span:
+           - 'attributes["http.route"] == "/**"'
+           - 'IsMatch(attributes["http.route"], "/actuator*") == true'
+           - 'name == "OperationHandler.handle"'
+           - 'attributes["http.target"] == "/metrics"'
+           - 'IsMatch(attributes["http.target"], "/health*") == true'
+     batch:
+
+    service:
+     pipelines:
+       traces:
+         receivers: [ "otlp" ]
+         exporters: [ "otlp" ]
+         processors: [ "filter/ottl", "batch" ]
+     telemetry:
+       logs:
+         level: "debug"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: otel-collector
+  name: otel-collector
+spec:
+  ports:
+    - name: "4317"
+      port: 4317
+    - name: "9464"
+      port: 9464
+  selector:
+    app: otel-collector
+  type: LoadBalancer
+#Tempo
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: tempo
+  name: tempo
+spec:
+  selector:
+    matchLabels:
+      app: tempo
+  template:
+    metadata:
+      labels:
+        app: tempo
+    spec:
+      serviceAccountName: tracing-service-account
+      containers:
+        - image: 'grafana/tempo:2.3.1'
+          name: tempo
+          ports:
+            - containerPort: 3200
+            - containerPort: 4317
+          args:
+            - '-config.file=/etc//tempo/tempo.yaml'
+          resources: { }
+          volumeMounts:
+            - mountPath: /etc/tempo
+              name: tempo-config
+            - mountPath: /tmp/tempo
+              name: tempo-data
+      restartPolicy: Always
+      volumes:
+        - name: tempo-config
+          configMap:
+            defaultMode: 420
+            name: tempo-config
+        - name: tempo-data
+          persistentVolumeClaim:
+            claimName: tempo-claim0
+---
+apiVersion: v1
+kind: PersistentVolumeClaim
+metadata:
+  labels:
+    app: tempo-claim0
+  name: tempo-claim0
+spec:
+  accessModes:
+    - ReadWriteOnce
+  resources:
+    requests:
+      storage: 100Mi
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: tempo-config
+data:
+  tempo.yaml: |-
+    server:
+      http_listen_port: 3200
+    
+    distributor:
+      receivers:                           # this configuration will listen on all ports and protocols that tempo is capable of.
+        jaeger:                            # the receives all come from the OpenTelemetry collector.  more configuration information can
+          protocols:                       # be found there: https://github.com/open-telemetry/opentelemetry-collector/tree/main/receiver
+            thrift_http:                   #
+            grpc:                          # for a production deployment you should only enable the receivers you need!
+            thrift_binary:
+            thrift_compact:
+        zipkin:
+        otlp:
+          protocols:
+            http:
+            grpc:
+        opencensus:
+    
+    ingester:
+      trace_idle_period: 10s               # the length of time after a trace has not received spans to consider it complete and flush it
+      max_block_bytes: 1_000_000           # cut the head block when it hits this size or ...
+      max_block_duration: 5m               #   this much time passes
+    
+    compactor:
+      compaction:
+        compaction_window: 1h              # blocks in this time window will be compacted together
+        max_block_bytes: 100_000_000       # maximum size of compacted blocks
+        block_retention: 1h
+        compacted_block_retention: 10m
+    
+    metrics_generator:
+      registry:
+        external_labels:
+          source: tempo
+          cluster: docker-compose
+      storage:
+        path: /tmp/tempo/generator/wal
+        remote_write:
+          - url: http://prometheus:9090/prometheus/api/v1/write
+            send_exemplars: true
+      processor:
+        service_graphs:
+          dimensions: 
+            - service.instance.id
+            - service.namespace
+        span_metrics:
+          dimensions:
+            - service.instance.id
+            - service.namespace
+    
+    storage:
+      trace:
+        backend: local                     # backend configuration to use
+        block:
+          bloom_filter_false_positive: .05 # bloom filter false positive rate.  lower values create larger filters but fewer false positives
+          v2_encoding: zstd
+        wal:
+          path: /tmp/tempo/wal             # where to store the wal locally
+          v2_encoding: snappy
+        local:
+          path: /tmp/tempo/blocks
+        pool:
+          max_workers: 100                 # worker pool determines the number of parallel requests to the object store backend
+          queue_depth: 10000
+    querier:
+      trace_by_id:
+        query_timeout: 30s
+      max_concurrent_queries: 50
+    overrides:
+      metrics_generator_processors: [service-graphs, span-metrics]
+      max_bytes_per_trace: 15000000
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: tempo
+  name: tempo
+spec:
+  ports:
+    - name: "4317"
+      port: 4317
+    - name: "3200"
+      port: 3200
+  selector:
+    app: tempo
+  type: LoadBalancer
