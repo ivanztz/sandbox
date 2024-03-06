@@ -96,5 +96,4 @@ Postman collection for services REST APIs [Sandbox API.postman_collection.json](
 - Prometheus Graph - http://MINIKUBE_IP/prometheus/graph
 - Grafana - http://MINIKUBE_IP/grafana (admin:password)
 - Keycloak http://MINIKUBE_IP/keycloak (admin:password)
-- DocHub http://MINIKUBE_IP/dochub 
 
