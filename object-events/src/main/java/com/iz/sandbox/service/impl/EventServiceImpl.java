@@ -1,7 +1,7 @@
 package com.iz.sandbox.service.impl;
 
 import com.iz.sandbox.config.ObjectEventTypeMapper;
-import com.iz.sandbox.dto.ObjectEventData;
+import com.iz.sandbox.object.event.dto.ObjectEventData;
 import com.iz.sandbox.event.ObjectCreatedMessage;
 import com.iz.sandbox.event.ObjectDeletedMessage;
 import com.iz.sandbox.event.ObjectUpdatedMessage;

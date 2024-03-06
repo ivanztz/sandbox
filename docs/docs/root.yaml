@@ -1,0 +1,26 @@
+docs:
+  dochub.welcome:
+    type: markdown
+    source: welcome.md
+  deployment:
+    location: Deployment
+    type: markdown
+    source: deployment.md
+  objects.rest:
+    location: API/Objects API/REST
+    subjects:
+      - business.objects.service
+    source: ../../object-api/src/main/resources/objects-api.yaml
+    type: openapi
+  events.rest:
+    location: API/Objects Events/REST
+    subjects:
+      - business.objects.events
+    source: ../../object-api/src/main/resources/objects-events-api.yaml
+    type: openapi
+  objects.kafka:
+    location: API/Objects API/Async
+    subjects:
+      - business.objects.service
+    type: asyncapi
+    source: ../../object-api/src/main/resources/objects-async-api.yaml

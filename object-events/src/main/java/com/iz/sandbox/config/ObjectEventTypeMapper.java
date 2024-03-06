@@ -1,7 +1,7 @@
 package com.iz.sandbox.config;
 
-import com.iz.sandbox.dto.ObjectData;
-import com.iz.sandbox.dto.ObjectEventData;
+import com.iz.sandbox.object.event.dto.ObjectData;
+import com.iz.sandbox.object.event.dto.ObjectEventData;
 import com.iz.sandbox.event.EventObjectData;
 import com.iz.sandbox.event.ObjectCreatedMessage;
 import com.iz.sandbox.event.ObjectDeletedMessage;

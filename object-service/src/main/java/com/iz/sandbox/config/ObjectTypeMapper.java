@@ -1,10 +1,12 @@
 package com.iz.sandbox.config;
 
 
-import com.iz.sandbox.dto.ObjectData;
-import com.iz.sandbox.dto.ObjectDataRequest;
 import com.iz.sandbox.entity.ObjectEntity;
 import com.iz.sandbox.event.EventObjectData;
+import com.iz.sandbox.object.dto.ObjectData;
+import com.iz.sandbox.object.dto.ObjectDataRequest;
+import com.iz.sandbox.object.dto.ObjectEventData;
+import com.iz.sandbox.object.dto.ObjectEventDataListResponse;
 import org.mapstruct.Mapper;
 import org.mapstruct.MappingTarget;
 
@@ -20,4 +22,8 @@ public interface ObjectTypeMapper {
     void mapRequestToEntity(ObjectDataRequest source, @MappingTarget ObjectEntity target);
 
     ObjectEntity mapDtoToEntity(ObjectData dto);
+
+    ObjectEventDataListResponse mapEventDataList(com.iz.sandbox.object.event.dto.ObjectEventDataListResponse source);
+
+    ObjectEventData mapEventData(com.iz.sandbox.object.event.dto.ObjectEventData source);
 }

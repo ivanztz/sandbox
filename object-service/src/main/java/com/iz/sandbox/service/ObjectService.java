@@ -1,7 +1,7 @@
 package com.iz.sandbox.service;
 
-import com.iz.sandbox.dto.ObjectData;
-import com.iz.sandbox.dto.ObjectDataRequest;
+import com.iz.sandbox.object.dto.ObjectData;
+import com.iz.sandbox.object.dto.ObjectDataRequest;
 
 import java.time.OffsetDateTime;
 import java.util.List;

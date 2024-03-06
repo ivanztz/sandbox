@@ -1,0 +1,13 @@
+@startuml
+
+entity Objects{
+* id: uuid
+--
+string_field: varchar
+int_field: bigint
+decimal_field: double
+json_field: jsonb
+created_at: datetime
+updated_at: datetime
+}
+@enduml

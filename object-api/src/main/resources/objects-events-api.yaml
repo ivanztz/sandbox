@@ -1,131 +1,13 @@
 openapi: 3.0.3
 info:
-  title: Sandbox Objects API
-  description: Sandbox Objects API
+  title: Sandbox Objects Events API
+  description: Sandbox Objects Events API
   version: 1.0.0
 servers:
   - url: 'https://localhost:8080/v1'
 tags:
-  - name: objects # CRUD
-  - name: events # Events facade api
+  - name: events
 paths:
-  /objects:
-    post:
-      description: Creates new object
-      operationId: createObject
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/ObjectDataRequest'
-      responses:
-        201:
-          description: Object created response
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ObjectDataResponse'
-        401:
-          $ref: '#/components/responses/401'
-        403:
-          $ref: '#/components/responses/403'
-        500:
-          $ref: '#/components/responses/500'
-      tags:
-        - objects
-    get:
-      description: Finds objects with filtering options
-      operationId: getObjects
-      parameters:
-        - in: query
-          name: startDate
-          schema:
-            type: string
-            format: date-time
-          required: false
-          description: Start date for filtering objects
-        - in: query
-          name: endDate
-          schema:
-            type: string
-            format: date-time
-          required: false
-          description: End date for filtering objects
-      responses:
-        200:
-          description: Returns objects array according to filtering parameters
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ObjectDataListResponse'
-      tags:
-        - objects
-  /objects/{objectId}:
-    parameters:
-      - in: path
-        name: objectId
-        schema:
-          type: string
-          format: uuid
-        required: true
-    get:
-      description: Get object by ID
-      operationId: getObjectById
-      responses:
-        200:
-          description: Object created response
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/ObjectDataResponse'
-        401:
-          $ref: '#/components/responses/401'
-        403:
-          $ref: '#/components/responses/403'
-        404:
-          $ref: '#/components/responses/404'
-        500:
-          $ref: '#/components/responses/500'
-      tags:
-        - objects
-    put:
-      description: Update object
-      operationId: updateObjectById
-      requestBody:
-        content:
-          application/json:
-            schema:
-              $ref: '#/components/schemas/ObjectDataRequest'
-      responses:
-        200:
-          $ref: '#/components/responses/200'
-        401:
-          $ref: '#/components/responses/401'
-        403:
-          $ref: '#/components/responses/403'
-        404:
-          $ref: '#/components/responses/404'
-        500:
-          $ref: '#/components/responses/500'
-      tags:
-        - objects
-    delete:
-      description: Delete object
-      operationId: deleteObjectById
-      responses:
-        200:
-          $ref: '#/components/responses/200'
-        401:
-          $ref: '#/components/responses/401'
-        403:
-          $ref: '#/components/responses/403'
-        404:
-          $ref: '#/components/responses/404'
-        500:
-          $ref: '#/components/responses/500'
-      tags:
-        - objects
-
   /events:
     get:
       description: Finds events with filtering options
@@ -196,45 +78,6 @@ components:
           format: date-time
           readOnly: true
           example: 2017-07-21T17:32:28Z
-
-    ObjectDataRequest:
-      type: object
-      description: Base object
-      properties:
-        stringField:
-          type: string
-          example: 'String example'
-        intField:
-          type: integer
-          format: int64
-          example: 1
-        decimalField:
-          type: number
-          format: double
-          example: 3.14
-        jsonField:
-          type: string
-        objectFiled:
-          type: object
-          format: json
-
-    ObjectDataResponse:
-      description: Single object data response
-      allOf:
-        - $ref: '#/components/schemas/Response'
-        - properties:
-            data:
-              $ref: '#/components/schemas/ObjectData'
-
-    ObjectDataListResponse:
-      description: Response for list of objects
-      allOf:
-        - $ref: '#/components/schemas/Response'
-      properties:
-        data:
-          type: array
-          items:
-            $ref: '#/components/schemas/ObjectData'
 
     ObjectEventDataListResponse:
       description: Response for list of object events

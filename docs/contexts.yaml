@@ -1,0 +1,35 @@
+contexts:
+  overview:
+    title: System Structure
+    location: 1.System Structure
+    components:
+      - inf
+      - tech
+      - business
+      - inf.*
+      - tech.*
+      - business.*
+  observability:
+    title: Observability
+    location: 2.Observability
+    components:
+      - inf.obs.*
+      - inf.obs.*.*
+  components.objects.component:
+    title: Component
+    location: 3.Components/Objects sub-system/Component Diagram
+    components:
+      - business.objects.*
+      - inf.data.*
+      - inf.messaging.kafka
+      - tech.security.auth
+  components.objects.sequence:
+    title: Component
+    location: 3.Components/Objects sub-system/Flows/Object Modify
+    presentation: plantuml
+    uml: ./flows/object-modify.puml
+  components.objects.erd:
+    title: Component
+    location: 3.Components/Objects sub-system/ERD Diagram
+    presentation: plantuml
+    uml: ./erd/object-service-erd.puml

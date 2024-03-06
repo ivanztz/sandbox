@@ -1,7 +1,6 @@
 # Sandbox project
 
-Sandbox project with java microservices to be used for educational or project accelerator purposes  
-Simplified data flow is described at [flow diagram](./object-api/src/main/resources/flows/object-modify.puml)
+Sandbox project with java microservices to be used for educational or project accelerator purposes
 
 
 ## Modules
@@ -10,18 +9,19 @@ Simplified data flow is described at [flow diagram](./object-api/src/main/resour
 - **object-service** - simple service for object CRUD operations and filtering
 - **object-events** - simple service for storing object events
 
-## Architecture
-![Deployment](sandbox.png)
+## DocHub
+DocHub description is available via IntelliJ or VSCode Plugins and contains detailed information about project structure 
+
+### Deployment diagram
+![Deployment](docs/docs/sandbox.png)
 
 ## Technologies\frameworks used:
 
 ### Specification
 
 - OpenApi 3
-- AsyncApi 2.3
 - JSON Schema
 - Avro
-- PlantUml
 
 ### Development
 
@@ -43,7 +43,6 @@ Simplified data flow is described at [flow diagram](./object-api/src/main/resour
 - MongoDB
 - Kafka + Schema registry
 - Keycloak
-- Nginx
 
 ### Deployment
 
@@ -54,7 +53,7 @@ Simplified data flow is described at [flow diagram](./object-api/src/main/resour
 - OpenTelemetry + OTEL Collector + Custom agent extension for sampling
 - Prometheus
 - Grafana + Tempo + Loki
-- Vector
+- Promtail
 
 ## Deployment instructions
 
@@ -97,4 +96,5 @@ Postman collection for services REST APIs [Sandbox API.postman_collection.json](
 - Prometheus Graph - http://MINIKUBE_IP/prometheus/graph
 - Grafana - http://MINIKUBE_IP/grafana (admin:password)
 - Keycloak http://MINIKUBE_IP/keycloak (admin:password)
+- DocHub http://MINIKUBE_IP/dochub 
 

@@ -1,7 +1,7 @@
 package com.iz.sandbox.controller;
 
-import com.iz.sandbox.api.EventsApi;
-import com.iz.sandbox.dto.ObjectEventDataListResponse;
+import com.iz.sandbox.object.event.api.EventsApi;
+import com.iz.sandbox.object.event.dto.ObjectEventDataListResponse;
 import com.iz.sandbox.service.EventService;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;

@@ -1,0 +1,164 @@
+# Deployable artifacts
+components:
+  inf.obs.grafana:
+    title: Grafana
+    entity: component
+    aspects:
+      - inf.obs
+      - inf.obs.monitoring
+      - inf.obs.tracing
+      - inf.obs.logging
+    links:
+      - id: inf.obs.monitoring.prometheus
+        direction: -->
+        title: PromQL queries
+      - id: inf.obs.tracing.tempo
+        direction: -->
+        title: Requesting traces
+      - id: inf.obs.logging.loki
+        direction: -->
+        title: Requesting logs
+    technologies:
+      - Grafana
+  inf.obs.monitoring.prometheus:
+    title: Prometheus
+    entity: component
+    aspects:
+      - inf.obs.monitoring
+    technologies:
+      - Prometheus
+  inf.obs.tracing.tempo:
+    title: Tempo
+    entity: component
+    aspects:
+      - inf.obs.tracing
+    technologies:
+      - Tempo
+  inf.obs.tracing.otel:
+    title: OTEL collector
+    entity: component
+    aspects:
+      - inf.obs.tracing
+    links:
+      - id: inf.obs.tracing.tempo
+        direction: -->
+        title: Pushing traces
+    technologies:
+      - OpenTelemetry
+  inf.obs.logging.loki:
+    title: Loki
+    entity: component
+    aspects:
+      - inf.obs.logging
+    technologies:
+      - Loki
+  inf.obs.logging.promtail:
+    title: Promtail
+    entity: component
+    aspects:
+      - inf.obs.logging
+    links:
+      - id: inf.obs.logging.loki
+        direction: -->
+        title: Gathering and pushing\nsyslog\syserr
+    technologies:
+      - Promtail
+  inf.messaging.kafka:
+    title: Kafka
+    entity: queue
+    aspects:
+      - inf.messaging
+    technologies:
+      - Kafka
+  inf.data.postgres:
+    title: PostreSQL
+    entity: database
+    aspects:
+      - inf.data
+    technologies:
+      - PostgreSQL
+  inf.data.mongo:
+    title: MongoDB
+    entity: database
+    aspects:
+      - inf.data
+    technologies:
+      - MongoDB
+  tech.security.auth:
+    title: Authentication
+    entity: component
+    aspects:
+      - nfa.security
+    links:
+      - id: inf.data.postgres
+        direction: -->
+    technologies:
+      - Keycloak
+  business.objects.service:
+    title: objects-service
+    entity: component
+    aspects:
+      - fa.objects
+    links:
+      - id: inf.obs.tracing.otel
+        direction: -->
+        title: Pushing traces
+      - id: inf.data.postgres
+        direction: -->
+        title: Storing\Reading data
+      - id: tech.security.auth
+        direction: -->
+        title: Getting JKS keys\nfor token validation
+      - id: inf.messaging.kafka
+        direction: -->
+        title: Pushing events
+        contract:
+      - id: business.objects.events
+        direction: -->
+        title: Getting events
+        contract: events.rest
+    technologies:
+      - Java
+      - SpringBoot
+      - Liquibase
+      - KafkaProtocol
+      - OTLP
+      - HTTP
+      - OpenID
+      - Micrometer
+      - MapStruct
+      - Maven
+      - OpenApi
+      - Avro
+      - JsonSchema
+      - Logback
+      - Kotlin
+      - Groovy
+  business.objects.events:
+    title: objects-events
+    entity: component
+    aspects:
+      - fa.objects
+    links:
+      - id: inf.obs.tracing.otel
+        direction: -->
+        title: Pushing traces
+      - id: inf.data.mongo
+        direction: -->
+        title: Storing\Reading data
+      - id: inf.messaging.kafka
+        direction: -->
+        title: Reading events
+        contract: objects.kafka
+    technologies:
+      - Java
+      - SpringBoot
+      - KafkaProtocol
+      - OTLP
+      - HTTP
+      - Micrometer
+      - MapStruct
+      - Maven
+      - OpenApi
+      - Avro
+      - Logback

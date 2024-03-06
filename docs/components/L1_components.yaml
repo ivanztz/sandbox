@@ -1,0 +1,17 @@
+# High level component groups
+components:
+  inf:
+    title: Infrastructure components
+    entity: collections
+    aspects:
+      - inf
+  tech:
+    title: Tech components
+    entity: collections
+    aspects:
+      - nfa
+  business:
+    title: Business components
+    entity: collections
+    aspects:
+      - fa

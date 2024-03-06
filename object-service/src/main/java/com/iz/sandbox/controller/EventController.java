@@ -1,8 +1,9 @@
 package com.iz.sandbox.controller;
 
-import com.iz.sandbox.api.EventsApi;
-import com.iz.sandbox.dto.ObjectEventDataListResponse;
+import com.iz.sandbox.config.ObjectTypeMapper;
 import com.iz.sandbox.feign.EventsApiClient;
+import com.iz.sandbox.object.api.EventsApi;
+import com.iz.sandbox.object.dto.ObjectEventDataListResponse;
 import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
@@ -16,8 +17,9 @@ public class EventController implements EventsApi {
 
     private final EventsApiClient client;
 
+    private final ObjectTypeMapper typeMapper;
     @Override
     public ResponseEntity<ObjectEventDataListResponse> getEvents(UUID objectId, OffsetDateTime startDate, OffsetDateTime endDate) {
-        return client.getEvents(objectId, startDate, endDate);
+        return ResponseEntity.ok(typeMapper.mapEventDataList(client.getEvents(objectId, startDate, endDate).getBody()));
     }
 }

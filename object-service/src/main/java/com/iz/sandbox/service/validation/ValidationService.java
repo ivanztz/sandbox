@@ -1,6 +1,6 @@
 package com.iz.sandbox.service.validation;
 
-import com.iz.sandbox.dto.ObjectDataRequest;
+import com.iz.sandbox.object.dto.ObjectDataRequest;
 
 import java.util.List;
 

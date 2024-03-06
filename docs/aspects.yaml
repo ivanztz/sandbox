@@ -1,0 +1,37 @@
+aspects:
+  inf:
+    title: Infrastructure aspects
+    location: Infrastructure aspects
+  inf2:
+    title: Infrastructure aspects 2
+    location: Infrastructure aspects 2
+  inf.obs:
+    title: Observability
+    location: observability
+  inf.obs.monitoring:
+    title: Monitoring
+    location: Monitoring
+  inf.obs.logging:
+    title: Logging
+    location: Logging
+  inf.obs.tracing:
+    title: Tracing
+    location: Tracing
+  inf.data:
+    title: Data Management
+    location: Data Management
+  inf.messaging:
+    title: Messaging
+    location: Messaging
+  nfa:
+    title: Non-functional aspects
+    location: Non-functional aspects
+  nfa.security:
+    title: Security
+    location: Security
+  fa:
+    title: Functional aspects
+    location: Functional aspects
+  fa.objects:
+    title: Objects
+    location: Objects

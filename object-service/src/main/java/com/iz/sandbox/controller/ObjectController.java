@@ -1,10 +1,10 @@
 package com.iz.sandbox.controller;
 
-import com.iz.sandbox.api.ObjectsApi;
-import com.iz.sandbox.dto.ObjectData;
-import com.iz.sandbox.dto.ObjectDataListResponse;
-import com.iz.sandbox.dto.ObjectDataRequest;
-import com.iz.sandbox.dto.ObjectDataResponse;
+import com.iz.sandbox.object.api.ObjectsApi;
+import com.iz.sandbox.object.dto.ObjectData;
+import com.iz.sandbox.object.dto.ObjectDataListResponse;
+import com.iz.sandbox.object.dto.ObjectDataRequest;
+import com.iz.sandbox.object.dto.ObjectDataResponse;
 import com.iz.sandbox.service.ObjectService;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

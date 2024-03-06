@@ -1,8 +1,8 @@
 package com.iz.sandbox.service.impl;
 
 import com.iz.sandbox.config.ObjectTypeMapper;
-import com.iz.sandbox.dto.ObjectData;
-import com.iz.sandbox.dto.ObjectDataRequest;
+import com.iz.sandbox.object.dto.ObjectData;
+import com.iz.sandbox.object.dto.ObjectDataRequest;
 import com.iz.sandbox.entity.ObjectEntity;
 import com.iz.sandbox.repository.ObjectRepository;
 import com.iz.sandbox.repository.ObjectSpecifications;

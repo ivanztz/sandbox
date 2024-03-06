@@ -1,0 +1,163 @@
+# Statues
+#  - Adopt - actively used
+#  - Trial - tested and applying
+#  - Assess - testing
+#  - Hold - deprecating
+technologies:
+  sections:
+    languages:
+      title: Programming languages
+    frameworks:
+      title: Frameworks
+    databases:
+      title: Databases
+    storages:
+      title: Storages
+    protocols:
+      title: Protocols
+    observability:
+      title: Observability tools
+    messaging:
+      title: Messaging
+    iam:
+      title: Identity and access management
+    specification:
+      title: Specification
+    build:
+      title: Building tools
+  items:
+    Java:
+      title: Java
+      link: https://www.java.com/ru/
+      section: languages
+      status: adopt
+    Kotlin:
+      title: Kotlin
+      link: https://kotlinlang.org/
+      section: languages
+      status: assess
+    Groovy:
+      title: Groovy
+      link: https://www.groovy-lang.org/
+      section: languages
+      status: assess
+    Keycloak:
+      title: Keycloak
+      link: https://www.keycloak.org/
+      section: iam
+      status: adopt
+    PostgreSQL:
+      title: PostgreSQL
+      link: https://www.postgresql.org/
+      section: databases
+      status: adopt
+    MongoDB:
+      title: MongoDB
+      link: https://www.mongodb.com/
+      section: databases
+      status: trial
+    Kafka:
+      title: Kafka
+      link: https://kafka.apache.org/
+      section: messaging
+      status: adopt
+    SchemaRegistry:
+      title: Schema Registry
+      link: https://docs.confluent.io/platform/current/schema-registry/index.html
+      section: specification
+      status: trial
+    Prometheus:
+      title: Prometheus
+      link: https://prometheus.io/
+      section: observability
+      status: adopt
+    Grafana:
+      title: Grafana
+      link: https://grafana.com/
+      section: observability
+      status: adopt
+    Tempo:
+      title: Tempo
+      link: https://grafana.com/oss/tempo/
+      section: observability
+      status: adopt
+    Loki:
+      title: Loki
+      link: https://grafana.com/oss/loki/
+      section: observability
+      status: adopt
+    Promtail:
+      title: Promtail
+      link: https://grafana.com/docs/loki/latest/send-data/promtail/
+      section: observability
+      status: adopt
+    OpenTelemetry:
+      title: OpenTelemetry
+      link: https://opentelemetry.io/
+      section: observability
+      status: adopt
+    OTLP:
+      title: OpenTelemetry
+      link: https://opentelemetry.io/docs/specs/otlp/
+      section: protocols
+      status: adopt
+    KafkaProtocol:
+      title: KafkaProtocol
+      link: https://kafka.apache.org/protocol
+      section: protocols
+      status: adopt
+    HTTP:
+      title: HTTP
+      link: https://ru.wikipedia.org/wiki/HTTP
+      section: protocols
+      status: adopt
+    OpenID:
+      title: OpenID
+      link: https://openid.net/
+      section: protocols
+      status: adopt
+    SpringBoot:
+      title: SpringBoot
+      link: https://spring.io/projects/spring-boot
+      section: frameworks
+      status: adopt
+    MapStruct:
+      title: MapStruct
+      link: https://mapstruct.org/
+      section: frameworks
+      status: adopt
+    Liquibase:
+      title: Liquibase
+      link: https://www.liquibase.org/
+      section: frameworks
+      status: adopt
+    Micrometer:
+      title: Micrometer
+      link: https://micrometer.io/
+      section: frameworks
+      status: adopt
+    Maven:
+      title: Maven
+      link: https://maven.apache.org/
+      section: build
+      status: adopt
+    Logback:
+      title: Logback
+      link: https://logback.qos.ch/
+      section: frameworks
+      status: adopt
+    OpenApi:
+      title: OpenApi
+      link: https://spec.openapis.org/oas/latest.html
+      section: specification
+      status: adopt
+    Avro:
+      title: Avro
+      link: https://avro.apache.org/
+      section: specification
+      status: adopt
+    JsonSchema:
+      title: JsonSchema
+      link: https://json-schema.org/
+      section: specification
+      status: adopt

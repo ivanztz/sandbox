@@ -1,7 +1,7 @@
 package com.iz.sandbox.service.validation.impl;
 
 import com.iz.sandbox.config.validation.ValidationConfiguration;
-import com.iz.sandbox.dto.ObjectDataRequest;
+import com.iz.sandbox.object.dto.ObjectDataRequest;
 import com.iz.sandbox.service.validation.ValidationService;
 import com.iz.sandbox.service.validation.Violation;
 import lombok.AllArgsConstructor;

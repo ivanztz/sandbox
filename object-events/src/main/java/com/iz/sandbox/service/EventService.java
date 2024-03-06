@@ -1,6 +1,6 @@
 package com.iz.sandbox.service;
 
-import com.iz.sandbox.dto.ObjectEventData;
+import com.iz.sandbox.object.event.dto.ObjectEventData;
 import com.iz.sandbox.model.MessageInfo;
 
 import java.time.OffsetDateTime;

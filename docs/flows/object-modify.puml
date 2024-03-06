@@ -1,9 +1,10 @@
 @startuml
 autonumber
 
-participant "Invoker" as invoker
-participant "Object Service" as objectService #LightBlue
-participant "Object Events Service" as objectEvents #LightBlue
+participant "Invoker" as invoker #Business
+participant "[[/architect/components/business.objects.service object-service]]" as objectService #LightBlue
+participant "[[/architect/components/business.objects.service object-events]]" as objectEvents #LightBlue
+participant "[[/architect/components/inf.messaging.kafka kafka]]" as kafka #LightBlue
 
 invoker -> objectService: Object modification request \n [HTTP POST /objects] \n [HTTP PUT\DELETE /objects/{objectId}]
 activate invoker
@@ -12,13 +13,15 @@ objectService -> objectService: Validate request
 
 alt "Request is valid"
     objectService -> objectService: Persist object modifications
-    objectService ->> objectEvents: Publish object modification event\n [kafka:object.events]
-    activate objectEvents
+    objectService ->> kafka: Publish object modification event\n [kafka:object.events]
     objectService --> invoker: Success response
+    objectEvents ->> kafka: Reveive object modification event\n [kafka:object.events]
+    activate objectEvents
     objectEvents -> objectEvents: Persist object modification event
     deactivate objectEvents
 else "Request is not valid"
     objectService --> invoker: Error response
+    deactivate objectService
 end
 deactivate objectService
 deactivate invoker

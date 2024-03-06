@@ -1,0 +1,42 @@
+# Subsystems
+components:
+  inf.obs:
+    title: Observability sub-system
+    entity: collections
+    aspects:
+      - inf.obs
+  inf.obs.monitoring:
+    title: Monitoring sub-system
+    entity: collections
+    aspects:
+      - inf.obs.monitoring
+  inf.obs.tracing:
+    title: Tracing sub-system
+    entity: collections
+    aspects:
+      - inf.obs.tracing
+  inf.obs.logging:
+    title: Logging sub-system
+    entity: collections
+    aspects:
+      - inf.obs.logging
+  inf.data:
+    title: Storage sub-system
+    entity: collections
+    aspects:
+      - inf.data
+  inf.messaging:
+    title: Messaging sub-system
+    entity: collections
+    aspects:
+      - inf.messaging
+  tech.security:
+    title: Security sub-system
+    entity: collections
+    aspects:
+      - nfa.security
+  business.objects:
+    title: Object sub-system
+    entity: collections
+    aspects:
+      - fa.objects

@@ -1,0 +1,42 @@
+asyncapi: 2.5.0
+info:
+  title: Async API for Objects Service
+  version: "1.0"
+channels:
+  events.object:
+    description: Object data modification events
+    subscribe:
+      operationId: objectModified
+      message:
+        oneOf:
+          - $ref: "#/components/messages/objectCreatedMessage"
+          - $ref: "#/components/messages/objectUpdatedMessage"
+          - $ref: "#/components/messages/objectDeletedMessage"
+
+components:
+  messages:
+    objectCreatedMessage:
+      description: "Object Created Event Message"
+      schemaFormat: "application/vnd.apache.avro+json;version=1.9.0"
+      payload:
+        # TODO Find the way to merge schema references into one
+        $ref: "https://raw.githubusercontent.com/ivanztz/sandbox/master/object-api/src/main/resources/schema/avro/objectCreatedMessage.avsc"
+      bindings:
+        kafka:
+    objectUpdatedMessage:
+      description: "Object Updated Event Message"
+      schemaFormat: "application/vnd.apache.avro+json;version=1.9.0"
+      payload:
+        $ref: "https://raw.githubusercontent.com/ivanztz/sandbox/master/object-api/src/main/resources/schema/avro/objectUpdatedMessage.avsc"
+      bindings:
+        kafka:
+    objectDeletedMessage:
+      description: "Object Deleted Event Message"
+      schemaFormat: "application/vnd.apache.avro+json;version=1.9.0"
+      payload:
+        $ref: "https://raw.githubusercontent.com/ivanztz/sandbox/master/object-api/src/main/resources/schema/avro/objectDeletedMessage.avsc"
+      bindings:
+        kafka:
+
+
+

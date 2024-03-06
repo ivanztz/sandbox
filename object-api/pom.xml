@@ -30,6 +30,7 @@
                 <version>5.4.0</version>
                 <executions>
                     <execution>
+                        <id>objects-api</id>
                         <goals>
                             <goal>generate</goal>
                         </goals>
@@ -37,8 +38,31 @@
                             <!-- https://openapi-generator.tech/docs/generators/spring/ -->
                             <inputSpec>${project.basedir}/src/main/resources/objects-api.yaml</inputSpec>
                             <generatorName>spring</generatorName>
-                            <apiPackage>com.iz.sandbox.api</apiPackage>
-                            <modelPackage>com.iz.sandbox.dto</modelPackage>
+                            <apiPackage>com.iz.sandbox.object.api</apiPackage>
+                            <modelPackage>com.iz.sandbox.object.dto</modelPackage>
+                            <configOptions>
+                                <annotationLibrary>none</annotationLibrary>
+                                <interfaceOnly>true</interfaceOnly>
+                                <sourceFolder>openapi</sourceFolder>
+                                <documentationProvider>source</documentationProvider>
+                                <serializableModel>true</serializableModel>
+                                <hideGenerationTimestamp>true</hideGenerationTimestamp>
+                                <useTags>true</useTags>
+                                <skipDefaultInterface>true</skipDefaultInterface>
+                            </configOptions>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>events-api</id>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                        <configuration>
+                            <!-- https://openapi-generator.tech/docs/generators/spring/ -->
+                            <inputSpec>${project.basedir}/src/main/resources/objects-events-api.yaml</inputSpec>
+                            <generatorName>spring</generatorName>
+                            <apiPackage>com.iz.sandbox.object.event.api</apiPackage>
+                            <modelPackage>com.iz.sandbox.object.event.dto</modelPackage>
                             <configOptions>
                                 <annotationLibrary>none</annotationLibrary>
                                 <interfaceOnly>true</interfaceOnly>

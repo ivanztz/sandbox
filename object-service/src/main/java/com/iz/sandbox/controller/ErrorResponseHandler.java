@@ -1,7 +1,7 @@
 package com.iz.sandbox.controller;
 
-import com.iz.sandbox.dto.Error;
-import com.iz.sandbox.dto.Response;
+import com.iz.sandbox.object.dto.Error;
+import com.iz.sandbox.object.dto.Response;
 import com.iz.sandbox.service.ObjectNotFoundException;
 import com.iz.sandbox.service.validation.exception.ValidationException;
 import lombok.extern.slf4j.Slf4j;
