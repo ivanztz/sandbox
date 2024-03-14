@@ -43,7 +43,8 @@ metadata:
   name: loki-config
 data:
   loki.yaml: |-
-    auth_enabled: false
+    # required for multi-tenancy
+    auth_enabled: true
 
     server:
       http_listen_port: 3100
@@ -217,6 +218,9 @@ data:
                   expression: '.*level=(?P<level>[a-zA-Z]+)'
               - labels:
                   level:
+        - tenant:
+            # hardcoded value 
+            value: sandbox
       relabel_configs:
         - source_labels:
             - __meta_kubernetes_pod_node_name

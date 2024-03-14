@@ -128,7 +128,7 @@ data:
         editable: true
         apiVersion: 1
         jsonData:
-          httpHeaderTenant: 'X-Scope-OrgID'
+          httpHeaderName1: 'X-Scope-OrgID'
           httpMethod: GET
           serviceMap:
             datasourceUid: prometheus
@@ -150,19 +150,76 @@ data:
               - name: 'Request error rate'
                 query: 'sum by(uri, outcome) (rate(http_server_requests_count{$$__tags, outcome=~"CLIENT_ERROR|SERVER_ERROR"}[5m])) '
         secureJsonData:
-          httpHeaderTenant: 'Organization 1'
+          httpHeaderValue1: 'sandbox'
+      - name: tempo-wrong-tenant
+        type: tempo
+        uid: tempo-wrong-tenant
+        access: proxy
+        orgId: 1
+        url: http://tempo:3200
+        basicAuth: false
+        isDefault: false
+        version: 1
+        editable: true
+        apiVersion: 1
+        jsonData:
+          httpHeaderName1: 'X-Scope-OrgID'
+          httpMethod: GET
+          serviceMap:
+            datasourceUid: prometheus
+          tracesToLogs: # mapping traces to logs datasource
+            mappedTags: [{ key: 'service.name', value: 'container_name' }]
+            datasourceUid: 'loki'
+            mapTagNamesEnabled: true
+            spanStartTimeShift: '-5m' #shifts grafana timerange forward and can cause empty search result
+            spanEndTimeShift: '5m'
+            filterByTraceID: true
+            filterBySpanID: false # not all spans have logs but link is displayed for both
+            lokiSearch: true
+          tracesToMetrics:
+            datasourceUid: 'prometheus'
+            tags: [ { key: 'service.name', value: 'application' } ]
+            queries:
+              - name: 'Request rate'
+                query: 'sum by(uri) (rate(http_server_requests_count{$$__tags}[5m])) '
+              - name: 'Request error rate'
+                query: 'sum by(uri, outcome) (rate(http_server_requests_count{$$__tags, outcome=~"CLIENT_ERROR|SERVER_ERROR"}[5m])) '
+        secureJsonData:
+          httpHeaderValue1: 'sandbox2'
       - name: Loki
         type: loki
         uid: loki
+        orgId: 1
         access: proxy
         url: http://loki:3100
         basicAuth: false
         jsonData:
+          httpHeaderName1: 'X-Scope-OrgID'
           maxLines: 1000
           derivedFields:
             - datasourceUid: tempo
               matcherRegex: "\"trace_id\":\"(\\w+)\""
               name: TraceID
               url: '$${__value.raw}'
+        secureJsonData:
+          httpHeaderValue1: 'sandbox'
+        editable: true
+      - name: Loki-Wrong-Tenant
+        type: loki
+        uid: loki-wrong-tenant
+        orgId: 1
+        access: proxy
+        url: http://loki:3100
+        basicAuth: false
+        jsonData:
+          httpHeaderName1: 'X-Scope-OrgID'
+          maxLines: 1000
+          derivedFields:
+            - datasourceUid: tempo
+              matcherRegex: "\"trace_id\":\"(\\w+)\""
+              name: TraceID
+              url: '$${__value.raw}'
+        secureJsonData:
+          httpHeaderValue1: 'sandbox2'
         editable: true
     

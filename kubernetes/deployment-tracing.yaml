@@ -58,7 +58,7 @@ data:
        tls:
          insecure: true
        headers:
-         x-scope-orgid: "Organization 1"
+         x-scope-orgid: sandbox
 
     processors:
      filter/ottl:
@@ -158,6 +158,7 @@ metadata:
   name: tempo-config
 data:
   tempo.yaml: |-
+    multitenancy_enabled: true
     server:
       http_listen_port: 3200
     
