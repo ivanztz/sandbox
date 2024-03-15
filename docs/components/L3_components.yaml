@@ -9,7 +9,7 @@ components:
       - inf.obs.tracing
       - inf.obs.logging
     links:
-      - id: inf.obs.monitoring.prometheus
+      - id: inf.obs.monitoring.proxy
         direction: -->
         title: PromQL queries
       - id: inf.obs.tracing.tempo
@@ -27,6 +27,15 @@ components:
       - inf.obs.monitoring
     technologies:
       - Prometheus
+  inf.obs.monitoring.proxy:
+    title: Prometheus label proxy
+    entity: component
+    aspects:
+      - inf.obs.monitoring
+    links:
+      - id: inf.obs.monitoring.prometheus
+        direction: -->
+        title: Proxying calls
   inf.obs.tracing.tempo:
     title: Tempo
     entity: component

@@ -108,7 +108,7 @@ data:
       - name: prometheus
         type: prometheus
         uid: prometheus
-        url: http://prometheus:9090/prometheus
+        url: http://prom-label-proxy:8080
         access: proxy
         orgId: 1
         isDefault: true
@@ -116,6 +116,19 @@ data:
         editable: true
         jsonData:
           httpMethod: GET
+          customQueryParameters: 'tenant=sandbox'
+      - name: prometheus-wrong-tenant
+        type: prometheus
+        uid: prometheus-wrong-tenant
+        url: http://prom-label-proxy:8080
+        access: proxy
+        orgId: 1
+        isDefault: false
+        version: 1
+        editable: true
+        jsonData:
+          httpMethod: GET
+          customQueryParameters: 'tenant=sandbox2'
       - name: tempo
         type: tempo
         uid: tempo

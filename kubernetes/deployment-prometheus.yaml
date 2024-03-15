@@ -169,6 +169,8 @@ data:
             regex: (.+)
             target_label: __metrics_path__
             replacement: /api/v1/nodes/${1}/proxy/metrics
+          - target_label: tenant
+            replacement: 'sandbox'
     
       - job_name: 'kubernetes-pods'
         kubernetes_sd_configs:
@@ -194,6 +196,8 @@ data:
           - source_labels: [ __meta_kubernetes_pod_name ]
             action: replace
             target_label: kubernetes_pod_name
+          - target_label: tenant
+            replacement: 'sandbox'
     
       - job_name: 'kube-state-metrics'
         static_configs:
@@ -214,6 +218,8 @@ data:
             regex: (.+)
             target_label: __metrics_path__
             replacement: /api/v1/nodes/${1}/proxy/metrics/cadvisor
+          - target_label: tenant
+            replacement: 'sandbox'
     
       - job_name: 'kubernetes-service-endpoints'
         kubernetes_sd_configs:
@@ -243,6 +249,8 @@ data:
           - source_labels: [ __meta_kubernetes_service_name ]
             action: replace
             target_label: kubernetes_name
+          - target_label: tenant
+            replacement: 'sandbox'
       - job_name: 'kubernetes-pods-actuator'
         scrape_interval: 5s
         kubernetes_sd_configs:
@@ -271,6 +279,8 @@ data:
             target_label: kubernetes_pod_name
           - target_label: source
             replacement: 'actuator'
+          - target_label: tenant
+            replacement: 'sandbox'
         # Transforming otel labels for prometheus/grafana needs
         metric_relabel_configs:
           - source_labels: ['app']
@@ -305,6 +315,8 @@ data:
             target_label: kubernetes_pod_name
           - target_label: source
             replacement: 'otel'
+          - target_label: tenant
+            replacement: 'sandbox'
         metric_relabel_configs:
           - source_labels: ['app']
             target_label: "application"
@@ -385,3 +397,54 @@ spec:
       protocol: TCP
       port: 9100
       targetPort: 9100
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: prom-label-proxy
+  name: prom-label-proxy
+  namespace: default
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: prom-label-proxy
+  template:
+    metadata:
+      labels:
+        app: prom-label-proxy
+    spec:
+      serviceAccountName: prometheus-service-account
+      containers:
+        - name: prom-label-proxy
+          image: quay.io/prometheuscommunity/prom-label-proxy:v0.8.1
+          ports:
+            - name: http
+              containerPort: 8080
+          args:
+            - "--insecure-listen-address=0.0.0.0:8080"
+            - "--upstream=http://prometheus:9090/prometheus"
+            - "--label=tenant"
+            - "--query-param=tenant"
+            - "--enable-label-apis=true"
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+            readOnlyRootFilesystem: true
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: prom-label-proxy
+  labels:
+    app: prom-label-proxy
+spec:
+  selector:
+    app: prom-label-proxy
+  ports:
+    - port: 8080
+      targetPort: http
+  type: LoadBalancer
