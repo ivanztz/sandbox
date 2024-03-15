@@ -63,7 +63,6 @@ DocHub description is available via IntelliJ or VSCode Plugins and contains deta
  - JDK 17+
 
 ### Minikube environment
-[deployment-mongo.yaml](kubernetes%2Fdeployment-mongo.yaml)
 > **Important**. Minikube specifics in bash scripts is only used for pushing application images inside Kubernetes. Environment scripts
 > can be used with any other Kubernetes deployment
 
