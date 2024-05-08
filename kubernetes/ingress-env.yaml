@@ -5,9 +5,10 @@ metadata:
   name: ingress-kafka-ui
 spec:
   rules:
-    - http:
+    - host: kafka-ui.cluster.local
+      http:
         paths:
-          - path: /kafka-ui
+          - path: /
             pathType: Prefix
             backend:
               service:
@@ -22,9 +23,10 @@ metadata:
   name: ingress-keycloak
 spec:
   rules:
-    - http:
+    - host: keycloak.cluster.local
+      http:
         paths:
-          - path: /keycloak
+          - path: /
             pathType: Prefix
             backend:
               service:
@@ -39,10 +41,11 @@ metadata:
   name: ingress-mongo
 spec:
   rules:
-    - http:
+    - host: mongo-express.cluster.local
+      http:
         paths:
-          - path: /mongo-express
-            pathType: ImplementationSpecific
+          - path: /
+            pathType: Prefix
             backend:
               service:
                 name: mongo-express
@@ -56,9 +59,10 @@ metadata:
   name: ingress-adminer
 spec:
   rules:
-    - http:
+    - host: adminer.cluster.local
+      http:
         paths:
-          - path: /adminer
+          - path: /
             pathType: Prefix
             backend:
               service:
@@ -73,9 +77,10 @@ metadata:
   name: ingress-grafana
 spec:
   rules:
-    - http:
+    - host: grafana.cluster.local
+      http:
         paths:
-          - path: /grafana
+          - path: /
             pathType: Prefix
             backend:
               service:
@@ -90,9 +95,10 @@ metadata:
   name: ingress-prometheus
 spec:
   rules:
-    - http:
+    - host: prometheus.cluster.local
+      http:
         paths:
-          - path: /prometheus
+          - path: /
             pathType: Prefix
             backend:
               service:

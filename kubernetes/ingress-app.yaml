@@ -5,13 +5,24 @@ metadata:
   name: ingress-services
 spec:
   rules:
-    - http:
+    - host: object-service.cluster.local
+      http:
         paths:
-          - path: /object-service
+          - path: /
             pathType: Prefix
             backend:
               service:
                 name: object-service
+                port:
+                  number: 8080
+    - host: object-events.cluster.local
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: object-events
                 port:
                   number: 8080
   ingressClassName: nginx

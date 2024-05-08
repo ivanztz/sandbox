@@ -22,6 +22,9 @@ kubectl apply -f deployment-prometheus.yaml
 echo "Deploying tracing"
 kubectl apply -f deployment-tracing.yaml
 
+echo "Deploying profiling"
+kubectl apply -f deployment-profiling.yaml
+
 echo "Deploying grafana"
 kubectl apply -f deployment-grafana-dashboards.yaml
 kubectl apply -f deployment-grafana.yaml

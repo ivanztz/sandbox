@@ -24,7 +24,7 @@ spec:
         - name: keycloak
           image: quay.io/keycloak/keycloak:23.0.2
           # using proxy mode and http-relative-path for ingress controller
-          args: ["start-dev", "--proxy=passthrough", "--hostname-strict=false", "--http-relative-path=/keycloak", "--import-realm", "--http-port=8080"]
+          args: ["start-dev", "--proxy=passthrough", "--hostname-strict=false", "--import-realm", "--http-port=8080"]
           envFrom:
             - secretRef:
                 name: keycloak-database-secrets
@@ -35,7 +35,7 @@ spec:
               containerPort: 8080
           readinessProbe:
             httpGet:
-              path: /keycloak/realms/master
+              path: /realms/master
               port: 8080
           volumeMounts:
             - mountPath: /opt/keycloak/data/import/

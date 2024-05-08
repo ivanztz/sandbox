@@ -25,6 +25,7 @@
         <json-schema-registry.version>7.3.0</json-schema-registry.version>
         <kafka-avro-serializer.version>7.3.0</kafka-avro-serializer.version>
         <logback-ecs-encoder.version>1.5.0</logback-ecs-encoder.version>
+        <pyroscope.otel.version>0.10.1.11</pyroscope.otel.version>
     </properties>
 
     <dependencies>
@@ -84,6 +85,12 @@
             <groupId>io.opentelemetry.javaagent</groupId>
             <artifactId>opentelemetry-javaagent</artifactId>
             <version>${opentelemetry-javaagent.version}</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.pyroscope</groupId>
+            <artifactId>otel</artifactId>
+            <version>${pyroscope.otel.version}</version>
             <scope>runtime</scope>
         </dependency>
         <dependency>

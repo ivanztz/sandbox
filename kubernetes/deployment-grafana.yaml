@@ -22,7 +22,7 @@ spec:
       serviceAccountName: grafana-service-account
       containers:
         - name: grafana
-          image: grafana/grafana:10.3.1
+          image: grafana/grafana:10.4.2
           ports:
             - name: grafana
               containerPort: 3000
@@ -31,13 +31,7 @@ spec:
                 name: grafana-secrets
           env:
             - name: GF_FEATURE_TOGGLES_ENABLE #disabled by default
-              value: 'traceToMetrics'
-            # Ingress specific setup
-            - name: GF_SERVER_ROOT_URL
-              value: 'http://%(domain)s/grafana/'
-            # Ingress specific setup
-            - name: GF_SERVER_SERVE_FROM_SUB_PATH
-              value: 'true'
+              value: 'traceToMetrics flameGraph'
           volumeMounts:
             - mountPath: /var/lib/grafana
               name: grafana-storage
@@ -162,6 +156,13 @@ data:
                 query: 'sum by(uri) (rate(http_server_requests_count{$$__tags}[5m])) '
               - name: 'Request error rate'
                 query: 'sum by(uri, outcome) (rate(http_server_requests_count{$$__tags, outcome=~"CLIENT_ERROR|SERVER_ERROR"}[5m])) '
+          tracesToProfiles:
+            customQuery: false
+            datasourceUid: "pyroscope"
+            profileTypeId: "process_cpu:cpu:nanoseconds:cpu:nanoseconds"
+            tags:
+              - key: "service.name"
+                value: "service_name"
         secureJsonData:
           httpHeaderValue1: 'sandbox'
       - name: tempo-wrong-tenant
@@ -197,6 +198,13 @@ data:
                 query: 'sum by(uri) (rate(http_server_requests_count{$$__tags}[5m])) '
               - name: 'Request error rate'
                 query: 'sum by(uri, outcome) (rate(http_server_requests_count{$$__tags, outcome=~"CLIENT_ERROR|SERVER_ERROR"}[5m])) '
+          tracesToProfiles:
+            customQuery: false
+            datasourceUid: "pyroscope"
+            profileTypeId: "process_cpu:cpu:nanoseconds:cpu:nanoseconds"
+            tags:
+              - key: "service.name"
+                value: "service_name"
         secureJsonData:
           httpHeaderValue1: 'sandbox2'
       - name: Loki
@@ -235,4 +243,18 @@ data:
         secureJsonData:
           httpHeaderValue1: 'sandbox2'
         editable: true
+      - name: Pyroscope
+        type: grafana-pyroscope-datasource
+        access: proxy
+        orgId: 1
+        uid: pyroscope
+        url: http://pyroscope:4040
+        basicAuth: false
+        isDefault: false
+        version: 1
+        editable: true
+        apiVersion: 1
+        jsonData:
+          minStep: '15s'
+          backendType: 'pyroscope'
     

@@ -3,9 +3,9 @@
 echo "Stopping applications"
 
 echo "Removing apps"
-kubectl delete -f deployment-app.yaml
+kubectl delete -f deployment-app.yaml --force
 
 echo  "Removing ingresses"
-kubectl apply -f ingress-app.yaml
+kubectl apply -f ingress-app.yaml --force
 
 echo "Applications stopped"

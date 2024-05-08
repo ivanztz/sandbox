@@ -67,7 +67,6 @@ spec:
           args:
             - '--config.file=/etc/prometheus/prometheus.yml'
             - '--web.enable-remote-write-receiver' #for tempo metrics
-            - '--web.route-prefix=/prometheus' #Ingress specific setup
       volumes:
         - name: config-volume
           configMap:
@@ -424,7 +423,7 @@ spec:
               containerPort: 8080
           args:
             - "--insecure-listen-address=0.0.0.0:8080"
-            - "--upstream=http://prometheus:9090/prometheus"
+            - "--upstream=http://prometheus:9090"
             - "--label=tenant"
             - "--query-param=tenant"
             - "--enable-label-apis=true"

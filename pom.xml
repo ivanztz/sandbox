@@ -37,13 +37,14 @@
 					<version>3.3.0</version>
 					<executions>
 						<execution>
+							<id>opentelemetry</id>
 							<phase>package</phase>
 							<goals>
 								<goal>copy-dependencies</goal>
 							</goals>
 							<configuration>
 								<outputDirectory>target/otel</outputDirectory>
-								<includeArtifactIds>opentelemetry-javaagent,otel-extension</includeArtifactIds>
+								<includeArtifactIds>opentelemetry-javaagent,otel-extension,otel</includeArtifactIds>
 								<stripVersion>true</stripVersion>
 							</configuration>
 						</execution>
@@ -67,7 +68,7 @@
 							<jvmFlags>
 								<jvmFlag>--add-opens=java.base/java.lang=ALL-UNNAMED</jvmFlag>
 								<jvmFlag>-javaagent:/otel/opentelemetry-javaagent.jar</jvmFlag>
-								<!--<jvmFlag>-Dotel.javaagent.extensions=/otel/otel-extension.jar</jvmFlag>-->
+								<jvmFlag>-Dotel.javaagent.extensions=/otel/otel.jar</jvmFlag>
 							</jvmFlags>
 						</container>
 					</configuration>

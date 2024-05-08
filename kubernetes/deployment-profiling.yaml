@@ -1,0 +1,63 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: profiling-service-account
+#Otel
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: pyroscope
+  name: pyroscope
+spec:
+  selector:
+    matchLabels:
+      app: pyroscope
+  template:
+    metadata:
+      labels:
+        app: pyroscope
+    spec:
+      serviceAccountName: profiling-service-account
+      containers:
+        - image: 'grafana/pyroscope:1.5.0'
+          name: pyroscope
+          ports:
+            - containerPort: 4040
+          args:
+            - 'server'
+          resources: { }
+          volumeMounts:
+            - mountPath: /conf
+              name: pyroscope-config
+      restartPolicy: Always
+      volumes:
+        - name: pyroscope-config
+          configMap:
+            defaultMode: 420
+            name: pyroscope-config
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: pyroscope-config
+  labels:
+    name: pyroscope-config
+data:
+  pyroscope-config.yaml: |-
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  labels:
+    app: pyroscope
+  name: pyroscope
+spec:
+  ports:
+    - name: "4040"
+      port: 4040
+  selector:
+    app: pyroscope
+  type: LoadBalancer

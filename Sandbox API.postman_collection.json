@@ -312,18 +312,19 @@
 		},
 		{
 			"key": "SERVICE_URL",
-			"value": "http://{{HOST}}/object-service",
+			"value": "http://object-service.cluster.local",
 			"type": "string"
 		},
 		{
 			"key": "KEYCLOAK_URL",
-			"value": "http://{{HOST}}/keycloak",
+			"value": "http://keycloak.cluster.local",
 			"type": "string"
 		},
 		{
 			"key": "HOST",
 			"value": "192.168.49.2",
-			"type": "string"
+			"type": "string",
+			"disabled": true
 		}
 	]
 }

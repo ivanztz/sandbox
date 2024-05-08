@@ -1,4 +1,4 @@
-import com.iz.sandbox.dto.ObjectDataRequest
+import com.iz.sandbox.`object`.dto.ObjectDataRequest
 import com.iz.sandbox.service.validation.Violation
 
 fun validateObject(dto: ObjectDataRequest): List<Violation> {

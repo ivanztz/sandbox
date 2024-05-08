@@ -52,7 +52,7 @@ DocHub description is available via IntelliJ or VSCode Plugins and contains deta
 
 - OpenTelemetry + OTEL Collector + Custom agent extension for sampling
 - Prometheus
-- Grafana + Tempo + Loki
+- Grafana + Tempo + Loki + Pyroscope
 - Promtail
 
 ## Deployment instructions
@@ -75,12 +75,11 @@ Ensure minikube ingress addon is enabled by running:
 - Run ```./kubernetes/kubernetes-app-build-images.sh``` to build project artifacts
 - Ensure minikube is running. Use ```minikube dashboard``` to access web UI
 - Use ```./kubernetes/kubernetes-env-start.sh``` to setup project environment
-  and ```./kubernetes/kubernetes-env-stop.sh``` to clean it. Services are kept for redeployment purposes to avoid reconfiguring postman every time. Use ```kubernetes-env-full-cleanup.sh``` for full cleanup. 
+  and ```./kubernetes/kubernetes-env-stop.sh``` to clean it. Services are kept for redeployment purposes to avoid reconfiguring postman every time. Use ```kubernetes-env-full-cleanup.sh``` for full cleanup.
 - After environment is initialized use ```./kubernetes/kubernetes-app-start.sh``` to start services
   and ```./kubernetes/kubernetes-app-stop.sh``` to stop them.
-
-
-> Minikube IP can be obtained with ```minikube ip``` command
+- To access services and 3rd-party tools edit **/etc/hosts** with following value: 
+> {{minikube_ip}}	grafana.cluster.local keycloak.cluster.local adminer.cluster.local prometheus.cluster.local kafka-ui.cluster.local mongo-express.cluster.local object-service.cluster.local object-events.cluster.local
 
 ## Usage
 
@@ -88,11 +87,11 @@ Postman collection for services REST APIs [Sandbox API.postman_collection.json](
 
 ### Endpoints by default available at:
 
-- REST endpoints - http://MINIKUBE_IP/object-service
-- Postgres adminer - http://MINIKUBE_IP/adminer (admin:password)
-- Kafka UI - http://MINIKUBE_IP/kafka-ui
-- MongoDB Express - http://MINIKUBE_IP/mongo-express (admin:password)
-- Prometheus Graph - http://MINIKUBE_IP/prometheus/graph
-- Grafana - http://MINIKUBE_IP/grafana (admin:password)
-- Keycloak http://MINIKUBE_IP/keycloak (admin:password)
+- REST endpoints - http://object-service.cluster.local and http://object-events.cluster.local
+- Postgres adminer - http://adminer.cluster.local (admin:password)
+- Kafka UI - http://kafka-ui.cluster.local
+- MongoDB Express - http://mongo-express.cluster.local (admin:password)
+- Prometheus Graph - http://prometheus.cluster.local
+- Grafana - http://grafana.cluster.local (admin:password)
+- Keycloak http://keycloak.cluster.local (admin:password)
 
