@@ -26,10 +26,10 @@ spec:
           ports:
             - containerPort: 4040
           args:
-            - 'server'
+            - '--config.file=/var/lib/pyroscope/config.yaml'
           resources: { }
           volumeMounts:
-            - mountPath: /conf
+            - mountPath: /var/lib/pyroscope
               name: pyroscope-config
       restartPolicy: Always
       volumes:
@@ -45,7 +45,10 @@ metadata:
   labels:
     name: pyroscope-config
 data:
-  pyroscope-config.yaml: |-
+  config.yaml: |-
+    server: 
+      http_listen_port: 4040
+    multitenancy_enabled: true
 
 ---
 apiVersion: v1

@@ -53,6 +53,8 @@ spec:
                   fieldPath: metadata.namespace
             - name: OTEL_RESOURCE_ATTRIBUTES
               value: 'service.instance.id=$(POD_NAME),service.namespace=$(POD_NAMESPACE)'
+            - name: PYROSCOPE_LABELS
+              value: 'service_instance_id=$(POD_NAME),service_namespace=$(POD_NAMESPACE)'
           envFrom:
             - configMapRef:
                 name: object-service-config
@@ -92,6 +94,8 @@ data:
   #OTEL_TRACES_SAMPLER_ARG: '1.0'
   PYROSCOPE_APPLICATION_NAME: object-service
   PYROSCOPE_SERVER_ADDRESS: http://pyroscope:4040
+  PYROSCOPE_TENANT_ID: sandbox
+  PYROSCOPE_FORMAT: jfr
 ---
 apiVersion: v1
 kind: Service
@@ -164,6 +168,8 @@ spec:
                   fieldPath: metadata.namespace
             - name: OTEL_RESOURCE_ATTRIBUTES
               value: 'service.instance.id=$(POD_NAME),service.namespace=$(POD_NAMESPACE)'
+            - name: PYROSCOPE_LABELS
+              value: 'service_instance_id=$(POD_NAME),service_namespace=$(POD_NAMESPACE)'
           envFrom:
             - configMapRef:
                 name: object-events-config
@@ -202,6 +208,8 @@ data:
   #OTEL_TRACES_SAMPLER_ARG: '1.0'
   PYROSCOPE_APPLICATION_NAME: object-events
   PYROSCOPE_SERVER_ADDRESS: http://pyroscope:4040
+  PYROSCOPE_TENANT_ID: sandbox
+  PYROSCOPE_FORMAT: jfr
 ---
 apiVersion: v1
 kind: Service
