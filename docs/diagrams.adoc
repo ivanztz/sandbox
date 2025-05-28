@@ -6,12 +6,107 @@ image:sandbox.png[Solution structure]
 
 [plantuml]
 ----
-!include ./flows/object-modify.puml
+@startuml
+autonumber
+
+participant "Invoker" as invoker #Business
+participant "object-service" as objectService #LightBlue
+participant "object-events" as objectEvents #LightBlue
+participant "kafka" as kafka #Business
+
+invoker -> objectService: Object modification request \n [HTTP POST /objects] \n [HTTP PUT\DELETE /objects/{objectId}]
+activate invoker
+activate objectService
+objectService -> objectService: Validate request
+
+alt "Request is valid"
+    objectService -> objectService: Persist object modifications
+    objectService ->> kafka: Publish object modification event\n [kafka:object.events]
+    objectService --> invoker: Success response
+    objectEvents ->> kafka: Reveive object modification event\n [kafka:object.events]
+    activate objectEvents
+    objectEvents -> objectEvents: Persist object modification event
+    deactivate objectEvents
+else "Request is not valid"
+    objectService --> invoker: Error response
+    deactivate objectService
+end
+deactivate objectService
+deactivate invoker
+
+legend right
+    |Color| Type |
+    |<#LightBlue>| In context|
+    |<#Business>| Not in context|
+endlegend
+
+
+@enduml
 ----
 
 == Flow Diagram
 
 [plantuml]
 ----
-!include ./erd/object-service-erd.puml
+@startuml
+
+skinparam  class {
+    BackgroundColor<<mg_object>> Business
+    BackgroundColor<<mg_sub_entity>> Bisque
+    BackgroundColor<<pg_table>> Application
+}
+
+node "Object-Service" {
+    entity "Objects" as objects <<pg_table>>{
+    * id: uuid
+    --
+    string_field: string
+    int_field: bigint
+    decimal_field: double
+    json_field: jsonb
+    created_at: datetime
+    updated_at: datetime
+    }
+}
+node "Object-Events" {
+    entity "ObjectEvent" as objectEvents <<mg_object>>{
+    * id: uuid
+    --
+    * objectId: uuid
+    * publishedAt: datetime
+    principal: string
+    *eventType: string
+    *data: ObjectInfo
+    *messageInfo: MessageInfo
+    }
+
+    entity "ObjectInfo" as objectInfo <<mg_sub_entity>>{
+    *id: string
+    stringField: string
+    intField: long
+    decimalField: double
+    jsonField: string
+    *createdAt: datetime
+    updatedAt: datetime
+    }
+
+    entity "MessageInfo" as messageInfo <<mg_sub_entity>>{
+    *topic: string
+    *partition: string
+    *offset: long
+    }
+}
+
+objects ||-r-o{ objectEvents
+objectEvents ||-d-|| objectInfo
+objectEvents ||-d-|| messageInfo
+
+legend right
+    |Цвет| Описание |
+    |<#Application>| PostgreSQL Table|
+    |<#Business>| MongoDB Object|
+    |<#Bisque>| MongoDB Sub-entity|
+endlegend
+
+@enduml
 ----

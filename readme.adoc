@@ -73,7 +73,7 @@ NOTE: **Important**. Minikube specifics in bash scripts is only used for pushing
 
 ==== Setup
 
-include::deploy/readme.adoc[leveloffset=4]
+link:deploy/readme.adoc[Deployment instructions]
 
 == Usage
 
