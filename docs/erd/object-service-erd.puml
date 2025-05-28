@@ -1,13 +1,61 @@
 @startuml
 
-entity Objects{
-* id: uuid
---
-string_field: varchar
-int_field: bigint
-decimal_field: double
-json_field: jsonb
-created_at: datetime
-updated_at: datetime
+skinparam  class {
+    BackgroundColor<<mg_object>> Business
+    BackgroundColor<<mg_sub_entity>> Bisque
+    BackgroundColor<<pg_table>> Application
 }
+
+node "Object-Service" {
+    entity "Objects" as objects <<pg_table>>{
+    * id: uuid
+    --
+    string_field: string
+    int_field: bigint
+    decimal_field: double
+    json_field: jsonb
+    created_at: datetime
+    updated_at: datetime
+    }
+}
+node "Object-Events" {
+    entity "ObjectEvent" as objectEvents <<mg_object>>{
+    * id: uuid
+    --
+    * objectId: uuid
+    * publishedAt: datetime
+    principal: string
+    *eventType: string
+    *data: ObjectInfo
+    *messageInfo: MessageInfo
+    }
+
+    entity "ObjectInfo" as objectInfo <<mg_sub_entity>>{
+    *id: string
+    stringField: string
+    intField: long
+    decimalField: double
+    jsonField: string
+    *createdAt: datetime
+    updatedAt: datetime
+    }
+
+    entity "MessageInfo" as messageInfo <<mg_sub_entity>>{
+    *topic: string
+    *partition: string
+    *offset: long
+    }
+}
+
+objects ||-r-o{ objectEvents
+objectEvents ||-d-|| objectInfo
+objectEvents ||-d-|| messageInfo
+
+legend right
+    |Цвет| Описание |
+    |<#Application>| PostgreSQL Table|
+    |<#Business>| MongoDB Object|
+    |<#Bisque>| MongoDB Sub-entity|
+endlegend
+
 @enduml

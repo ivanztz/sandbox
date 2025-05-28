@@ -16,7 +16,7 @@
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
         <object-api.version>0.0.1-SNAPSHOT</object-api.version>
-        <lombok.version>1.18.24</lombok.version>
+        <lombok.version>1.18.38</lombok.version>
         <mapstruct.version>1.5.2.Final</mapstruct.version>
         <lombok-mapstruct-binding.version>0.2.0</lombok-mapstruct-binding.version>
         <opentelemetry-javaagent.version>1.18.0</opentelemetry-javaagent.version>

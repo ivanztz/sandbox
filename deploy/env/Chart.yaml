@@ -1,0 +1,23 @@
+apiVersion: v2
+name: Environment All in One
+description: A Helm chart for running full environment stack on single Kubernetes cluster
+type: application
+version: 0.1.0
+appVersion: "0.0.1"
+
+dependencies:
+  - name: kafka
+    version: 32.2.8
+    repository: https://charts.bitnami.com/bitnami
+  - name: postgresql
+    version: 16.7.4
+    repository: https://charts.bitnami.com/bitnami
+  - name: mongodb
+    version: 16.5.11
+    repository: https://charts.bitnami.com/bitnami
+  - name: kafka-ui
+    version: 0.7.6
+    repository: https://provectus.github.io/kafka-ui-charts
+  - name: schema-registry
+    version: 25.1.6
+    repository: https://charts.bitnami.com/bitnami

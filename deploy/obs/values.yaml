@@ -1,0 +1,729 @@
+# Logging
+#-----------------------------------------------------------------
+loki:
+  fullnameOverride: loki
+  loki:
+    commonConfig:
+      replication_factor: 1
+    schemaConfig:
+      configs:
+        - from: 2024-04-01
+          store: tsdb
+          object_store: s3
+          schema: v13
+          index:
+            prefix: loki_index_
+            period: 24h
+    ingester:
+      chunk_encoding: snappy
+    tracing:
+      enabled: true
+    querier:
+      # Default is 4, if you have enough memory and CPU you can increase, reduce if OOMing
+      max_concurrent: 2
+
+  deploymentMode: SingleBinary
+  singleBinary:
+    replicas: 1
+    resources:
+      limits:
+        cpu: 3
+        memory: 4Gi
+      requests:
+        cpu: 2
+        memory: 2Gi
+    extraEnv:
+      # Keep a little bit lower than memory limits
+      - name: GOMEMLIMIT
+        value: 3750MiB
+
+  chunksCache:
+    # default is 500MB, with limited memory keep this smaller
+    writebackSizeLimit: 10MB
+
+  # Enable minio for storage
+  minio:
+    enabled: true
+
+  # Zero out replica counts of other deployment modes
+  backend:
+    replicas: 0
+  read:
+    replicas: 0
+  write:
+    replicas: 0
+
+  ingester:
+    replicas: 0
+  querier:
+    replicas: 0
+  queryFrontend:
+    replicas: 0
+  queryScheduler:
+    replicas: 0
+  distributor:
+    replicas: 0
+  compactor:
+    replicas: 0
+  indexGateway:
+    replicas: 0
+  bloomCompactor:
+    replicas: 0
+  bloomGateway:
+    replicas: 0
+#-----------------------------------------------------------------
+vector:
+  fullnameOverride: vector
+  role: "Agent"
+  persistence:
+    enabled: false # for POC reasons
+  customConfig:
+    data_dir: "/var/lib/vector"
+    api:
+      enabled: true
+      address: 127.0.0.1:8686
+      playground: false
+    sources:
+      kubernetes:
+        type: "kubernetes_logs"
+    transforms:
+      kubernetes_logs_enrich:
+        type: "remap"
+        inputs:
+          - "kubernetes"
+        # extracting header from pod annotations or defaulting it to "non_project"
+        source: |-
+          if exists(.kubernetes.pod_annotations."prometheus.io/tenant") {
+            .tenantId = .kubernetes.pod_annotations."prometheus.io/tenant"
+          } else {
+            .tenantId = "nonproject"
+          }
+          if exists(.kubernetes.pod_labels."prometheus.io/tenant") {
+            .app = .kubernetes.pod_labels."app"
+          } else {
+            .app = ""
+          }
+
+          expr = r'("log.level":\s*"|level=|"level":"|\s|\[|\t)(?i)(?P<log_level>(info|warn|debug|warning|error)+)'
+          message = string!(.message)
+          if match(message, expr){
+            . |= parse_regex!(.message, expr)
+            .log_level = downcase(.log_level)
+          } else {
+            .log_level = "unknown"
+          }
+    sinks:
+      loki:
+        type: loki
+        inputs:
+          - kubernetes_logs_enrich
+        endpoint: http://loki:3100
+        out_of_order_action: accept
+        tenant_id: >-
+          {{ printf "{{ tenantId }}" }}
+        labels:
+          file: >-
+            {{ printf "{{ file }}" }}
+          stream: >-
+            {{ printf "{{ stream }}" }}
+          source_type: >-
+            {{ printf "{{ source_type }}" }}
+          kubernetes_pod_namespace: >-
+            {{ printf "{{ kubernetes.pod_namespace }}" }}
+          kubernetes_pod_name: >-
+            {{ printf "{{ kubernetes.pod_name }}" }}
+          kubernetes_pod_uid: >-
+            {{ printf "{{ kubernetes.pod_uid }}" }}
+          kubernetes_service_name: >-
+            {{ printf "{{ app }}" }}
+          kubernetes_container_name: >-
+            {{ printf "{{ kubernetes.container_name }}" }}
+          kubernetes_cluster: local
+          tenant: >-
+            {{ printf "{{ tenantId }}" }}
+          log_level: >-
+            {{ printf "{{ log_level }}" }}
+        encoding:
+          codec: raw_message # Passing original message
+  service:
+    enabled: true
+    ports:
+      - name: api
+        port: 8686
+        protocol: TCP
+  containerPorts:
+    - name: api
+      containerPort: 8686
+      protocol: TCP
+
+# Metrics
+#-----------------------------------------------------------------
+prom-label-proxy:
+  fullnameOverride: prom-label-proxy
+  config:
+    upstream: http://victoriametrics-server:8428
+    listenAddress: 0.0.0.0:8080
+    label: tenant
+    extraArgs:
+      - "--query-param=tenant"
+      - "--enable-label-apis=true"
+#-----------------------------------------------------------------
+prometheus-node-exporter:
+  fullnameOverride: prometheus-node-exporter
+#-----------------------------------------------------------------
+kube-state-metrics:
+  fullnameOverride: kube-state-metrics
+#-----------------------------------------------------------------
+victoria-metrics-single:
+  fullnameOverride: victoriametrics
+  server:
+    ingress:
+      enabled: true
+      isStable: true
+      hosts:
+        - name: victoria.metrics # TODO Configure
+          path: /victoriametrics
+    scrape:
+      enabled: false
+#-----------------------------------------------------------------      
+victoria-metrics-agent:
+  fullnameOverride: victoria-metrics-agent
+  deployment:
+    enabled: true
+  remoteWrite:
+    - url: http://victoriametrics-server:8428/api/v1/write
+  #Scrape config
+  config:
+    global:
+      scrape_interval: 5s
+      external_labels:
+        cluster: local
+
+    scrape_configs:
+      - job_name: 'node-exporter'
+        kubernetes_sd_configs:
+          - role: endpoints
+        relabel_configs:
+          - source_labels: [ __meta_kubernetes_endpoints_name ]
+            regex: 'node-exporter'
+            action: keep
+      - job_name: 'kubernetes-apiservers'
+        kubernetes_sd_configs:
+          - role: endpoints
+        scheme: https
+        tls_config:
+          ca_file: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
+        bearer_token_file: /var/run/secrets/kubernetes.io/serviceaccount/token
+        relabel_configs:
+          - source_labels: [ __meta_kubernetes_namespace, __meta_kubernetes_service_name, __meta_kubernetes_endpoint_port_name ]
+            action: keep
+            regex: default;kubernetes;https
+      - job_name: 'kubernetes-nodes'
+        scheme: https
+        tls_config:
+          ca_file: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
+        bearer_token_file: /var/run/secrets/kubernetes.io/serviceaccount/token
+        kubernetes_sd_configs:
+          - role: node
+        relabel_configs:
+          - action: labelmap
+            regex: __meta_kubernetes_node_label_(.+)
+          - target_label: __address__
+            replacement: kubernetes.default.svc:443
+          - source_labels: [ __meta_kubernetes_node_name ]
+            regex: (.+)
+            target_label: __metrics_path__
+            replacement: /api/v1/nodes/${1}/proxy/metrics
+          - target_label: tenant
+            replacement: 'sandbox'
+
+      - job_name: 'kubernetes-pods'
+        kubernetes_sd_configs:
+          - role: pod
+        relabel_configs:
+          - source_labels: [ __meta_kubernetes_pod_annotation_prometheus_io_scrape ]
+            action: keep
+            regex: true
+          - source_labels: [ __meta_kubernetes_pod_annotation_prometheus_io_path ]
+            action: replace
+            target_label: __metrics_path__
+            regex: (.+)
+          - source_labels: [ __address__, __meta_kubernetes_pod_annotation_prometheus_io_port ]
+            action: replace
+            regex: ([^:]+)(?::\d+)?;(\d+)
+            replacement: $1:$2
+            target_label: __address__
+          - action: labelmap
+            regex: __meta_kubernetes_pod_label_(.+)
+          - source_labels: [ __meta_kubernetes_namespace ]
+            action: replace
+            target_label: kubernetes_namespace
+          - source_labels: [ __meta_kubernetes_pod_name ]
+            action: replace
+            target_label: kubernetes_pod_name
+          - target_label: tenant
+            replacement: 'sandbox'
+
+      - job_name: 'kube-state-metrics'
+        static_configs:
+          - targets: [ 'kube-state-metrics:8080' ]
+      - job_name: 'kubernetes-cadvisor'
+        scheme: https
+        tls_config:
+          ca_file: /var/run/secrets/kubernetes.io/serviceaccount/ca.crt
+        bearer_token_file: /var/run/secrets/kubernetes.io/serviceaccount/token
+        kubernetes_sd_configs:
+          - role: node
+        relabel_configs:
+          - action: labelmap
+            regex: __meta_kubernetes_node_label_(.+)
+          - target_label: __address__
+            replacement: kubernetes.default.svc:443
+          - source_labels: [ __meta_kubernetes_node_name ]
+            regex: (.+)
+            target_label: __metrics_path__
+            replacement: /api/v1/nodes/${1}/proxy/metrics/cadvisor
+          - target_label: tenant
+            replacement: 'sandbox'
+
+      - job_name: 'kubernetes-service-endpoints'
+        kubernetes_sd_configs:
+          - role: endpoints
+        relabel_configs:
+          - source_labels: [ __meta_kubernetes_service_annotation_prometheus_io_scrape ]
+            action: keep
+            regex: true
+          - source_labels: [ __meta_kubernetes_service_annotation_prometheus_io_scheme ]
+            action: replace
+            target_label: __scheme__
+            regex: (https?)
+          - source_labels: [ __meta_kubernetes_service_annotation_prometheus_io_path ]
+            action: replace
+            target_label: __metrics_path__
+            regex: (.+)
+          - source_labels: [ __address__, __meta_kubernetes_service_annotation_prometheus_io_port ]
+            action: replace
+            target_label: __address__
+            regex: ([^:]+)(?::\d+)?;(\d+)
+            replacement: $1:$2
+          - action: labelmap
+            regex: __meta_kubernetes_service_label_(.+)
+          - source_labels: [ __meta_kubernetes_namespace ]
+            action: replace
+            target_label: kubernetes_namespace
+          - source_labels: [ __meta_kubernetes_service_name ]
+            action: replace
+            target_label: kubernetes_name
+          - target_label: tenant
+            replacement: 'sandbox'
+      - job_name: 'kubernetes-pods-actuator'
+        scrape_interval: 5s
+        kubernetes_sd_configs:
+          - role: pod
+        relabel_configs:
+          - source_labels: [ __meta_kubernetes_pod_annotation_actuator_prometheus_io_scrape,__meta_kubernetes_pod_container_port_name ]
+            separator: '@'
+            action: keep
+            regex: 'true@app' #checking scraping enabled for actuator and container port belongs to application
+          - source_labels: [ __meta_kubernetes_pod_annotation_actuator_prometheus_io_path ]
+            action: replace
+            target_label: __metrics_path__
+            regex: (.+)
+          - source_labels: [ __instance__, __meta_kubernetes_pod_annotation_actuator_prometheus_io_port ]
+            action: replace
+            regex: ([^:]+)(?::\d+)?;(\d+)
+            replacement: $1:$2
+            target_label: __address__
+          - action: labelmap
+            regex: __meta_kubernetes_pod_label_(.+)
+          - source_labels: [ __meta_kubernetes_namespace ]
+            action: replace
+            target_label: kubernetes_namespace
+          - source_labels: [ __meta_kubernetes_pod_name ]
+            action: replace
+            target_label: kubernetes_pod_name
+          - target_label: source
+            replacement: 'actuator'
+          - target_label: tenant
+            replacement: 'sandbox'
+        # Transforming otel labels for prometheus/grafana needs
+        metric_relabel_configs:
+          - source_labels: [ 'app' ]
+            target_label: "application"
+          - source_labels: [ 'instance' ]
+            target_label: "app_instance"
+      - job_name: 'kubernetes-pods-otel'
+        scrape_interval: 5s
+        kubernetes_sd_configs:
+          - role: pod
+        relabel_configs:
+          - source_labels: [ __meta_kubernetes_pod_annotation_otel_prometheus_io_scrape,__meta_kubernetes_pod_container_port_name ]
+            separator: '@'
+            action: keep
+            regex: 'true@otel-metrics' #checking scraping enabled for otel and container port belongs to otel agent
+          - source_labels: [ __meta_kubernetes_pod_annotation_otel_prometheus_io_path ]
+            action: replace
+            target_label: __metrics_path__
+            regex: (.+)
+          - source_labels: [ __instance__, __meta_kubernetes_pod_annotation_otel_prometheus_io_port ]
+            action: replace
+            regex: ([^:]+)(?::\d+)?;(\d+)
+            replacement: $1:$2
+            target_label: __address__
+          - action: labelmap
+            regex: __meta_kubernetes_pod_label_(.+)
+          - source_labels: [ __meta_kubernetes_namespace ]
+            action: replace
+            target_label: kubernetes_namespace
+          - source_labels: [ __meta_kubernetes_pod_name ]
+            action: replace
+            target_label: kubernetes_pod_name
+          - target_label: source
+            replacement: 'otel'
+          - target_label: tenant
+            replacement: 'sandbox'
+        metric_relabel_configs:
+          - source_labels: [ 'app' ]
+            target_label: "application"
+          - source_labels: [ 'instance' ]
+            target_label: "app_instance"
+# Tracing
+#-----------------------------------------------------------------
+opentelemetry-collector:
+  fullnameOverride: opentelemetry-collector
+  mode: "daemonset"
+
+  image:
+    repository: "otel/opentelemetry-collector-contrib"
+  command:
+    name: "otelcol-contrib"
+
+  service:
+    enabled: true
+
+  ports:
+    otlp:
+      enabled: true
+      containerPort: 4317
+      servicePort: 4317
+      hostPort: 4317
+      protocol: TCP
+      # nodePort: 30317
+      appProtocol: grpc
+    otlp-http:
+      enabled: false
+    jaeger-compact:
+      enabled: false
+    jaeger-thrift:
+      enabled: false
+    jaeger-grpc:
+      enabled: false
+    zipkin:
+      enabled: false
+    metrics:
+      enabled: false
+
+  config:
+    receivers:
+      otlp:
+        protocols:
+          grpc:
+            endpoint: ${env:MY_POD_IP}:4317
+    exporters:
+      otlp:
+        endpoint: tempo:4317
+        tls:
+          insecure: true
+        headers:
+          x-scope-orgid: sandbox
+
+    processors:
+      filter/ottl:
+        error_mode: ignore
+        traces:
+          span:
+            - 'IsMatch(attributes["http.route"], ".*/\\*\\*") == true'
+            - 'IsMatch(attributes["http.route"], ".*/actuator*") == true'
+            - 'name == "OperationHandler.handle"'
+            - 'attributes["http.target"] == "/metrics"'
+            - 'IsMatch(attributes["http.target"], "/health*") == true'
+            - attributes["http.target"] == "/readiness/"
+            - attributes["http.target"] == "/liveness/"
+            - 'IsMatch(name, ".*/healthcheck*") == true'
+            - 'IsMatch(name, ".*/metrics*") == true'
+      batch: { }
+    service:
+      pipelines:
+        traces:
+          receivers: [ "otlp" ]
+          exporters: [ "otlp" ]
+          processors: [ "filter/ottl", "batch" ]
+        logs: {}
+        metrics: {}
+      telemetry:
+        logs:
+          level: "info"
+        metrics: {}
+#-----------------------------------------------------------------
+tempo:
+  fullnameOverride: tempo
+  queryFrontend:
+    search:
+      duration_slo: 5s
+      throughput_bytes_slo: 1.073741824e+09
+    trace_by_id:
+      duration_slo: 5s
+
+  global_overrides:
+    metrics_generator_processor_service_graphs_dimensions: [ "service.instance.id", "service.namespace" ]
+    metrics_generator_processor_span_metrics_dimensions: [ "service.instance.id", "service.namespace" ]
+
+  retention: 1h
+  multitenancyEnabled: false
+  reportingEnabled: true
+  metricsGenerator:
+    enabled: true
+    remoteWriteUrl: "http://victoriametrics-server:8427" # IP address of the Yandex network load balancer
+
+  server:
+    http_listen_port: 3100
+  storage:
+    trace:
+      backend: local
+      local:
+        path: /var/tempo/traces
+      wal:
+        path: /var/tempo/wal
+# Monitoring
+#-----------------------------------------------------------------
+grafana:
+  fullnameOverride: grafana
+  persistence:
+    type: pvc
+    enabled: false # for POC reasons
+
+  adminUser: admin
+  adminPassword: password
+
+  datasources:
+    datasources.yaml:
+      apiVersion: 1
+      datasources:
+        - name: prometheus
+          type: prometheus
+          uid: prometheus
+          url: http://prom-label-proxy:8080
+          access: proxy
+          orgId: 1
+          isDefault: true
+          version: 1
+          editable: true
+          jsonData:
+            httpMethod: GET
+            customQueryParameters: 'tenant=sandbox'
+        - name: prometheus-wrong-tenant
+          type: prometheus
+          uid: prometheus-wrong-tenant
+          url: http://prom-label-proxy:8080
+          access: proxy
+          orgId: 1
+          isDefault: false
+          version: 1
+          editable: true
+          jsonData:
+            httpMethod: GET
+            customQueryParameters: 'tenant=sandbox2'
+        - name: tempo
+          type: tempo
+          uid: tempo
+          access: proxy
+          orgId: 1
+          url: http://tempo:3100
+          basicAuth: false
+          isDefault: false
+          version: 1
+          editable: true
+          apiVersion: 1
+          jsonData:
+            httpHeaderName1: 'X-Scope-OrgID'
+            httpMethod: GET
+            serviceMap:
+              datasourceUid: prometheus
+            tracesToLogs: # mapping traces to logs datasource
+              mappedTags: [ { key: 'service.name', value: 'container_name' } ]
+              datasourceUid: 'loki'
+              mapTagNamesEnabled: true
+              spanStartTimeShift: '-5m' #shifts grafana timerange forward and can cause empty search result
+              spanEndTimeShift: '5m'
+              filterByTraceID: true
+              filterBySpanID: false # not all spans have logs but link is displayed for both
+              lokiSearch: true
+            tracesToMetrics:
+              datasourceUid: 'prometheus'
+              tags: [ { key: 'service.name', value: 'application' } ]
+              queries:
+                - name: 'Request rate'
+                  query: 'sum by(uri) (rate(http_server_requests_count{$$__tags}[5m])) '
+                - name: 'Request error rate'
+                  query: 'sum by(uri, outcome) (rate(http_server_requests_count{$$__tags, outcome=~"CLIENT_ERROR|SERVER_ERROR"}[5m])) '
+            tracesToProfiles:
+              customQuery: false
+              datasourceUid: "pyroscope"
+              profileTypeId: "process_cpu:cpu:nanoseconds:cpu:nanoseconds"
+              tags:
+                - key: "service.name"
+                  value: "service_name"
+          secureJsonData:
+            httpHeaderValue1: 'sandbox'
+        - name: tempo-wrong-tenant
+          type: tempo
+          uid: tempo-wrong-tenant
+          access: proxy
+          orgId: 1
+          url: http://tempo:3100
+          basicAuth: false
+          isDefault: false
+          version: 1
+          editable: true
+          apiVersion: 1
+          jsonData:
+            httpHeaderName1: 'X-Scope-OrgID'
+            httpMethod: GET
+            serviceMap:
+              datasourceUid: prometheus
+            tracesToLogs: # mapping traces to logs datasource
+              mappedTags: [ { key: 'service.name', value: 'container_name' } ]
+              datasourceUid: 'loki'
+              mapTagNamesEnabled: true
+              spanStartTimeShift: '-5m' #shifts grafana timerange forward and can cause empty search result
+              spanEndTimeShift: '5m'
+              filterByTraceID: true
+              filterBySpanID: false # not all spans have logs but link is displayed for both
+              lokiSearch: true
+            tracesToMetrics:
+              datasourceUid: 'prometheus'
+              tags: [ { key: 'service.name', value: 'application' } ]
+              queries:
+                - name: 'Request rate'
+                  query: 'sum by(uri) (rate(http_server_requests_count{$$__tags}[5m])) '
+                - name: 'Request error rate'
+                  query: 'sum by(uri, outcome) (rate(http_server_requests_count{$$__tags, outcome=~"CLIENT_ERROR|SERVER_ERROR"}[5m])) '
+            tracesToProfiles:
+              customQuery: false
+              datasourceUid: "pyroscope"
+              profileTypeId: "process_cpu:cpu:nanoseconds:cpu:nanoseconds"
+              tags:
+                - key: "service.name"
+                  value: "service_name"
+          secureJsonData:
+            httpHeaderValue1: 'sandbox2'
+        - name: Loki
+          type: loki
+          uid: loki
+          orgId: 1
+          access: proxy
+          url: http://loki:3100
+          basicAuth: false
+          jsonData:
+            httpHeaderName1: 'X-Scope-OrgID'
+            maxLines: 1000
+            derivedFields:
+              - datasourceUid: tempo
+                matcherRegex: "\"trace_id\":\"(\\w+)\""
+                name: TraceID
+                url: '$${__value.raw}'
+          secureJsonData:
+            httpHeaderValue1: 'sandbox'
+          editable: true
+        - name: Loki-Non-Project
+          type: loki
+          uid: loki-wrong-tenant
+          orgId: 1
+          access: proxy
+          url: http://loki:3100
+          basicAuth: false
+          jsonData:
+            httpHeaderName1: 'X-Scope-OrgID'
+            maxLines: 1000
+            derivedFields:
+              - datasourceUid: tempo
+                matcherRegex: "\"trace_id\":\"(\\w+)\""
+                name: TraceID
+                url: '$${__value.raw}'
+          secureJsonData:
+            httpHeaderValue1: 'nonproject'
+          editable: true
+        - name: Pyroscope
+          type: grafana-pyroscope-datasource
+          access: proxy
+          orgId: 1
+          uid: pyroscope
+          url: http://pyroscope:4040
+          basicAuth: false
+          isDefault: false
+          version: 1
+          editable: true
+          apiVersion: 1
+          jsonData:
+            httpHeaderName1: 'X-Scope-OrgID'
+            minStep: '15s'
+            backendType: 'pyroscope'
+          secureJsonData:
+            httpHeaderValue1: 'sandbox'
+        - name: Pyroscope-Wrong-Tenant
+          type: grafana-pyroscope-datasource
+          access: proxy
+          orgId: 1
+          uid: pyroscope-wrong-tenant
+          url: http://pyroscope:4040
+          basicAuth: false
+          isDefault: false
+          version: 1
+          editable: true
+          apiVersion: 1
+          jsonData:
+            httpHeaderName1: 'X-Scope-OrgID'
+            minStep: '15s'
+            backendType: 'pyroscope'
+          secureJsonData:
+            httpHeaderValue1: 'sandbox2'
+      deleteDatasources: [ ]
+
+  dashboardProviders:
+    dashboardproviders.yaml:
+      apiVersion: 1
+      providers:
+        - name: 'default'
+          orgId: 1
+          folder: ''
+          type: file
+          disableDeletion: false
+          editable: true
+          options:
+            path: /var/lib/grafana/dashboards/default
+
+  dashboardsConfigMaps:
+    default: grafana-dashboards
+
+  # Grafana custom dashboard provisioning. Config map should be linked from grafana helm chart dashboardsConfigMaps parameter
+  provisioning:
+    configMapName: grafana-dashboards
+    dashboards:
+      spring-boot-statistics:
+        file: dashboards/spring_boot_statistics.json
+      spring_boot_hikaricp:
+        file: dashboards/spring_boot_hikaricp.json
+      java-error-corellation:
+        file: dashboards/java-error-corellation.json
+      node-exporter:
+        file: dashboards/node_exporter.json
+      k8s_monitoring:
+        file: dashboards/k8s_monitoring.json
+
+#Profiling
+#-----------------------------------------------------------------
+pyroscope:
+  pyroscope:
+    fullnameOverride: pyroscope
+  alloy:
+    enabled: false

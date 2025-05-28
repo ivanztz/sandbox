@@ -1,0 +1,57 @@
+#-----------------------------------------------------------------
+kafka:
+  fullnameOverride: kafka
+  controller:
+    replicaCount: 3
+    controllerOnly: false
+
+  listeners:
+    client:
+      protocol: PLAINTEXT
+    controller:
+      protocol: PLAINTEXT
+    interbroker:
+      protocol: PLAINTEXT
+    external:
+      protocol: PLAINTEXT
+#-----------------------------------------------------------------
+kafka-ui:
+  fullnameOverride: kafka-ui
+  yamlApplicationConfig:
+    kafka:
+      clusters:
+        - name: KAFKA
+          bootstrapServers: kafka:9092
+    auth:
+      type: disabled
+#-----------------------------------------------------------------
+postgresql:
+  fullnameOverride: postgresql
+  architecture: standalone
+  auth:
+    database: objects
+    username: admin
+    password: password
+    postgresPassword: password
+#-----------------------------------------------------------------
+mongodb:
+  fullnameOverride: mongodb
+  architecture: standalone
+  auth:
+    databases:
+      - events
+    usernames:
+      - admin
+    passwords:
+      - password
+    rootPassword: password
+#-----------------------------------------------------------------
+schema-registry:
+  fullnameOverride: schema-registry
+  kafka:
+    enabled: false
+  listeners: http://0.0.0.0:8081
+  externalKafka:
+    brokers: ["PLAINTEXT://kafka:9092"]
+    listener:
+      protocol: PLAINTEXT

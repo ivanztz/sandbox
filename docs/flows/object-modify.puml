@@ -2,9 +2,9 @@
 autonumber
 
 participant "Invoker" as invoker #Business
-participant "[[/architect/components/business.objects.service object-service]]" as objectService #LightBlue
-participant "[[/architect/components/business.objects.service object-events]]" as objectEvents #LightBlue
-participant "[[/architect/components/inf.messaging.kafka kafka]]" as kafka #LightBlue
+participant "object-service" as objectService #LightBlue
+participant "object-events" as objectEvents #LightBlue
+participant "kafka" as kafka #Business
 
 invoker -> objectService: Object modification request \n [HTTP POST /objects] \n [HTTP PUT\DELETE /objects/{objectId}]
 activate invoker

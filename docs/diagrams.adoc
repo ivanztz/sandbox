@@ -1,0 +1,17 @@
+== Solution structure
+
+image:sandbox.png[Solution structure]
+
+== Flow Diagram
+
+[plantuml]
+----
+!include ./flows/object-modify.puml
+----
+
+== Flow Diagram
+
+[plantuml]
+----
+!include ./erd/object-service-erd.puml
+----

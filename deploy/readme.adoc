@@ -1,0 +1,29 @@
+== Helm repository setup
+
+[source, shell]
+----
+make deps_repos
+
+----
+
+== Application setup
+
+=== Build
+[source, shell]
+----
+make app_build
+----
+
+=== Start
+[source, shell]
+----
+make env_start obs_start app_start
+----
+
+=== Stop
+[source, shell]
+----
+make env_stop obs_stop app_stop
+----
+
+

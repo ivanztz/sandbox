@@ -43,14 +43,6 @@ spring:
     loadbalancer:
       ribbon:
         enable: false
-  security:
-    client:
-      name: sandbox-app #custom param
-    oauth2:
-      resourceserver:
-        jwt:
-          jwk-set-uri: ${keycloak.url}/realms/sandbox/protocol/openid-connect/certs
-          issuer-uri: ${keycloak.url}/realms/sandbox
 
   httpclient:
     enabled: true
@@ -84,9 +76,6 @@ topics:
 
 clients:
   events: ${events-url:http://localhost:8082/}
-
-keycloak.url: http://localhost:8888
-schemaregistry.url: http://localhost:8081
 
 validation:
   definitions:

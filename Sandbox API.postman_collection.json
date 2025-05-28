@@ -9,6 +9,9 @@
 		{
 			"name": "Create object",
 			"request": {
+				"auth": {
+					"type": "noauth"
+				},
 				"method": "POST",
 				"header": [
 					{
@@ -36,6 +39,9 @@
 		{
 			"name": "Get events",
 			"request": {
+				"auth": {
+					"type": "noauth"
+				},
 				"method": "GET",
 				"header": [
 					{
@@ -59,6 +65,9 @@
 		{
 			"name": "Update object",
 			"request": {
+				"auth": {
+					"type": "noauth"
+				},
 				"method": "PUT",
 				"header": [
 					{
@@ -87,6 +96,9 @@
 		{
 			"name": "Delete object",
 			"request": {
+				"auth": {
+					"type": "noauth"
+				},
 				"method": "DELETE",
 				"header": [
 					{
@@ -111,6 +123,9 @@
 		{
 			"name": "Get object",
 			"request": {
+				"auth": {
+					"type": "noauth"
+				},
 				"method": "GET",
 				"header": [
 					{
@@ -135,6 +150,9 @@
 		{
 			"name": "Get objects",
 			"request": {
+				"auth": {
+					"type": "noauth"
+				},
 				"method": "GET",
 				"header": [],
 				"url": {
@@ -154,121 +172,6 @@
 							"key": "endDate",
 							"value": "2023-05-05T16%3A44%3A57.272%2B03%3A00"
 						}
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Auth token (full permissions)",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"pm.collectionVariables.set(\"AUTH_TOKEN\", pm.response.json().access_token);",
-							""
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"request": {
-				"method": "POST",
-				"header": [],
-				"body": {
-					"mode": "urlencoded",
-					"urlencoded": [
-						{
-							"key": "client_id",
-							"value": "sandbox-app",
-							"type": "text"
-						},
-						{
-							"key": "username",
-							"value": "user",
-							"type": "text"
-						},
-						{
-							"key": "password",
-							"value": "password",
-							"type": "text"
-						},
-						{
-							"key": "grant_type",
-							"value": "password",
-							"type": "text"
-						}
-					]
-				},
-				"url": {
-					"raw": "{{KEYCLOAK_URL}}/realms/sandbox/protocol/openid-connect/token",
-					"host": [
-						"{{KEYCLOAK_URL}}"
-					],
-					"path": [
-						"realms",
-						"sandbox",
-						"protocol",
-						"openid-connect",
-						"token"
-					]
-				}
-			},
-			"response": []
-		},
-		{
-			"name": "Auth token (readonly permissions)",
-			"event": [
-				{
-					"listen": "test",
-					"script": {
-						"exec": [
-							"pm.collectionVariables.set(\"AUTH_TOKEN\", pm.response.json().access_token);"
-						],
-						"type": "text/javascript"
-					}
-				}
-			],
-			"request": {
-				"method": "POST",
-				"header": [],
-				"body": {
-					"mode": "urlencoded",
-					"urlencoded": [
-						{
-							"key": "client_id",
-							"value": "sandbox-app",
-							"type": "text"
-						},
-						{
-							"key": "username",
-							"value": "readonly_user",
-							"type": "text"
-						},
-						{
-							"key": "password",
-							"value": "password",
-							"type": "text"
-						},
-						{
-							"key": "grant_type",
-							"value": "password",
-							"type": "text"
-						}
-					]
-				},
-				"url": {
-					"raw": "{{KEYCLOAK_URL}}/realms/sandbox/protocol/openid-connect/token",
-					"host": [
-						"{{KEYCLOAK_URL}}"
-					],
-					"path": [
-						"realms",
-						"sandbox",
-						"protocol",
-						"openid-connect",
-						"token"
 					]
 				}
 			},
@@ -307,17 +210,8 @@
 	],
 	"variable": [
 		{
-			"key": "AUTH_TOKEN",
-			"value": "eyJhbGciOiJSUzI1NiIsInR5cCIgOiAiSldUIiwia2lkIiA6ICJoSHllNHQxcEx6QWdLUmNmLXYxdTBqQjcwZ2tUQTcxX3Z5Q0UzVVRzcTdRIn0"
-		},
-		{
 			"key": "SERVICE_URL",
-			"value": "http://object-service.cluster.local",
-			"type": "string"
-		},
-		{
-			"key": "KEYCLOAK_URL",
-			"value": "http://keycloak.cluster.local",
+			"value": "http://localhost:8080",
 			"type": "string"
 		},
 		{
