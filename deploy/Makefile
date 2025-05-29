@@ -1,4 +1,4 @@
-.PHONY: deps_repos obs_start obs_stop app_start app_stop env_start env_stop app_start app_build
+.PHONY: deps_repos obs_start obs_stop app_start app_stop env_start env_stop app_build
 
 app_start:
 	kubectl apply -f ../kubernetes/deployment-app.yaml
