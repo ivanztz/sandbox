@@ -79,7 +79,11 @@ link:deploy/readme.adoc[Deployment instructions]
 
 Project doesn't provide any Ingresses or NodePorts as it's very env-specific so any of deployed apps can be accessed via https://kubernetes.io/docs/tasks/access-application-cluster/port-forward-access-application-cluster/[K8S Port Forwarding]
 
-=== App credentials:
+== Swagger UI
+
+Swagger UI is available for object-service on http://localhost:8080[]
+
+=== Env credentials:
 
 * Postgres (admin:password)
 * MongoDB (admin:password)

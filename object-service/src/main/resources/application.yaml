@@ -55,12 +55,18 @@ spring:
 
 springdoc:
   api-docs:
-    enabled: false
+    enabled: true
+  show-actuator: true
+  cache:
+    disabled: true
   swagger-ui:
+    disable-swagger-default-url: true
+    csrf:
+      enabled: true
+    use-root-path: true
     urls:
       - name: Rest API
         url: /objects-api.yaml
-
 logging:
   level:
     ROOT: INFO
