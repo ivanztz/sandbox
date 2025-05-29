@@ -30,8 +30,8 @@ loki:
         cpu: 3
         memory: 4Gi
       requests:
-        cpu: 2
-        memory: 2Gi
+        cpu: 100m
+        memory: 1Gi
     extraEnv:
       # Keep a little bit lower than memory limits
       - name: GOMEMLIMIT
@@ -436,6 +436,21 @@ opentelemetry-collector:
           insecure: true
         headers:
           x-scope-orgid: sandbox
+      clickhouse:
+        endpoint: tcp://clickhouse:9000?dial_timeout=10s
+        database: otel
+        username: admin
+        password: password
+        async_insert: true
+        ttl: 168h
+        compress: lz4
+        create_schema: true
+        timeout: 5s
+        retry_on_failure:
+          enabled: true
+          initial_interval: 5s
+          max_interval: 30s
+          max_elapsed_time: 300s
 
     processors:
       filter/ottl:
@@ -452,12 +467,19 @@ opentelemetry-collector:
             - 'IsMatch(name, ".*/healthcheck*") == true'
             - 'IsMatch(name, ".*/metrics*") == true'
       batch: { }
+      batch/clickhouse:
+        timeout: 5s
+        send_batch_size: 100000
     service:
       pipelines:
         traces:
           receivers: [ "otlp" ]
           exporters: [ "otlp" ]
           processors: [ "filter/ottl", "batch" ]
+        traces/clickhouse:
+          receivers: [ "otlp" ]
+          exporters: [ "clickhouse" ]
+          processors: [ "filter/ottl", "batch/clickhouse" ]
         logs: {}
         metrics: {}
       telemetry:
@@ -504,6 +526,9 @@ grafana:
 
   adminUser: admin
   adminPassword: password
+
+  plugins:
+    - grafana-clickhouse-datasource
 
   datasources:
     datasources.yaml:
@@ -687,6 +712,20 @@ grafana:
             backendType: 'pyroscope'
           secureJsonData:
             httpHeaderValue1: 'sandbox2'
+        - name: ClickHouse
+          type: grafana-clickhouse-datasource
+          jsonData:
+            defaultDatabase: otel
+            port: 9000
+            host: clickhouse
+            username: admin
+            tlsSkipVerify: false
+            traces:
+              defaultDatabase: otel
+              defaultTable: otel_traces
+              otelEnabled: true
+          secureJsonData:
+            password: password
       deleteDatasources: [ ]
 
   dashboardProviders:

@@ -23,7 +23,7 @@ make env_start obs_start app_start
 === Stop
 [source, shell]
 ----
-make env_stop obs_stop app_stop
+make app_stop obs_stop env_stop
 ----
 
 

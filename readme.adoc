@@ -55,6 +55,7 @@ For more documentation link:docs/diagrams.adoc[docs]
 * Grafana Loki
 * Grafana Pyroscope
 * Vector
+* Clickhouse (Traces)
 
 == Deployment instructions
 
@@ -88,4 +89,5 @@ Swagger UI is available for object-service on http://localhost:8080[]
 * Postgres (admin:password)
 * MongoDB (admin:password)
 * Grafana  (admin:password)
+* Clickhouse (admin:password)
 

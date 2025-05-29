@@ -19,7 +19,7 @@ deps_repos:
 	helm repo add prometheus-community https://prometheus-community.github.io/helm-charts
 	helm repo add vm https://victoriametrics.github.io/helm-charts/
 	helm repo add open-telemetry https://open-telemetry.github.io/opentelemetry-helm-charts
-	helm repo add bitnami https://charts.bitnami.com/bitnami
+	helm repo add bitnami https://charts.bitnami.co:m/bitnami
 	helm repo add kafka-ui https://provectus.github.io/kafka-ui-charts
 obs_start:
 	helm dependency update ./obs

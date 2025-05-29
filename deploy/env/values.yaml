@@ -55,3 +55,10 @@ schema-registry:
     brokers: ["PLAINTEXT://kafka:9092"]
     listener:
       protocol: PLAINTEXT
+#-----------------------------------------------------------------
+clickhouse:
+  fullnameOverride: clickhouse
+  replicaCount: 1
+  auth:
+    username: admin
+    password: password
