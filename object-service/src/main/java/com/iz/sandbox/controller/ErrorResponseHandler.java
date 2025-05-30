@@ -9,6 +9,7 @@ import org.springframework.beans.TypeMismatchException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
@@ -16,7 +17,8 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.context.request.WebRequest;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
-import javax.persistence.EntityNotFoundException;
+import jakarta.persistence.EntityNotFoundException;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -25,21 +27,21 @@ import java.util.List;
 public class ErrorResponseHandler extends ResponseEntityExceptionHandler {
 
     @Override
-    protected ResponseEntity<Object> handleHttpMessageNotReadable(HttpMessageNotReadableException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
+    protected ResponseEntity<Object> handleHttpMessageNotReadable(HttpMessageNotReadableException ex, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
         log.error(ex.getMessage(), ex);
-        return new ResponseEntity<>(createErrorResponse("Unable to parse request body", ex.getMessage()), HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(createErrorResponse("Unable to parse request body", ex.getMessage()), HttpStatusCode.valueOf(400));
     }
 
     @Override
-    protected ResponseEntity<Object> handleTypeMismatch(TypeMismatchException ex, HttpHeaders headers, HttpStatus status, WebRequest request) {
+    protected ResponseEntity<Object> handleTypeMismatch(TypeMismatchException ex, HttpHeaders headers, HttpStatusCode status, WebRequest request) {
         log.error(ex.getMessage(), ex);
-        return new ResponseEntity<>(createErrorResponse("Wrong query parameter", ex.getMessage()), HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(createErrorResponse("Wrong query parameter", ex.getMessage()), HttpStatusCode.valueOf(400));
     }
 
     @ExceptionHandler({EntityNotFoundException.class, EmptyResultDataAccessException.class, ObjectNotFoundException.class})
     protected ResponseEntity<Object> handleEntityNotFound(Exception ex) {
         log.error(ex.getMessage(), ex);
-        return new ResponseEntity<>(createErrorResponse("Entity Not found", ex.getMessage()), HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(createErrorResponse("Entity Not found", ex.getMessage()), HttpStatusCode.valueOf(404));
     }
 
     @ExceptionHandler({ValidationException.class})

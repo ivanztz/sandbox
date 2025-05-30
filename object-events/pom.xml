@@ -12,20 +12,22 @@
     <artifactId>object-events</artifactId>
 
     <properties>
-        <java.version>17</java.version>
-        <maven.compiler.source>17</maven.compiler.source>
-        <maven.compiler.target>17</maven.compiler.target>
+        <java.version>21</java.version>
+        <maven.compiler.source>21</maven.compiler.source>
+        <maven.compiler.target>21</maven.compiler.target>
         <object-api.version>0.0.1-SNAPSHOT</object-api.version>
         <lombok.version>1.18.38</lombok.version>
-        <mapstruct.version>1.5.2.Final</mapstruct.version>
+        <mapstruct.version>1.6.3</mapstruct.version>
         <lombok-mapstruct-binding.version>0.2.0</lombok-mapstruct-binding.version>
-        <opentelemetry-javaagent.version>1.18.0</opentelemetry-javaagent.version>
-        <micrometer-registry-prometheus.version>1.9.4</micrometer-registry-prometheus.version>
+        <opentelemetry-javaagent.version>2.16.0</opentelemetry-javaagent.version>
+        <micrometer-registry-prometheus.version>1.15.0</micrometer-registry-prometheus.version>
         <otel-extension.version>0.0.1-SNAPSHOT</otel-extension.version>
-        <json-schema-registry.version>7.3.0</json-schema-registry.version>
-        <kafka-avro-serializer.version>7.3.0</kafka-avro-serializer.version>
-        <logback-ecs-encoder.version>1.5.0</logback-ecs-encoder.version>
-        <pyroscope.otel.version>0.10.1.11</pyroscope.otel.version>
+        <json-schema-registry.version>7.9.1</json-schema-registry.version>
+        <kafka-avro-serializer.version>7.9.1</kafka-avro-serializer.version>
+        <logback-ecs-encoder.version>1.7.0</logback-ecs-encoder.version>
+        <pyroscope.otel.version>1.0.4</pyroscope.otel.version>
+        <jakarta.annotation-api.version>3.0.0</jakarta.annotation-api.version>
+        <hibernate-validator.version>9.0.0.Final</hibernate-validator.version>
     </properties>
 
     <dependencies>
@@ -38,6 +40,11 @@
             <groupId>com.iz.sandbox</groupId>
             <artifactId>otel-extension</artifactId>
             <version>${otel-extension.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>jakarta.annotation</groupId>
+            <artifactId>jakarta.annotation-api</artifactId>
+            <version>${jakarta.annotation-api.version}</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -118,6 +125,11 @@
             <artifactId>logback-ecs-encoder</artifactId>
             <version>${logback-ecs-encoder.version}</version>
         </dependency>
+        <dependency>
+            <groupId>org.hibernate.validator</groupId>
+            <artifactId>hibernate-validator</artifactId>
+            <version>${hibernate-validator.version}</version>
+        </dependency>
     </dependencies>
 
     <build>
@@ -129,7 +141,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.5.1</version>
+                <version>3.14.0</version>
                 <configuration>
                     <annotationProcessorPaths>
                         <path>

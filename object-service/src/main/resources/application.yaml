@@ -8,9 +8,9 @@ spring:
     driverClassName: org.postgresql.Driver
     hikari:
       maximum-pool-size: 5
+      minimum-idle: 1
   jpa:
     generate-ddl: false
-    database: postgresql
     hibernate:
       naming:
         physical-strategy: org.hibernate.boot.model.naming.CamelCaseToUnderscoresNamingStrategy
@@ -43,6 +43,10 @@ spring:
     loadbalancer:
       ribbon:
         enable: false
+    compatibility-verifier:
+      enabled: false # TODO enable after versions are compatible
+    schemaRegistryClient:
+      endpoint: ${schemaregistry.url}
 
   httpclient:
     enabled: true
@@ -85,18 +89,10 @@ clients:
 
 validation:
   definitions:
-    - type: kotlin
-      name: intFieldValidation
-      path: validation/scripts/intFieldValidation.kts
-      order: 2
     - type: bean
       name: decimalFieldValidation
       className: com.iz.sandbox.service.validation.impl.DecimalValueValidator
       order: 3
-    - type: kotlin
-      name: stringFieldValidation
-      path: validation/scripts/stringFieldValidation.kts
-      order: 1
     - type: groovy
       name: intFieldValidation2
       path: validation/scripts/intFieldValidation2.groovy

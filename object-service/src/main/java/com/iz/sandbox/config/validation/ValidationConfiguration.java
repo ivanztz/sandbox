@@ -44,7 +44,6 @@ public class ValidationConfiguration {
                 case BEAN -> Optional.ofNullable(validatorBeansMap.
                         get(definition.getClassName())).orElseThrow(() -> new NoSuchElementException("Validator not found: " + definition.getClassName()));
                 case GROOVY -> new Jsr233ValidatorImpl(definition, groovyScriptEngine);
-                case KOTLIN -> new Jsr233ValidatorImpl(definition, kotlinScriptEngine);
                 default -> throw new IllegalArgumentException("Unknown validator type " + definition.getType());
             };
         } catch (IOException | ScriptException e) {

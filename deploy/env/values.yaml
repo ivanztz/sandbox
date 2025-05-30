@@ -22,6 +22,7 @@ kafka-ui:
       clusters:
         - name: KAFKA
           bootstrapServers: kafka:9092
+          schemaRegistry: http://schema-registry:8081
     auth:
       type: disabled
 #-----------------------------------------------------------------
@@ -52,7 +53,7 @@ schema-registry:
     enabled: false
   listeners: http://0.0.0.0:8081
   externalKafka:
-    brokers: ["PLAINTEXT://kafka:9092"]
+    brokers: [ "PLAINTEXT://kafka:9092" ]
     listener:
       protocol: PLAINTEXT
 #-----------------------------------------------------------------

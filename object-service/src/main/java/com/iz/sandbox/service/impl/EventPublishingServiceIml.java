@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.OffsetDateTime;
+import java.time.Instant;
 import java.util.UUID;
 
 @Service
@@ -69,7 +69,7 @@ public class EventPublishingServiceIml implements EventPublishingService {
     private EventData createEventData() {
         return EventData.newBuilder()
                 .setPrincipal(null)
-                .setPublishedAt(OffsetDateTime.now())
+                .setPublishedAt(Instant.now())
                 .build();
     }
 

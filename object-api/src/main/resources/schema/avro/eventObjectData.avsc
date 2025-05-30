@@ -2,7 +2,7 @@
   "type": "record",
   "namespace": "com.iz.sandbox.event",
   "name": "EventObjectData",
-  "javaAnnotation": "javax.annotation.Generated(\"avro\")",
+  "javaAnnotation": "jakarta.annotation.Generated(\"avro\")",
   "fields": [
     {
       "name": "id",
@@ -42,18 +42,18 @@
     {
       "name": "createdAt",
       "type": {
-        "type": "string",
-        "logicalType": "offset-date-time"
+        "type": "long",
+        "logicalType": "timestamp-millis"
       }
     },
     {
       "name": "updatedAt",
       "type": [
+        "null",
         {
-          "type": "string",
-          "logicalType": "offset-date-time"
-        },
-        "null"
+          "type": "long",
+          "logicalType": "timestamp-millis"
+        }
       ]
     }
   ]

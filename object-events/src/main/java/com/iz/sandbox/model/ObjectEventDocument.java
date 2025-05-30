@@ -6,7 +6,7 @@ import lombok.Setter;
 import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import java.time.OffsetDateTime;
+import java.time.Instant;
 
 @NoArgsConstructor
 @Getter
@@ -19,7 +19,7 @@ public class ObjectEventDocument {
 
     private String objectId;
 
-    private OffsetDateTime publishedAt;
+    private Instant publishedAt;
 
     private String principal;
 

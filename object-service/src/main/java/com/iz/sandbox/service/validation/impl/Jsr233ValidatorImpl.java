@@ -15,7 +15,7 @@ import java.util.List;
 
 public class Jsr233ValidatorImpl implements Validator {
 
-    private Validator validatorDelegate;
+    private final Validator validatorDelegate;
 
     public Jsr233ValidatorImpl(ValidationDefinition definition, ScriptEngine scriptEngine) throws IOException, ScriptException {
         final String script = new String(new ClassPathResource(definition.getPath()).getInputStream().readAllBytes(), StandardCharsets.UTF_8);

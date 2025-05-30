@@ -11,5 +11,5 @@ List<Violation> validateObject(ObjectDataRequest dto) {
         violations.add(violation)
     }
 
-    return violations;
+    return violations
 }

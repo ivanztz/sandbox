@@ -13,7 +13,7 @@ import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
-import java.time.OffsetDateTime;
+import java.time.Instant;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -28,26 +28,23 @@ public class EventServiceImpl implements EventService {
 
     @Override
     public void processEvent(Object data, String eventClassName, MessageInfo messageInfo) {
-        final ObjectEventDocument eventDocument;
-        switch (eventClassName) {
-            case "com.iz.sandbox.event.ObjectCreatedMessage":
-                eventDocument = dataMapper.mapMessageDataToDocument((ObjectCreatedMessage) data);
-                break;
-            case "com.iz.sandbox.event.ObjectUpdatedMessage":
-                eventDocument = dataMapper.mapMessageDataToDocument((ObjectUpdatedMessage) data);
-                break;
-            case "com.iz.sandbox.event.ObjectDeletedMessage":
-                eventDocument = dataMapper.mapMessageDataToDocument((ObjectDeletedMessage) data);
-                break;
-            default:
-                throw new IllegalArgumentException();
-        }
+        log.info("Processing {}", data);
+        final ObjectEventDocument eventDocument = switch (eventClassName) {
+            case "com.iz.sandbox.event.ObjectCreatedMessage" ->
+                    dataMapper.mapMessageDataToDocument((ObjectCreatedMessage) data);
+            case "com.iz.sandbox.event.ObjectUpdatedMessage" ->
+                    dataMapper.mapMessageDataToDocument((ObjectUpdatedMessage) data);
+            case "com.iz.sandbox.event.ObjectDeletedMessage" ->
+                    dataMapper.mapMessageDataToDocument((ObjectDeletedMessage) data);
+            default -> throw new IllegalArgumentException();
+        };
 
         repository.save(eventDocument);
+        log.info("Successfully processed {}", data);
     }
 
     @Override
-    public List<ObjectEventData> findEvents(String objectId, OffsetDateTime startDate, OffsetDateTime endDate) {
+    public List<ObjectEventData> findEvents(String objectId, Instant startDate, Instant endDate) {
         return repository.findByCriteria(objectId, startDate, endDate).stream()
                 .map(dataMapper::mapEventDocumentToDto)
                 .collect(Collectors.toList());

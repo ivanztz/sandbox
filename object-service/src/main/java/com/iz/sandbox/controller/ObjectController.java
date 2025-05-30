@@ -12,7 +12,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.time.OffsetDateTime;
+import java.time.Instant;
 import java.util.UUID;
 
 @Slf4j
@@ -45,7 +45,7 @@ public class ObjectController implements ObjectsApi {
     }
 
     @Override
-    public ResponseEntity<ObjectDataListResponse> getObjects(OffsetDateTime startDate, OffsetDateTime endDate) {
+    public ResponseEntity<ObjectDataListResponse> getObjects(Instant startDate, Instant endDate) {
         final ObjectDataListResponse response = new ObjectDataListResponse();
         response.setData(objectService.getObjects(startDate, endDate));
         return ResponseEntity.ok(response);

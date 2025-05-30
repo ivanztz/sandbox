@@ -1,6 +1,6 @@
 spring:
   application:
-    name: object-service
+    name: object-events
   data:
     mongodb:
       database: ${database-name:local}
@@ -12,7 +12,7 @@ spring:
   jackson:
     default-property-inclusion: non_null
   kafka:
-    bootstrap-servers: kafka:9092
+    bootstrap-servers: localhost:9092
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.apache.kafka.common.serialization.ByteArraySerializer
@@ -31,6 +31,7 @@ spring:
         use.latest.version: true
         # avro config
         specific.avro.reader: true
+        value.subject.name.strategy: io.confluent.kafka.serializers.subject.RecordNameStrategy
 
         # json config
         # https://github.com/confluentinc/schema-registry/blob/master/json-schema-serializer/src/main/java/io/confluent/kafka/serializers/json/KafkaJsonSchemaDeserializerConfig.java

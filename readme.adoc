@@ -23,10 +23,9 @@ For more documentation link:docs/diagrams.adoc[docs]
 
 === Development
 
-* Java
+* Java 21
 * Frameworks
-** Spring
-** Spring Boot
+** Spring Boot 3.5
 ** Spring Data
 ** Spring Kafka
 ** Spring Metrics
@@ -65,7 +64,7 @@ For more documentation link:docs/diagrams.adoc[docs]
 * Helm
 * Kubectl
 * Maven 3+
-* JDK 17+
+* JDK 21+
 
 === Minikube environment
 

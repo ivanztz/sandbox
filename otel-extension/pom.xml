@@ -12,10 +12,10 @@
     <artifactId>otel-extension</artifactId>
 
     <properties>
-        <maven.compiler.source>17</maven.compiler.source>
-        <maven.compiler.target>17</maven.compiler.target>
+        <maven.compiler.source>21</maven.compiler.source>
+        <maven.compiler.target>21</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <opentelemetry-sdk-extension-autoconfigure.version>1.20.0-alpha
+        <opentelemetry-sdk-extension-autoconfigure.version>1.50.0
         </opentelemetry-sdk-extension-autoconfigure.version>
         <auto-service.version>1.0.1</auto-service.version>
         <opentelemetry-sdk-trace.version>1.20.0</opentelemetry-sdk-trace.version>
@@ -44,7 +44,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.5.1</version>
+                <version>3.14.0</version>
                 <configuration>
                     <annotationProcessorPaths>
                         <path>

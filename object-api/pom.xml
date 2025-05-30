@@ -12,14 +12,15 @@
     <artifactId>object-api</artifactId>
 
     <properties>
-        <maven.compiler.source>17</maven.compiler.source>
-        <maven.compiler.target>17</maven.compiler.target>
-        <jackson-databind-nullable.version>0.2.3</jackson-databind-nullable.version>
-        <swagger-parser-v3.version>2.1.3</swagger-parser-v3.version>
-        <swagger-annotations.version>2.2.3</swagger-annotations.version>
-        <lombok.version>1.18.24</lombok.version>
-        <avro.version>1.11.1</avro.version>
+        <maven.compiler.source>21</maven.compiler.source>
+        <maven.compiler.target>21</maven.compiler.target>
+        <jackson-databind-nullable.version>0.2.6</jackson-databind-nullable.version>
+        <swagger-parser-v3.version>2.1.27</swagger-parser-v3.version>
+        <swagger-annotations.version>2.2.30</swagger-annotations.version>
+        <lombok.version>1.18.38</lombok.version>
+        <avro.version>1.12.0</avro.version>
         <object-common.version>0.0.1-SNAPSHOT</object-common.version>
+        <jakarta.annotation-api.version>3.0.0</jakarta.annotation-api.version>
     </properties>
 
     <build>
@@ -27,7 +28,7 @@
             <plugin>
                 <groupId>org.openapitools</groupId>
                 <artifactId>openapi-generator-maven-plugin</artifactId>
-                <version>5.4.0</version>
+                <version>7.13.0</version>
                 <executions>
                     <execution>
                         <id>objects-api</id>
@@ -49,6 +50,7 @@
                                 <hideGenerationTimestamp>true</hideGenerationTimestamp>
                                 <useTags>true</useTags>
                                 <skipDefaultInterface>true</skipDefaultInterface>
+                                <useSpringBoot3>true</useSpringBoot3>
                             </configOptions>
                         </configuration>
                     </execution>
@@ -72,6 +74,7 @@
                                 <hideGenerationTimestamp>true</hideGenerationTimestamp>
                                 <useTags>true</useTags>
                                 <skipDefaultInterface>true</skipDefaultInterface>
+                                <useSpringBoot3>true</useSpringBoot3>
                             </configOptions>
                         </configuration>
                     </execution>
@@ -79,8 +82,12 @@
                 <configuration>
                     <typeMappings>
                         <typeMapping>object+json=JsonNode</typeMapping>
+                        <typeMapping>DateTime=Instant</typeMapping>
                     </typeMappings>
-                    <importMappings>JsonNode=com.fasterxml.jackson.databind.JsonNode</importMappings>
+                    <importMappings>
+                        <importMapping>JsonNode=com.fasterxml.jackson.databind.JsonNode</importMapping>
+                        <importMapping>Instant=java.time.Instant</importMapping>
+                    </importMappings>
                 </configuration>
             </plugin>
             <!--<plugin>
@@ -106,7 +113,7 @@
             <plugin>
                 <groupId>org.apache.avro</groupId>
                 <artifactId>avro-maven-plugin</artifactId>
-                <version>1.11.0</version>
+                <version>1.12.0</version>
                 <executions>
                     <execution>
                         <id>generate-avro-sources</id>
@@ -120,9 +127,6 @@
                     <sourceDirectory>${basedir}/src/main/resources/schema/avro</sourceDirectory>
                     <!-- Converting CharSequence to Strings -->
                     <stringType>String</stringType>
-                    <!-- Defining custom logical type and conversions -->
-                    <customConversions>org.apache.avro.Conversions$UUIDConversion,com.iz.sandbox.avro.data.OffsetDateTimeConversion</customConversions>
-                    <customLogicalTypeFactories>com.iz.sandbox.avro.data.OffsetDateTimeLogicalTypeFactory</customLogicalTypeFactories>
                     <!-- Linking schemas -->
                     <imports>
                         <import>${project.basedir}/src/main/resources/schema/avro/eventData.avsc</import>
@@ -141,6 +145,11 @@
     </build>
 
     <dependencies>
+        <dependency>
+            <groupId>jakarta.annotation</groupId>
+            <artifactId>jakarta.annotation-api</artifactId>
+            <version>${jakarta.annotation-api.version}</version>
+        </dependency>
         <dependency>
             <groupId>io.swagger.core.v3</groupId>
             <artifactId>swagger-annotations</artifactId>

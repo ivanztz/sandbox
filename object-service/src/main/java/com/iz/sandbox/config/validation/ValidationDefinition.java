@@ -15,7 +15,6 @@ public class ValidationDefinition {
     private int order;
 
     public enum ValidationScriptType {
-        KOTLIN,
         GROOVY,
         BEAN
     }

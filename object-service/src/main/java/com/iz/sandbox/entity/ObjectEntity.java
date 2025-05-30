@@ -1,16 +1,16 @@
 package com.iz.sandbox.entity;
 
-import com.vladmihalcea.hibernate.type.json.JsonType;
 import lombok.Getter;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.Type;
-import org.hibernate.annotations.TypeDef;
+import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.hibernate.type.SqlTypes;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
-import javax.persistence.*;
-import java.time.OffsetDateTime;
+import jakarta.persistence.*;
+
+import java.time.Instant;
 import java.util.UUID;
 
 @Entity
@@ -18,10 +18,6 @@ import java.util.UUID;
 @EntityListeners(AuditingEntityListener.class)
 @Getter
 @Setter
-@TypeDef(
-        name = "json",
-        typeClass = JsonType.class
-)
 public class ObjectEntity {
 
     @Id
@@ -34,13 +30,13 @@ public class ObjectEntity {
 
     private Double decimalField;
 
-    @Type(type = "json")
+    @JdbcTypeCode(SqlTypes.JSON)
     @Column(name = "json_field", columnDefinition = "jsonb")
     private String jsonField;
 
     @CreationTimestamp
-    private OffsetDateTime createdAt;
+    private Instant createdAt;
 
     @UpdateTimestamp
-    private OffsetDateTime updatedAt;
+    private Instant updatedAt;
 }

@@ -87,8 +87,10 @@ data:
   events-url: 'http://object-events:8080'
   OTEL_TRACES_EXPORTER: otlp
   OTEL_EXPORTER_OTLP_TRACES_ENDPOINT: 'http://opentelemetry-collector:4317'
+  OTEL_EXPORTER_OTLP_PROTOCOL: grpc
   OTEL_SERVICE_NAME: object-service
   OTEL_METRICS_EXPORTER: prometheus
+  OTEL_LOGS_EXPORTER: none
   #OTEL_TRACES_SAMPLER: sandbox_sampler
   #OTEL_TRACES_SAMPLER_ARG: '1.0'
   PYROSCOPE_APPLICATION_NAME: object-service
@@ -199,11 +201,13 @@ kind: ConfigMap
 metadata:
   name: object-events-config
 data:
-  spring.kafka.bootstrap: 'kafka:9092'
+  spring.kafka.bootstrap-servers: 'kafka:9092'
   OTEL_TRACES_EXPORTER: otlp
   OTEL_EXPORTER_OTLP_TRACES_ENDPOINT: http://opentelemetry-collector:4317
+  OTEL_EXPORTER_OTLP_PROTOCOL: grpc
   OTEL_SERVICE_NAME: object-events
   OTEL_METRICS_EXPORTER: prometheus
+  OTEL_LOGS_EXPORTER: none
   #OTEL_TRACES_SAMPLER: sandbox_sampler
   #OTEL_TRACES_SAMPLER_ARG: '1.0'
   PYROSCOPE_APPLICATION_NAME: object-events

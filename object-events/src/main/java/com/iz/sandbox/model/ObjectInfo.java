@@ -4,7 +4,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
-import java.time.OffsetDateTime;
+import java.time.Instant;
 
 @NoArgsConstructor
 @Getter
@@ -21,7 +21,7 @@ public class ObjectInfo {
 
     private String jsonField;
 
-    private OffsetDateTime createdAt;
+    private Instant createdAt;
 
-    private OffsetDateTime updatedAt;
+    private Instant updatedAt;
 }

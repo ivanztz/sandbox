@@ -8,7 +8,7 @@ import org.springframework.data.mongodb.core.query.Criteria;
 import org.springframework.data.mongodb.core.query.Query;
 import org.springframework.stereotype.Repository;
 
-import java.time.OffsetDateTime;
+import java.time.Instant;
 import java.util.List;
 
 @Repository
@@ -17,7 +17,7 @@ public class EventSearchRepositoryImpl implements EventSearchRepository {
     private final MongoTemplate mongoTemplate;
 
     @Override
-    public List<ObjectEventDocument> findByCriteria(String objectId, OffsetDateTime startDate, OffsetDateTime endDate) {
+    public List<ObjectEventDocument> findByCriteria(String objectId, Instant startDate, Instant endDate) {
         final Query query = new Query();
         if (objectId != null) {
             query.addCriteria(Criteria.where("objectId").is(objectId));

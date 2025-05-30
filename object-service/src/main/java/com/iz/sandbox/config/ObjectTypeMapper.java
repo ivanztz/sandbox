@@ -18,7 +18,6 @@ public interface ObjectTypeMapper {
 
     ObjectEntity mapRequestToEntity(ObjectDataRequest request);
 
-
     void mapRequestToEntity(ObjectDataRequest source, @MappingTarget ObjectEntity target);
 
     ObjectEntity mapDtoToEntity(ObjectData dto);
