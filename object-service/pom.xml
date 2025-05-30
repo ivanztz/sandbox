@@ -28,7 +28,6 @@
         <opentelemetry-javaagent.version>2.16.0</opentelemetry-javaagent.version>
         <micrometer-registry-prometheus.version>1.15.0</micrometer-registry-prometheus.version>
         <otel-extension.version>0.0.1-SNAPSHOT</otel-extension.version>
-        <springdoc-openapi-ui.version>1.8.0</springdoc-openapi-ui.version>
         <json-schema-registry.version>7.9.1</json-schema-registry.version>
         <kafka-avro-serializer.version>7.9.1</kafka-avro-serializer.version>
         <feign-micrometer.version>13.6</feign-micrometer.version>
@@ -39,6 +38,7 @@
         <pyroscope.otel.version>1.0.4</pyroscope.otel.version>
         <jakarta.annotation-api.version>3.0.0</jakarta.annotation-api.version>
         <hibernate-types-60.version>2.21.1</hibernate-types-60.version>
+        <springdoc-openapi-starter-webmvc-ui.version>2.8.8</springdoc-openapi-starter-webmvc-ui.version>
     </properties>
 
     <dependencies>
@@ -139,8 +139,8 @@
         </dependency>
         <dependency>
             <groupId>org.springdoc</groupId>
-            <artifactId>springdoc-openapi-ui</artifactId>
-            <version>${springdoc-openapi-ui.version}</version>
+            <artifactId>springdoc-openapi-starter-webmvc-ui</artifactId>
+            <version>${springdoc-openapi-starter-webmvc-ui.version}</version>
         </dependency>
         <dependency>
             <groupId>io.confluent</groupId>

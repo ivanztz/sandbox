@@ -60,11 +60,10 @@ spring:
 springdoc:
   api-docs:
     enabled: true
-  show-actuator: true
+  show-actuator: false
   cache:
     disabled: true
   swagger-ui:
-    disable-swagger-default-url: true
     csrf:
       enabled: true
     use-root-path: true
