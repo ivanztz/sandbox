@@ -5,6 +5,9 @@ app_start:
 app_stop:
 	kubectl delete -f ../kubernetes/deployment-app.yaml --force
 app_build:
+	# Running libraries build separately as it requires local Docker Env
+	mvn -f ../pom.xml clean install -PbuildLibraries -Dmaven.test.skip=true
+	# Running services build separately as it requires minikube Docker Env
 	eval  $$(minikube docker-env); \
 	mvn -f ../pom.xml clean install -PbuildDocker -Dmaven.test.skip=true
 env_start:

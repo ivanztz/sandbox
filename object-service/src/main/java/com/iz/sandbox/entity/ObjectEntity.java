@@ -10,7 +10,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import jakarta.persistence.*;
 
-import java.time.Instant;
+import java.time.OffsetDateTime;
 import java.util.UUID;
 
 @Entity
@@ -35,8 +35,8 @@ public class ObjectEntity {
     private String jsonField;
 
     @CreationTimestamp
-    private Instant createdAt;
+    private OffsetDateTime createdAt;
 
     @UpdateTimestamp
-    private Instant updatedAt;
+    private OffsetDateTime updatedAt;
 }

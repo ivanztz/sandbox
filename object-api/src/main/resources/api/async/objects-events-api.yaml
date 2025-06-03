@@ -1,0 +1,31 @@
+asyncapi: 3.0.0
+info:
+  title: Async API. Objects Events
+  version: 1.0.0
+  description: Асинхронное API. Objects Events
+  tags:
+    - name: objects
+      description: Объекты
+
+operations:
+  receiveObjectChangedEvent:
+    description: Receive object change events
+    action: receive
+    channel:
+      $ref: '#/channels/eventsObjectChanged'
+    tags:
+      - name: objects
+    bindings:
+      kafka:
+        bindingVersion: 0.3.0
+
+channels:
+  eventsObjectChanged:
+    messages:
+      eventsObjectChanged:
+        $ref: './common.yaml#/components/messages/ObjectChangedEvent'
+    tags:
+      - name: objects
+    address: "objects.events"
+
+

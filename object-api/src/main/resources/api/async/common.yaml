@@ -1,0 +1,85 @@
+asyncapi: 3.0.0
+info:
+  title: Async API. Common Objects
+  version: 1.0.0
+  description: Async API. Common Objects
+
+components:
+  messages:
+    ObjectChangedEvent:
+      description: Object change event
+      payload:
+        $id: ObjectChangedEvent #required to make generator generate correct names
+        type: object
+        properties:
+          objectId:
+            type: string
+            format: uuid
+            description: Unique object identifier
+          eventData:
+            $ref: '#/components/schemas/EventData'
+          eventPayload:
+            $ref: '#/components/schemas/EventObjectData'
+        required:
+          - objectId
+          - eventData
+
+  schemas:
+    EventData:
+      $id: EventData
+      type: object
+      description: Events metadata
+      properties:
+        publishedAt:
+          type: string
+          format: date-time
+          description: Event publication timestamp
+        principal:
+          type: string
+          description: Event user identity
+        type:
+          $ref: '#/components/schemas/EventType'
+      required:
+        - publishedAt
+        - principal
+    EventObjectData:
+      $id: EventObjectData
+      type: object
+      description: Object data
+      properties:
+        id:
+          type: string
+          format: uuid
+          description: Unique object identifier
+        stringField:
+          type: string
+          description: Field containing string value
+        intField:
+          type: integer
+          description: Field containing integer value
+        decimalField:
+          type: number
+          format: double
+          description: Field containing decimal value
+        jsonField:
+          type: string
+          description: Field containing json value
+        createdAt:
+          type: string
+          format: date-time
+          description: Object creation timestamp
+        updatedAt:
+          type: string
+          format: date-time
+          description: Object modification timestamp
+      required:
+        - id
+        - createdAt
+
+    EventType:
+      $id: EventType
+      type: string
+      enum:
+        - CREATE
+        - UPDATE
+        - DELETE

@@ -22,22 +22,7 @@ spring:
     bootstrap-servers: kafka:9092
     producer:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
-      value-serializer: io.confluent.kafka.serializers.KafkaAvroSerializer
-      properties:
-        # https://docs.confluent.io/platform/current/schema-registry/serdes-develop/serdes-json.html#json-schema-serializer-and-deserializer
-        auto.register.schemas: true
-        use.latest.version: true # not used with auto register enabled
-        value.subject.name.strategy: io.confluent.kafka.serializers.subject.RecordNameStrategy
-
-          # json config
-          # https://github.com/confluentinc/schema-registry/blob/master/schema-serializer/src/main/java/io/confluent/kafka/serializers/AbstractKafkaSchemaSerDeConfig.java
-          # https://github.com/confluentinc/schema-registry/blob/master/json-schema-serializer/src/main/java/io/confluent/kafka/serializers/json/KafkaJsonSchemaSerializerConfig.java
-          #json:
-        #schema.spec.version: draft_2019_09
-        #write.dates.iso8601: true
-        #fail.invalid.schema: true
-    properties:
-      schema.registry.url: ${schemaregistry.url}
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
   cloud:
     #disabling ribbon
     loadbalancer:
@@ -45,8 +30,6 @@ spring:
         enable: false
     compatibility-verifier:
       enabled: false # TODO enable after versions are compatible
-    schemaRegistryClient:
-      endpoint: ${schemaregistry.url}
 
   httpclient:
     enabled: true

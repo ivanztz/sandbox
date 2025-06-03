@@ -1,6 +1,9 @@
 package com.iz.sandbox.service.impl;
 
-import com.iz.sandbox.event.*;
+import com.iz.sandbox.event.EventObjectData;
+import com.iz.sandbox.event.EventType;
+import com.iz.sandbox.event.ObjectChangedEvent;
+import com.iz.sandbox.event.EventData;
 import com.iz.sandbox.service.EventPublishingService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.kafka.clients.producer.ProducerRecord;
@@ -11,6 +14,7 @@ import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Instant;
+import java.time.ZoneOffset;
 import java.util.UUID;
 
 @Service
@@ -30,11 +34,7 @@ public class EventPublishingServiceIml implements EventPublishingService {
     public void publishObjectCreatedEvent(EventObjectData data) {
         log.debug("Publishing creation event for {}", data);
 
-        final ObjectCreatedMessage event = ObjectCreatedMessage.newBuilder()
-                .setObjectId(data.getId())
-                .setEventPayload(data)
-                .setEventData(createEventData())
-                .build();
+        final ObjectChangedEvent event = createEvent(data.getId(), data, createEventData(EventType.CREATE));
         final ProducerRecord<String, Object> record = new ProducerRecord<>(eventsTopic, event);
         kafkaTemplate.send(record);
     }
@@ -44,11 +44,7 @@ public class EventPublishingServiceIml implements EventPublishingService {
     public void publishObjectModifiedEvent(EventObjectData data) {
         log.debug("Publishing updating event for {}", data);
 
-        final ObjectUpdatedMessage event = ObjectUpdatedMessage.newBuilder()
-                .setObjectId(data.getId())
-                .setEventPayload(data)
-                .setEventData(createEventData())
-                .build();
+        final ObjectChangedEvent event = createEvent(data.getId(), data, createEventData(EventType.UPDATE));
         final ProducerRecord<String, Object> record = new ProducerRecord<>(eventsTopic, event);
         kafkaTemplate.send(record);
     }
@@ -58,19 +54,27 @@ public class EventPublishingServiceIml implements EventPublishingService {
     public void publishObjectDeletedEvent(UUID id) {
         log.debug("Publishing deleting event for {}", id);
 
-        final ObjectDeletedMessage event = ObjectDeletedMessage.newBuilder()
-                .setObjectId(id)
-                .setEventData(createEventData())
-                .build();
+        final ObjectChangedEvent event = createEvent(id.toString(), null, createEventData(EventType.UPDATE));
         final ProducerRecord<String, Object> record = new ProducerRecord<>(eventsTopic, event);
         kafkaTemplate.send(record);
     }
 
-    private EventData createEventData() {
-        return EventData.newBuilder()
-                .setPrincipal(null)
-                .setPublishedAt(Instant.now())
-                .build();
+    private EventData createEventData(EventType eventType) {
+        final EventData eventData = new EventData();
+        eventData.setPublishedAt(Instant.now().atOffset(ZoneOffset.UTC));
+        eventData.setPrincipal(null);
+        eventData.setType(eventType);
+
+        return eventData;
+    }
+
+    private ObjectChangedEvent createEvent(String objectId, EventObjectData data, EventData eventData) {
+        final ObjectChangedEvent event = new ObjectChangedEvent();
+        event.setEventData(eventData);
+        event.setEventPayload(data);
+        event.setObjectId(objectId);
+
+        return event;
     }
 
 }

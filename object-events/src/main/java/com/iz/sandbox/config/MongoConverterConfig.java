@@ -5,7 +5,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.data.mongodb.core.convert.MongoCustomConversions;
 
-import java.time.Instant;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.util.Date;
 import java.util.List;
 
@@ -18,23 +19,23 @@ public class MongoConverterConfig {
     @Bean
     public MongoCustomConversions mongoCustomConversions() {
         return new MongoCustomConversions(List.of(
-                new InstantReadConverter(),
-                new InstantWriteConverter()
+                new OffsetDateTimeReadConverter(),
+                new OffsetDateTimeWriteConverter()
         ));
     }
 
-    static class InstantWriteConverter implements Converter<Instant, Date> {
+    static class OffsetDateTimeWriteConverter implements Converter<OffsetDateTime, Date> {
 
         @Override
-        public Date convert(Instant source) {
-            return Date.from(source);
+        public Date convert(OffsetDateTime source) {
+            return Date.from(source.toInstant().atZone(ZoneOffset.UTC).toInstant());
         }
     }
 
-    static class InstantReadConverter implements Converter<Date, Instant> {
+    static class OffsetDateTimeReadConverter implements Converter<Date, OffsetDateTime> {
         @Override
-        public Instant convert(Date source) {
-            return source.toInstant();
+        public OffsetDateTime convert(Date source) {
+            return source.toInstant().atOffset(ZoneOffset.UTC);
         }
     }
 }

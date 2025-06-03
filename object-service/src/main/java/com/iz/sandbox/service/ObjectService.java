@@ -3,7 +3,7 @@ package com.iz.sandbox.service;
 import com.iz.sandbox.object.dto.ObjectData;
 import com.iz.sandbox.object.dto.ObjectDataRequest;
 
-import java.time.Instant;
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.UUID;
 
@@ -17,5 +17,5 @@ public interface ObjectService {
 
     void deleteObjectById(UUID objectId);
 
-    List<ObjectData> getObjects(Instant startDate, Instant endDate);
+    List<ObjectData> getObjects(OffsetDateTime startDate, OffsetDateTime endDate);
 }

@@ -1,6 +1,6 @@
 {
   "type": "record",
-  "namespace": "com.iz.sandbox.event",
+  "namespace": "com.iz.sandbox.event.avro",
   "name": "EventData",
   "javaAnnotation": "jakarta.annotation.Generated(\"avro\")",
   "fields": [

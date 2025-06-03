@@ -18,7 +18,7 @@ import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.Instant;
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.UUID;
 import java.util.stream.Collectors;
@@ -76,7 +76,7 @@ public class ObjectServiceImpl implements ObjectService {
     }
 
     @Override
-    public List<ObjectData> getObjects(Instant startDate, Instant endDate) {
+    public List<ObjectData> getObjects(OffsetDateTime startDate, OffsetDateTime endDate) {
         log.debug("Finding objects with startDate: {}  and endDate: {}", startDate, endDate);
 
         Specification<ObjectEntity> specification = Specification

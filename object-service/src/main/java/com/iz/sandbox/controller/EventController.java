@@ -8,7 +8,7 @@ import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.time.Instant;
+import java.time.OffsetDateTime;
 import java.util.UUID;
 
 @RestController
@@ -19,7 +19,7 @@ public class EventController implements EventsApi {
 
     private final ObjectTypeMapper typeMapper;
     @Override
-    public ResponseEntity<ObjectEventDataListResponse> getEvents(UUID objectId, Instant startDate, Instant endDate) {
+    public ResponseEntity<ObjectEventDataListResponse> getEvents(UUID objectId, OffsetDateTime startDate, OffsetDateTime endDate) {
         return ResponseEntity.ok(typeMapper.mapEventDataList(client.getEvents(objectId, startDate, endDate).getBody()));
     }
 }

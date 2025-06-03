@@ -37,7 +37,7 @@
                         </goals>
                         <configuration>
                             <!-- https://openapi-generator.tech/docs/generators/spring/ -->
-                            <inputSpec>${project.basedir}/src/main/resources/objects-api.yaml</inputSpec>
+                            <inputSpec>${project.basedir}/src/main/resources/api/rest/objects-api.yaml</inputSpec>
                             <generatorName>spring</generatorName>
                             <apiPackage>com.iz.sandbox.object.api</apiPackage>
                             <modelPackage>com.iz.sandbox.object.dto</modelPackage>
@@ -61,7 +61,8 @@
                         </goals>
                         <configuration>
                             <!-- https://openapi-generator.tech/docs/generators/spring/ -->
-                            <inputSpec>${project.basedir}/src/main/resources/objects-events-api.yaml</inputSpec>
+                            <inputSpec>${project.basedir}/src/main/resources/api/rest/objects-events-api.yaml
+                            </inputSpec>
                             <generatorName>spring</generatorName>
                             <apiPackage>com.iz.sandbox.object.event.api</apiPackage>
                             <modelPackage>com.iz.sandbox.object.event.dto</modelPackage>
@@ -82,34 +83,14 @@
                 <configuration>
                     <typeMappings>
                         <typeMapping>object+json=JsonNode</typeMapping>
-                        <typeMapping>DateTime=Instant</typeMapping>
                     </typeMappings>
                     <importMappings>
                         <importMapping>JsonNode=com.fasterxml.jackson.databind.JsonNode</importMapping>
-                        <importMapping>Instant=java.time.Instant</importMapping>
                     </importMappings>
                 </configuration>
             </plugin>
-            <!--<plugin>
-                <groupId>org.jsonschema2pojo</groupId>
-                <artifactId>jsonschema2pojo-maven-plugin</artifactId>
-                <version>1.1.2</version>
-                <configuration>
-                    <sourceDirectory>${basedir}/src/main/resources/schema/json</sourceDirectory>
-                    <targetPackage>com.iz.sandbox.event</targetPackage>
-                    <dateTimeType>java.time.OffsetDateTime</dateTimeType>
-                    <useTitleAsClassname>true</useTitleAsClassname>
-                    <includeJsr303Annotations>true</includeJsr303Annotations>
-                    <serializable>true</serializable>
-                </configuration>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>generate</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>-->
+
+            <!-- Kept as generator usage example but not used in Runtime -->
             <plugin>
                 <groupId>org.apache.avro</groupId>
                 <artifactId>avro-maven-plugin</artifactId>
@@ -140,6 +121,99 @@
                         <version>${object-common.version}</version>
                     </dependency>
                 </dependencies>
+            </plugin>
+
+            <!-- Used as wrapper for official generator CLI for local development -->
+            <!-- For CI\CD is it recommended to have CLI installed on Git Workers and use it directly from separate profile -->
+            <!-- https://www.asyncapi.com/docs/tools/generator/usage -->
+            <!-- In addition to make it work maven-antrun-plugin and build-helper-maven-plugin are used -->
+
+            <plugin>
+                <groupId>io.fabric8</groupId>
+                <artifactId>docker-maven-plugin</artifactId>
+                <version>0.46.0</version>
+
+                <executions>
+                    <execution>
+                        <id>start</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>start</goal>
+                            <goal>stop</goal>
+                        </goals>
+                    </execution>
+                </executions>
+
+                <configuration>
+                    <images>
+                        <image>
+                            <name>asyncapi/cli:3.1.1</name>
+                            <run>
+                                <autoRemove>false</autoRemove>
+                                <volumes>
+                                    <bind>
+                                        <volume>${project.basedir}/src/main/resources/api/async:/app</volume>
+                                        <volume>${project.basedir}/target/generated-sources/asyncapi:/app/output</volume>
+                                    </bind>
+                                </volumes>
+                                <user>root</user>
+                                <log>
+                                    <date>default</date>
+                                </log>
+                                <entryPoint>
+                                    <shell>
+                                        asyncapi generate models java /app/objects-api.yaml -o /app/output
+                                        --packageName=com.iz.sandbox.event --javaJackson
+                                    </shell>
+                                </entryPoint>
+                                <!-- Blocking maven build until models are generated -->
+                                <wait>
+                                    <time>10000</time>
+                                    <exit>0</exit>
+                                </wait>
+                            </run>
+                        </image>
+                    </images>
+                </configuration>
+            </plugin>
+            <!-- Ensures asyncapi generated sources dir is created under system user -->
+            <plugin>
+                <artifactId>maven-antrun-plugin</artifactId>
+                <version>3.1.0</version>
+                <executions>
+                    <execution>
+                        <id>initialize</id>
+                        <phase>initialize</phase>
+                        <configuration>
+                            <target>
+                                <mkdir dir="target/generated-sources/asyncapi"/>
+                            </target>
+                        </configuration>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+            <!-- Adds asyncapi generated sources to build -->
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <version>3.6.0</version>
+                <executions>
+                    <execution>
+                        <id>add-source</id>
+                        <phase>generate-sources</phase>
+                        <goals>
+                            <goal>add-source</goal>
+                        </goals>
+                        <configuration>
+                            <sources>
+                                <source>target/generated-sources/asyncapi/</source>
+                            </sources>
+                        </configuration>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>

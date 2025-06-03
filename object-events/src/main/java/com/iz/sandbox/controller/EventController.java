@@ -8,7 +8,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.time.Instant;
+import java.time.OffsetDateTime;
 import java.util.UUID;
 
 @RestController("/events")
@@ -18,7 +18,7 @@ public class EventController implements EventsApi {
     private EventService eventService;
 
     @Override
-    public ResponseEntity<ObjectEventDataListResponse> getEvents(UUID objectId, Instant startDate, Instant endDate) {
+    public ResponseEntity<ObjectEventDataListResponse> getEvents(UUID objectId, OffsetDateTime startDate, OffsetDateTime endDate) {
         final ObjectEventDataListResponse response = new ObjectEventDataListResponse();
 
         response.setData(eventService.findEvents(objectId != null ? objectId.toString() : null, startDate, endDate));

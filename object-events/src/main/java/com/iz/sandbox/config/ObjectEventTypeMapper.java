@@ -1,11 +1,9 @@
 package com.iz.sandbox.config;
 
+import com.iz.sandbox.event.ObjectChangedEvent;
 import com.iz.sandbox.object.event.dto.ObjectData;
 import com.iz.sandbox.object.event.dto.ObjectEventData;
 import com.iz.sandbox.event.EventObjectData;
-import com.iz.sandbox.event.ObjectCreatedMessage;
-import com.iz.sandbox.event.ObjectDeletedMessage;
-import com.iz.sandbox.event.ObjectUpdatedMessage;
 import com.iz.sandbox.model.ObjectEventDocument;
 import com.iz.sandbox.model.ObjectInfo;
 import org.mapstruct.Mapper;
@@ -22,28 +20,10 @@ public interface ObjectEventTypeMapper {
             @Mapping(target = "principal", expression = "java(source.getEventData().getPrincipal())"),
             @Mapping(target = "publishedAt", expression = "java(source.getEventData().getPublishedAt())"),
             @Mapping(target = "data", source = "eventPayload"),
-            @Mapping(target = "eventType", constant = "CREATE"),
+            @Mapping(target = "eventType", expression = "java(source.getEventData().getType().toString())"),
     })
-    ObjectEventDocument mapMessageDataToDocument(ObjectCreatedMessage source);
+    ObjectEventDocument mapMessageDataToDocument(ObjectChangedEvent source);
 
-    @Mappings({
-            // mapping UUID to string to avoid string it as binary
-            @Mapping(target = "objectId", expression = "java(source.getObjectId().toString())"),
-            @Mapping(target = "principal", expression = "java(source.getEventData().getPrincipal())"),
-            @Mapping(target = "publishedAt", expression = "java(source.getEventData().getPublishedAt())"),
-            @Mapping(target = "data", source = "eventPayload"),
-            @Mapping(target = "eventType", constant = "UPDATE"),
-    })
-    ObjectEventDocument mapMessageDataToDocument(ObjectUpdatedMessage source);
-
-    @Mappings({
-            // mapping UUID to string to avoid string it as binary
-            @Mapping(target = "objectId", expression = "java(source.getObjectId().toString())"),
-            @Mapping(target = "principal", expression = "java(source.getEventData().getPrincipal())"),
-            @Mapping(target = "publishedAt", expression = "java(source.getEventData().getPublishedAt())"),
-            @Mapping(target = "eventType", constant = "DELETE"),
-    })
-    ObjectEventDocument mapMessageDataToDocument(ObjectDeletedMessage source);
 
     @Mappings({
             // mapping UUID to string to avoid string it as binary

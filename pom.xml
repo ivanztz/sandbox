@@ -16,14 +16,6 @@
 	<description>Sandbox project</description>
 	<packaging>pom</packaging>
 
-	<modules>
-		<module>object-service</module>
-		<module>object-api</module>
-        <module>object-events</module>
-		<module>otel-extension</module>
-        <module>object-common</module>
-    </modules>
-
 	<properties>
 		<image.registry.path>localhost:5000</image.registry.path>
 	</properties>
@@ -79,6 +71,30 @@
 
 	<profiles>
 		<profile>
+			<id>default</id>
+			<activation>
+				<activeByDefault>true</activeByDefault>
+			</activation>
+			<modules>
+				<module>object-api</module>
+				<module>object-common</module>
+				<module>otel-extension</module>
+				<module>object-events</module>
+				<module>object-service</module>
+			</modules>
+		</profile>
+		<profile>
+			<id>buildLibraries</id>
+			<activation>
+				<activeByDefault>false</activeByDefault>
+			</activation>
+			<modules>
+				<module>object-api</module>
+				<module>object-common</module>
+				<module>otel-extension</module>
+			</modules>
+		</profile>
+		<profile>
 			<!-- CI\CD or local kubernetes -->
 			<id>buildImage</id>
 			<build>
@@ -107,6 +123,9 @@
 		</profile>
 
 		<profile>
+			<activation>
+				<activeByDefault>false</activeByDefault>
+			</activation>
 			<!-- For local docker env -->
 			<id>buildDocker</id>
 			<build>
@@ -132,6 +151,10 @@
 					</plugins>
 				</pluginManagement>
 			</build>
+			<modules>
+				<module>object-events</module>
+				<module>object-service</module>
+			</modules>
 		</profile>
 	</profiles>
 
