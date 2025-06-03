@@ -18,8 +18,9 @@ For more documentation link:docs/diagrams.adoc[docs]
 
 === Specification
 
-- OpenApi 3
-- Avro
+- OpenApi 3+
+- AsyncApi 3+
+- Avro (deprecated)
 
 === Development
 
