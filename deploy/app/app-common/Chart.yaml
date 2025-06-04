@@ -1,0 +1,16 @@
+apiVersion: v2
+name: app-common
+description: A common Helm chart for deploying microservices (AI Generated)
+type: application
+
+version: 0.1.0
+
+appVersion: "1.0.0"
+
+maintainers:
+  - name: Ivan Zayats
+
+keywords:
+  - microservice
+  - deployment
+  - common

@@ -695,23 +695,6 @@ grafana:
             backendType: 'pyroscope'
           secureJsonData:
             httpHeaderValue1: 'sandbox'
-        - name: Pyroscope-Wrong-Tenant
-          type: grafana-pyroscope-datasource
-          access: proxy
-          orgId: 1
-          uid: pyroscope-wrong-tenant
-          url: http://pyroscope:4040
-          basicAuth: false
-          isDefault: false
-          version: 1
-          editable: true
-          apiVersion: 1
-          jsonData:
-            httpHeaderName1: 'X-Scope-OrgID'
-            minStep: '15s'
-            backendType: 'pyroscope'
-          secureJsonData:
-            httpHeaderValue1: 'sandbox2'
         - name: ClickHouse
           type: grafana-clickhouse-datasource
           jsonData:

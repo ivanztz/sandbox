@@ -1,0 +1,17 @@
+apiVersion: v2
+name: Microservices
+description: A Helm chart for running all project microservices in Kubernetes cluster
+type: application
+version: 0.1.0
+appVersion: "0.0.1"
+
+dependencies:
+  - name: app-common
+    version: 0.1.0
+    alias: object-events
+    repository: file://./app-common
+  - name: app-common
+    version: 0.1.0
+    alias: object-service
+    repository: file://./app-common
+

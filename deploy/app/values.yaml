@@ -1,0 +1,163 @@
+object-events:
+  fullnameOverride: object-events
+  appName: object-events
+  image:
+    repository: object-events
+    tag: latest
+
+  podAnnotations:
+    actuator.prometheus.io/scrape: 'true'
+    actuator.prometheus.io/path: '/actuator/prometheus'
+    actuator.prometheus.io/port: '8080'
+    otel.prometheus.io/scrape: 'true'
+    otel.prometheus.io/port: '9464'
+    prometheus.io/tenant: 'sandbox'
+
+  service:
+    type: ClusterIP
+    port: 8080
+    targetPort: 8080
+
+  containerPorts:
+    - name: app
+      port: 8080
+      protocol: TCP
+    - name: otel-metrics
+      port: 9464
+      protocol: TCP
+
+  configMap:
+    create: true
+    data:
+      spring.kafka.bootstrap-servers: 'kafka:9092'
+      OTEL_TRACES_EXPORTER: otlp
+      OTEL_EXPORTER_OTLP_TRACES_ENDPOINT: http://opentelemetry-collector:4317
+      OTEL_EXPORTER_OTLP_PROTOCOL: grpc
+      OTEL_SERVICE_NAME: object-events
+      OTEL_METRICS_EXPORTER: prometheus
+      OTEL_LOGS_EXPORTER: none
+      #OTEL_TRACES_SAMPLER: sandbox_sampler
+      #OTEL_TRACES_SAMPLER_ARG: '1.0'
+      PYROSCOPE_APPLICATION_NAME: object-events
+      PYROSCOPE_SERVER_ADDRESS: http://pyroscope:4040
+      PYROSCOPE_TENANT_ID: sandbox
+      PYROSCOPE_FORMAT: jfr
+
+  secret:
+    create: true
+    stringData:
+      server-name: 'mongodb'
+      database-port: '27017'
+      database-name: 'events'
+      auth-database-name: 'events'
+      database-user: 'admin'
+      database-password: 'password'
+
+  env:
+    OTEL_RESOURCE_ATTRIBUTES: 'service.instance.id=$(POD_NAME),service.namespace=$(POD_NAMESPACE)'
+    PYROSCOPE_LABELS: 'service_instance_id=$(POD_NAME),service_namespace=$(POD_NAMESPACE)'
+    PYROSCOPE_TENANT_ID: sandbox
+
+  livenessProbe:
+    enabled: true
+    httpGet:
+      path: /actuator/health/liveness
+      port: 8080
+    initialDelaySeconds: 30
+    periodSeconds: 10
+    timeoutSeconds: 5
+    successThreshold: 1
+    failureThreshold: 3
+
+  readinessProbe:
+    enabled: true
+    httpGet:
+      path: /actuator/health/readiness
+      port: 8080
+    initialDelaySeconds: 5
+    periodSeconds: 10
+    timeoutSeconds: 5
+    successThreshold: 1
+    failureThreshold: 3
+
+object-service:
+  fullnameOverride: object-service
+  appName: object-service
+  image:
+    repository: object-service
+    tag: latest
+
+  podAnnotations:
+    actuator.prometheus.io/scrape: 'true'
+    actuator.prometheus.io/path: '/actuator/prometheus'
+    actuator.prometheus.io/port: '8080'
+    otel.prometheus.io/scrape: 'true'
+    otel.prometheus.io/port: '9464'
+    prometheus.io/tenant: 'sandbox'
+
+  service:
+    type: ClusterIP
+    port: 8080
+    targetPort: 8080
+
+  containerPorts:
+    - name: app
+      port: 8080
+      protocol: TCP
+    - name: otel-metrics
+      port: 9464
+      protocol: TCP
+
+  configMap:
+    create: true
+    data:
+      spring.kafka.bootstrap: 'kafka:9092'
+      events-url: 'http://object-events:8080'
+      OTEL_TRACES_EXPORTER: otlp
+      OTEL_EXPORTER_OTLP_TRACES_ENDPOINT: 'http://opentelemetry-collector:4317'
+      OTEL_EXPORTER_OTLP_PROTOCOL: grpc
+      OTEL_SERVICE_NAME: object-service
+      OTEL_METRICS_EXPORTER: prometheus
+      OTEL_LOGS_EXPORTER: none
+      #OTEL_TRACES_SAMPLER: sandbox_sampler
+      #OTEL_TRACES_SAMPLER_ARG: '1.0'
+      PYROSCOPE_APPLICATION_NAME: object-service
+      PYROSCOPE_SERVER_ADDRESS: http://pyroscope:4040
+      PYROSCOPE_TENANT_ID: sandbox
+      PYROSCOPE_FORMAT: jfr
+
+  secret:
+    create: true
+    stringData:
+      server-name: 'postgresql'
+      database-port: '5432'
+      database-name: 'objects'
+      database-user: 'admin'
+      database-password: 'password'
+
+  env:
+    OTEL_RESOURCE_ATTRIBUTES: 'service.instance.id=$(POD_NAME),service.namespace=$(POD_NAMESPACE)'
+    PYROSCOPE_LABELS: 'service_instance_id=$(POD_NAME),service_namespace=$(POD_NAMESPACE)'
+    PYROSCOPE_TENANT_ID: sandbox
+
+  livenessProbe:
+    enabled: true
+    httpGet:
+      path: /actuator/health/liveness
+      port: 8080
+    initialDelaySeconds: 30
+    periodSeconds: 10
+    timeoutSeconds: 5
+    successThreshold: 1
+    failureThreshold: 3
+
+  readinessProbe:
+    enabled: true
+    httpGet:
+      path: /actuator/health/readiness
+      port: 8080
+    initialDelaySeconds: 5
+    periodSeconds: 10
+    timeoutSeconds: 5
+    successThreshold: 1
+    failureThreshold: 3

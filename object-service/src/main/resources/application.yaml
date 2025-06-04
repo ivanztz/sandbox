@@ -52,7 +52,7 @@ springdoc:
     use-root-path: true
     urls:
       - name: Rest API
-        url: /objects-api.yaml
+        url: /api/rest/objects-api.yaml
 logging:
   level:
     ROOT: INFO

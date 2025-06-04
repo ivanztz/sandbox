@@ -1,0 +1,204 @@
+# values.yaml
+
+# Default application name, can be overridden for each microservice.
+# This will be used as a base for resource names if nameOverride or fullnameOverride are not set.
+appName: my-app
+
+replicaCount: 1
+
+image:
+  repository: nginx # Replace with your microservice's image repository
+  pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: "" # Defaults to .Chart.AppVersion if not set
+
+imagePullSecrets: []
+# - name: my-registry-secret
+
+# Override the name of the chart. If not set, a name is generated using release name and chart name.
+nameOverride: ""
+# Override the full name of the chart. If not set, a name is generated using release name, chart name and appName.
+fullnameOverride: ""
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+podAnnotations: {}
+  # prometheus.io/scrape: "true"
+# prometheus.io/port: "8080"
+
+podSecurityContext: {}
+# fsGroup: 2000
+
+# Security context for the container
+securityContext: {}
+  # capabilities:
+  #   drop:
+  #   - ALL
+  # readOnlyRootFilesystem: true
+  # runAsNonRoot: true
+# runAsUser: 1000
+
+service:
+  type: ClusterIP # As per requirement
+  port: 80 # The port the service will expose
+  targetPort: http # The name or number of the port on the pods targeted by the service.
+  # If using a name, it must match one of the containerPorts[].name
+  # annotations: {}
+  #  key: value
+  # labels: {}
+  #  key: value
+
+# Container ports to expose on the pod.
+# These are used by the Deployment and can be referenced by the Service's targetPort and probes.
+containerPorts:
+  - name: http # Name for the port (e.g., http, grpc, metrics)
+    port: 8080 # Port number the application listens on inside the container
+    protocol: TCP # TCP or UDP
+  # Example for another port:
+  # - name: metrics
+  #   port: 9090
+  #   protocol: TCP
+
+# Environment variables to be sourced from a ConfigMap.
+# The ConfigMap will be created by this chart if create is true.
+configMap:
+  create: true
+  # name: "" # Optional: specify a name for the ConfigMap. Defaults to {{ include "chart.fullname" . }}-config
+  # Data for the ConfigMap (key-value pairs)
+  data: {}
+  #  APP_ENV: "production"
+  #  LOG_LEVEL: "info"
+
+# Environment variables to be sourced from a Secret.
+# The Secret will be created by this chart if create is true.
+# Data should be provided as stringData for automatic base64 encoding by Kubernetes.
+secret:
+  create: true
+  # name: "" # Optional: specify a name for the Secret. Defaults to {{ include "chart.fullname" . }}-secret
+  # stringData for the Secret (key-value pairs). Values will be base64 encoded.
+  stringData: {}
+  #  DATABASE_PASSWORD: "yourSuperSecretPassword"
+  #  API_KEY: "yourSecretApiKey"
+
+# Additional environment variables to be injected directly into the container.
+# These are defined directly in the Deployment spec.
+env: []
+  # - name: DIRECT_ENV_VAR
+  #   value: "direct_value"
+  # - name: ANOTHER_DIRECT_ENV_FROM_FIELD
+  #   valueFrom:
+  #     fieldRef:
+  #       fieldPath: metadata.namespace
+  # - name: EXISTING_SECRET_VALUE
+  #   valueFrom:
+  #     secretKeyRef:
+  #       name: my-existing-secret # Name of an existing secret
+#       key: password # Key within that secret
+
+# Liveness probe configuration
+livenessProbe:
+  enabled: true
+  # IMPORTANT: Define only one of httpGet, tcpSocket, or exec for the probe.
+  httpGet:
+    path: /healthz # Default health check path
+    port: http # Can be port number or name (e.g., from containerPorts)
+    # scheme: HTTP # HTTP or HTTPS
+    # httpHeaders:
+    #   - name: Custom-Header
+    #     value: AwesomeValue
+  # tcpSocket:
+  #   port: http # Can be port number or name
+  #   # host: my-host # Optional host, defaults to pod IP
+  # exec:
+  #   command:
+  #     - /bin/sh
+  #     - -c
+  #     - check_health_script.sh
+  initialDelaySeconds: 30
+  periodSeconds: 10
+  timeoutSeconds: 5
+  successThreshold: 1
+  failureThreshold: 3
+
+# Readiness probe configuration
+readinessProbe:
+  enabled: true
+  # IMPORTANT: Define only one of httpGet, tcpSocket, or exec for the probe.
+  httpGet:
+    path: /readyz # Default readiness check path
+    port: http # Can be port number or name
+    # scheme: HTTP
+  # tcpSocket:
+  #   port: http
+  # exec:
+  #   command:
+  #     - /bin/sh
+  #     - -c
+  #     - check_ready_script.sh
+  initialDelaySeconds: 5
+  periodSeconds: 10
+  timeoutSeconds: 5
+  successThreshold: 1
+  failureThreshold: 3
+
+# Ingress configuration
+ingress:
+  enabled: false # Disabled by default
+  className: "" # Optional: specify IngressClass. E.g., "nginx", "alb"
+  annotations: {}
+  #  kubernetes.io/ingress.class: nginx
+  #  nginx.ingress.kubernetes.io/rewrite-target: /
+  #  cert-manager.io/cluster-issuer: "letsencrypt-prod"
+  hosts:
+    - host: chart-example.local # Replace with your desired hostname
+      paths:
+        - path: / # Path for the service
+          pathType: ImplementationSpecific # Or Prefix, Exact
+          # Backend service name and port are derived from .Values.service.port and chart fullname
+          # You can override if needed, but typically not required for simple cases.
+          # backend:
+          #   service:
+          #     name: my-custom-service-name
+          #     port:
+          #       number: 8080
+  tls: []
+  #  - secretName: chart-example-tls
+  #    hosts:
+  #      - chart-example.local
+
+# Resource requests and limits for the container.
+resources: {}
+  # We usually recommend not to specify default resources and to leave this as a conscious
+  # choice for the user. This also increases chances charts run on environments with little
+  # resources, such as Minikube. If you do want to specify resources, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  # limits:
+  #   cpu: 200m
+  #   memory: 256Mi
+  # requests:
+  #   cpu: 100m
+#   memory: 128Mi
+
+# Autoscaling configuration (Horizontal Pod Autoscaler)
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 5
+  targetCPUUtilizationPercentage: 80
+  # targetMemoryUtilizationPercentage: 80
+
+# Node selector configuration
+nodeSelector: {}
+
+# Tolerations for pod assignment
+tolerations: []
+
+# Affinity for pod assignment
+affinity: {}
