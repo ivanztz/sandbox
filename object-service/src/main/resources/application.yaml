@@ -24,21 +24,17 @@ spring:
       key-serializer: org.apache.kafka.common.serialization.StringSerializer
       value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
   cloud:
-    #disabling ribbon
-    loadbalancer:
-      ribbon:
-        enable: false
     compatibility-verifier:
       enabled: false # TODO enable after versions are compatible
-
-  httpclient:
-    enabled: true
-  client:
-    config:
-      events:
-        connectTimeout: 5000
-        readTimeout: 5000
-        loggerLevel: full
+    openfeign:
+      client:
+        config:
+          events:
+            url: ${events-url:http://localhost:8082/}
+            connectTimeout: 5000
+            readTimeout: 5000
+            loggerLevel: full
+            micrometer.enabled: true
 
 springdoc:
   api-docs:
@@ -65,9 +61,6 @@ management.endpoints.web.exposure.include: '*'
 
 topics:
   events: object.events
-
-clients:
-  events: ${events-url:http://localhost:8082/}
 
 validation:
   definitions:
